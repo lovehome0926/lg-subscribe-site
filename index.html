@@ -469,7 +469,7 @@ img, video {
 
 /* === 手机模式 === */
 @media (max-width: 768px) {
-  /* 汉堡按钮样式 */
+  /* ☰ 汉堡按钮样式 */
   .menu-toggle {
     font-size: 26px;
     background: none;
@@ -482,7 +482,7 @@ img, video {
     z-index: 1100;
   }
 
-  /* 手机下的导航菜单 */
+  /* 📱 手机下的导航菜单（右侧滑出） */
   .nav-links {
     position: fixed;
     top: 60px;
@@ -493,18 +493,36 @@ img, video {
     flex-direction: column;
     align-items: flex-start;
     padding: 30px 20px;
-    box-shadow: -4px 0 12px rgba(0,0,0,0.1);
+    box-shadow: -4px 0 12px rgba(0, 0, 0, 0.1);
     border-top-left-radius: 12px;
     border-bottom-left-radius: 12px;
     transition: right 0.3s ease;
+    overflow-y: auto;             /* ✅ 可上下滚动 */
+    -webkit-overflow-scrolling: touch; /* ✅ 平滑滑动（iPhone 优化） */
   }
 
   .nav-links.active {
     right: 0;
   }
 
+  /* 每个选项间距与样式 */
   .nav-links li {
-    margin-bottom: 20px;
+    margin-bottom: 18px;
+    width: 100%;
+  }
+
+  .nav-links a {
+    display: block;
+    width: 100%;
+    padding: 10px 0;
+    font-size: 16px;
+    color: #333;
+    border-bottom: 1px solid #eee;
+    transition: 0.2s ease;
+  }
+
+  .nav-links a:hover {
+    color: #d60000;
   }
 }
 
@@ -1801,6 +1819,7 @@ setupPriceChange("ac-model-2", "ac-price-2");
 /* 如果太大或太靠边，可以微调这两个数值 */</style>
 </body>
 </html>
+
 
 
 
