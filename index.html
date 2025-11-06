@@ -385,97 +385,95 @@
 </style>
 <body>
 
-<!-- 🟣 顶部导航栏 -->
-<header class="mobile-header">
-  <div class="logo">LG Subscribe</div>
-  <button class="menu-toggle" onclick="toggleMenu()">☰</button>
-</header>
-
-<!-- 🟢 折叠菜单 -->
-<nav class="mobile-menu" id="mobileMenu">
-  <a href="#home">Home</a>
-  <a href="#water-purifier">Water Purifier</a>
-  <a href="#air-purifier">Air Purifier</a>
-  <a href="#aircond">Air Conditioner</a>
-  <a href="#dehumidifier">Dehumidifier</a>
-  <a href="#washer-&-dryer">Washer & Dryer</a>
-  <a href="#styler">Styler</a>
-  <a href="#refrigerator">Refrigerator</a>
-  <a href="#vacuum">Vacuum</a>
-  <a href="#tv-&-soundbar">TV & Soundbar</a>
-  <a href="#xboom">Xboom</a>
-  <a href="#monitors">Monitors</a>
-  <a href="#dishwasher">Dishwasher</a>
+<nav class="mobile-nav">
+  <div class="menu-toggle" onclick="toggleMenu()">☰</div>
+  <ul id="mobileMenu">
+  <li><a href="#home">Home</a></li>
+  <li><a href="#water-purifier">Water Purifier</a></li>
+  <li><a href="#air-purifier">Air Purifier</a></li>
+  <li><a href="#aircond">Air Conditioner</a></li>
+  <li><a href="#dehumidifier">Dehumidifier</a></li>
+  <li><a href="#washer-&-dryer">Washer & Dryer</a></li>
+  <li><a href="#styler">Styler</a></li>
+  <li><a href="#refrigerator">Refrigerator</a></li>
+  <li><a href="#vacuum">Vacuum</a></li>
+  <li><a href="#tv-&-soundbar">TV & Soundbar</a></li>
+  <li><a href="#xboom">Xboom</a></li>
+  <li><a href="#monitors">Monitors</a></li>
+  <li><a href="#dishwasher">Dishwasher</a></li>
+    </ul>
 </nav>
 
   <style>
-    /* 🟣 顶部导航栏样式 */
-.mobile-header {
+  /* ======= 基本样式 ======= */
+.desktop-nav ul {
+  list-style: none;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: #a50034; /* LG红色 */
-  color: white;
-  padding: 10px 16px;
-  position: sticky;
-  top: 0;
-  z-index: 999;
+  gap: 20px;
+  background: #fff;
+  padding: 10px 20px;
 }
 
-.mobile-header .logo {
+.desktop-nav a {
+  text-decoration: none;
+  color: #333;
   font-weight: bold;
-  font-size: 18px;
+}
+
+/* ======= 手机版导航栏 ======= */
+.mobile-nav {
+  display: none;
+  position: relative;
+  background: #fff;
+  padding: 10px 20px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
 .menu-toggle {
-  background: none;
-  border: none;
-  color: white;
   font-size: 24px;
   cursor: pointer;
-}
-
-/* 🟢 折叠菜单样式 */
-.mobile-menu {
-  display: none;
-  flex-direction: column;
-  background: #fff;
-  border-top: 1px solid #ccc;
-  position: sticky;
-  top: 55px;
-  z-index: 998;
-}
-
-.mobile-menu a {
-  padding: 12px;
-  text-decoration: none;
   color: #333;
-  border-bottom: 1px solid #eee;
-  font-size: 15px;
 }
 
-.mobile-menu a:hover {
-  background: #f3f3f3;
+.mobile-nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: none; /* 默认收起 */
+  background: #fff;
 }
 
-/* 📱 桌面隐藏汉堡菜单 */
-@media (min-width: 769px) {
-  .menu-toggle {
+.mobile-nav ul li {
+  border-top: 1px solid #eee;
+}
+
+.mobile-nav ul li a {
+  display: block;
+  padding: 10px;
+  color: #333;
+  text-decoration: none;
+}
+
+.mobile-nav ul li a:hover {
+  background: #f2f2f2;
+}
+
+/* ======= 响应式控制 ======= */
+@media screen and (min-width: 769px) {
+  .mobile-nav {
     display: none;
   }
-  .mobile-menu {
-    display: flex !important;
-    flex-direction: row;
-    justify-content: center;
-    flex-wrap: wrap;
-    background: #fff;
-    border: none;
+}
+
+@media screen and (max-width: 768px) {
+  .desktop-nav {
+    display: none;
   }
-  .mobile-menu a {
-    border: none;
-    padding: 10px 15px;
+  .mobile-nav {
+    display: block;
   }
 }
+
 </style>
 <style>
 /* 🔹 Banner 主容器 */
@@ -619,7 +617,7 @@
 
 
 
-<nav class="category-nav">
+<nav class="desktop-nav">
   <button onclick="location.href='#home'">Home</button>
   <button onclick="location.href='#water-purifier'">Water Purifier</button>
   <button onclick="location.href='#air-purifier'">Air Purifier</button>
@@ -1764,6 +1762,18 @@ function toggleMenu() {
   menu.style.display = (menu.style.display === "flex") ? "none" : "flex";
 }
 </script>
+<script>
+  <script>
+function toggleMenu() {
+  const menu = document.getElementById("mobileMenu");
+  if (menu.style.display === "block") {
+    menu.style.display = "none";
+  } else {
+    menu.style.display = "block";
+  }
+}
+</script>
 </body>
 </html>
+
 
