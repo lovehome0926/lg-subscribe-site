@@ -288,13 +288,83 @@
 
 
 
-<div class="banner">
+<style>
+/* 🔹 Banner 主容器 */
+.hero {
+  position: relative;
+  width: 100%;
+  height: 90vh; /* 桌機版較高 */
+  overflow: hidden;
+}
+
+/* 🔹 圖片設定 */
+.hero img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;        /* 保持比例填滿 */
+  object-position: center;  /* 圖片置中顯示 */
+}
+
+/* 🔹 內容（文字） */
+.hero-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  text-align: center;
+  z-index: 2;
+  padding: 0 20px; /* 手機時避免文字太貼邊 */
+}
+
+.hero-content h1 {
+  font-size: 3rem;
+  margin-bottom: 10px;
+}
+
+.hero-content p {
+  font-size: 1.3rem;
+  margin-bottom: 20px;
+}
+
+/* 🔹 遮罩 */
+.hero::after {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.35);
+  z-index: 1;
+}
+
+/* 🔹 手機響應式調整 */
+@media (max-width: 768px) {
+  .hero {
+    height: 65vh; /* 手機版比較矮，避免空白太多 */
+  }
+
+  .hero-content h1 {
+    font-size: 2rem;
+  }
+
+  .hero-content p {
+    font-size: 1rem;
+  }
+
+  .hero-content a {
+    padding: 10px 18px;
+    font-size: 0.9rem;
+  }
+}
+</style>
+
+<!-- 🔹 Banner HTML -->
+<div class="hero">
   <img src="images/banners/banner1.png" alt="LG Subscribe Banner">
-  <div class="banner-text">
+  <div class="hero-content">
     <h1>LG Subscribe</h1>
     <p>A Complete Home, Today.</p>
-    <a href="#water-purifier" class="banner-btn">Shop Now</a>
-  </div>
+    <a href="#shop" class="btn btn-danger mt-3">Shop Now</a>
+  </div>
 </div>
 
 <div class="scrolling-banner">
@@ -1396,3 +1466,4 @@ function changeColor(productId, color) {
 
 </body>
 </html>
+
