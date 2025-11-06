@@ -23,69 +23,7 @@
     .product-card button:hover { background:#b0000d; }
     footer { background:#000; color:#fff; text-align:center; padding:20px 0; margin-top:30px; font-size:14px; }
   </style>
-  <style>
-/* 🌟 新版导航栏设计：可滚动、可固定（sticky） */
-.category-nav {
-  position: sticky;       /* 当滚动到顶部时固定 */
-  top: 0;
-  z-index: 1000;
-  display: flex;
-  overflow-x: auto;
-  white-space: nowrap;
-  background: linear-gradient(90deg, #fff, #fafafa);
-  border-bottom: 1px solid #eee;
-  padding: 10px 8px;
-  gap: 10px;
-  scroll-behavior: smooth;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.05); /* 增加层次感 */
-}
 
-/* 美化按钮 */
-.category-nav button {
-  background-color: #f9f9f9;
-  border: 1px solid #ddd;
-  border-radius: 20px;
-  padding: 8px 16px;
-  font-size: 14px;
-  cursor: pointer;
-  flex-shrink: 0;
-  transition: all 0.2s ease;
-}
-
-.category-nav button:hover {
-  background-color: #ff4b4b;
-  color: white;
-  border-color: #ff4b4b;
-}
-
-/* 当前选中状态（你可以在JS点击后加上active类） */
-.category-nav button.active {
-  background-color: #ff4b4b;
-  color: white;
-  border-color: #ff4b4b;
-}
-
-/* 移除横向滚动条 */
-.category-nav::-webkit-scrollbar {
-  display: none;
-}
-
-</style>
-  <style>
-.trial-btn {
-  background-color: #009688; /* Green for trial */
-  color: white;
-  padding: 10px 16px;
-  border-radius: 8px;
-  text-decoration: none;
-  font-weight: 600;
-  margin-right: 6px;
-}
-
-.trial-btn:hover, .subscribe-btn:hover {
-  opacity: 0.9;
-}
-</style>
   <style>
 .subscribe-btn {
   display: inline-block;
@@ -429,6 +367,11 @@
 <!-- ✅ 导航栏样式 -->
 <style>
 /* === 基础样式 === */
+  html, body {
+  scroll-behavior: smooth;
+  margin: 0;
+  padding: 0;
+}
 .navbar {
   position: sticky;
   top: 0;
@@ -496,36 +439,26 @@
 
 /* 小屏幕下的菜单样式 */
 @media (max-width: 768px) {
-  .menu-toggle {
-    display: block;
-  }
-
   .nav-links {
     position: fixed;
     top: 60px;
     right: -100%;
-    width: 70%;
-    height: 100vh;
-    background: white;
+    width: 75%;
+    height: calc(100vh - 60px);
+    background: #fff;
     flex-direction: column;
-    gap: 18px;
     align-items: flex-start;
     padding: 30px 20px;
-    box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+    box-shadow: -4px 0 12px rgba(0,0,0,0.1);
+    border-top-left-radius: 12px;
+    border-bottom-left-radius: 12px;
     transition: right 0.3s ease;
-    overflow-y: auto;
   }
 
   .nav-links.active {
     right: 0;
   }
-
-  .nav-links a {
-    font-size: 16px;
-    width: 100%;
-  }
 }
-
 /* 点击选项后自动收起 */
 .nav-links a:active {
   color: #d60000;
@@ -1813,6 +1746,7 @@ setupPriceChange("ac-model-2", "ac-price-2");
 
 </body>
 </html>
+
 
 
 
