@@ -373,62 +373,60 @@
   padding: 0;
 }
 /* === 导航栏修正版 === */
+/* === 通用导航栏样式 === */
 .navbar {
- position: fixed;
+  position: sticky;
   top: 0;
-  left: 0;
-  width: 100%;
-  background: white;
-  z-index: 999;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  z-index: 1000;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
-/* LOGO */
-.nav-logo img {
-  height: 32px;
+.nav-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
 }
 
-/* 汉堡按钮样式 */
-.menu-toggle {
-  display: none;
-  font-size: 28px;
-  background: none;
-  border: none;
-  color: #222;
-  cursor: pointer;
-  position: relative;
-  z-index: 1200 !important; /* 🔹 确保按钮永远在最上层 */
+.logo-img {
+  height: 38px;
 }
 
-/* 导航链接（电脑版） */
+/* 桌面导航链接 */
 .nav-links {
   display: flex;
-  gap: 18px;
+  gap: 24px;
   list-style: none;
-  z-index: 1100;
 }
 
-.nav-links a {
+.nav-links li a {
   text-decoration: none;
   color: #333;
   font-weight: 500;
-  padding: 8px 14px;
-  border-radius: 20px;
-  transition: 0.3s;
+  transition: color 0.3s ease;
 }
 
-.nav-links a:hover {
-  background: #d60000;
-  color: #fff;
+.nav-links li a:hover {
+  color: #e00034;
 }
 
-/* === 手机版 === */
+/* === 手机模式 === */
 @media (max-width: 768px) {
+  /* 汉堡按钮样式 */
   .menu-toggle {
-    display: block; /* ✅ 确保按钮显示 */
+    font-size: 26px;
+    background: none;
+    border: none;
+    color: #333;
+    cursor: pointer;
+    position: absolute;
+    right: 20px;
+    top: 18px;
+    z-index: 1100;
   }
 
+  /* 手机下的导航菜单 */
   .nav-links {
     position: fixed;
     top: 60px;
@@ -443,23 +441,15 @@
     border-top-left-radius: 12px;
     border-bottom-left-radius: 12px;
     transition: right 0.3s ease;
-    z-index: 1100;
   }
 
   .nav-links.active {
     right: 0;
   }
 
-  .nav-links a {
-    font-size: 16px;
-    width: 100%;
+  .nav-links li {
+    margin-bottom: 20px;
   }
-}
-
-/* 🔹 确保 Chat / WhatsApp 浮动按钮不被导航盖住 */
-.chat-widget, .whatsapp-float, .whatsapp-icon, .chat-button {
-  position: fixed !important;
-  z-index: 2000 !important;
 }
 
 </style>
@@ -1742,9 +1732,20 @@ setupPriceChange("ac-model-2", "ac-price-2");
     });
   });
 </script>
+<style>.hamburger {
+  position: absolute;
+  top: 18px;
+  right: 20px;
+  font-size: 26px;
+  cursor: pointer;
+  color: #333;
+  z-index: 1001;
+}
 
+/* 如果太大或太靠边，可以微调这两个数值 */</style>
 </body>
 </html>
+
 
 
 
