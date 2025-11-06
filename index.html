@@ -398,6 +398,25 @@ img, video {
   background-color: #20b358;
   transform: scale(1.05);
 }
+  .price-box p {
+  margin: 4px 0;
+}
+
+.price-box .promo {
+  background-color: #ffefc2; /* 浅黄背景 */
+  color: #d32f2f;           /* 红色文字 */
+  font-weight: bold;
+  padding: 4px 8px;
+  border-radius: 4px;
+  display: inline-block;
+  margin-bottom: 4px;
+}
+
+.price-box .normal-price {
+  text-decoration: line-through;
+  color: #888;
+  font-size: 12px;
+}
 </style>
 <body>
 
@@ -700,10 +719,10 @@ img, video {
   <h3>ATOM-U</h3>
     <p style="color:#666666;">Hot / Ambient / Cold</p>
   <div class="price-box">
-    <p><strong>YEAR END PROMO: RM55/month</strong></p>
-        <p style="color:red;font-size:12px;">Normal Price: RM110/month </p>
-    <p style="color:red;font-size:12px;">Half Price for 1st 18 months </p>   
-    <p style="color:red;font-size:12px;">7-year warranty </p> 
+  <p class="promo">YEAR END PROMO: RM55/month</p>
+  <p class="normal-price">Normal Price: RM110/month</p>
+  <p class="promo" style="font-size:12px;">Half Price for 1st 18 months</p>
+  <p style="color:red;font-size:12px;">7-year warranty</p>
   </div>
    <div class="buyout-box">
     <p><strong>Outright: RM5,200</strong></p>
@@ -1842,6 +1861,7 @@ setupPriceChange("ac-model-2", "ac-price-2");
 /* 如果太大或太靠边，可以微调这两个数值 */</style>
 </body>
 </html>
+
 
 
 
