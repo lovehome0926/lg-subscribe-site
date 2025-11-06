@@ -40,6 +40,31 @@
   background-color: #b71c1c;
 }
 </style>
+  <style>
+    /* 修正手机滚动横向空白的问题 */
+html, body {
+  overflow-x: hidden; /* 禁止水平滚动 */
+}
+
+img, video {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* 对于横向滚动的图片区块（常见类名示例） */
+.slider, .carousel, .banner, .image-scroll, .hero-section {
+  overflow: hidden;
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .slider img, .carousel img, .banner img, .image-scroll img {
+    width: 100%;
+    object-fit: cover;
+  }
+}
+    </style>
 <style>
 .price-box, .buyout-box {
   background: #fafafa;
@@ -229,6 +254,35 @@
   .benefit-list {
     flex-direction: column;
     align-items: center;
+  }
+}
+  /* === 电脑版修正 === */
+@media (min-width: 769px) {
+  .menu-toggle {
+    display: none !important; /* 隐藏电脑版的 ☰ 按钮 */
+  }
+
+  .nav-links {
+    position: static;
+    flex-direction: row;
+    height: auto;
+    background: transparent;
+    box-shadow: none;
+    width: auto;
+    align-items: center;
+    padding: 0;
+  }
+
+  .nav-links a {
+    font-size: 15px;
+    padding: 8px 14px;
+    border-radius: 20px;
+    color: #333;
+  }
+
+  .nav-links a:hover {
+    background: #d60000;
+    color: #fff;
   }
 }
 </style>
@@ -1745,6 +1799,7 @@ setupPriceChange("ac-model-2", "ac-price-2");
 /* 如果太大或太靠边，可以微调这两个数值 */</style>
 </body>
 </html>
+
 
 
 
