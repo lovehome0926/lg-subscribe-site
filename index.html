@@ -402,14 +402,25 @@ img, video {
   margin: 4px 0;
 }
 
-.price-box .promo {
-  background-color: #ffefc2; /* 浅黄背景 */
-  color: #d32f2f;           /* 红色文字 */
-  font-weight: bold;
-  padding: 4px 8px;
-  border-radius: 4px;
-  display: inline-block;
-  margin-bottom: 4px;
+.price-box .promo-yellow {
+    background-color: #fff3cd;
+    color: #d32f2f;
+    font-weight: bold;
+    padding: 4px 8px;
+    border-radius: 4px;
+    display: inline-block;
+    margin-bottom: 4px;
+}
+
+.price-box .promo-green {
+    background-color: #dff5e0;
+    color: #28a745;
+    font-weight: bold;
+    padding: 4px 8px;
+    border-radius: 4px;
+    display: inline-block;
+    margin-bottom: 4px;
+
 }
 
 .price-box .normal-price {
@@ -719,9 +730,9 @@ img, video {
   <h3>ATOM-U</h3>
     <p style="color:#666666;">Hot / Ambient / Cold</p>
   <div class="price-box">
-  <p class="promo">YEAR END PROMO: RM55/month</p>
+  <p class="promo-yellow">YEAR END PROMO: RM55/month</p>
   <p class="normal-price">Normal Price: RM110/month</p>
-  <p class="promo" style="font-size:12px;">Half Price for 1st 18 months</p>
+  <p class="promo-yellow" style="font-size:12px;">Half Price for 1st 18 months</p>
   <p style="color:red;font-size:12px;">7-year warranty</p>
   </div>
    <div class="buyout-box">
@@ -743,9 +754,9 @@ img, video {
   <h3>WD516AN</h3>
     <p style="color:#666666;">Hot / Ambient / Cold</p>
   <div class="price-box">
-    <p><strong>YEAR END PROMO: RM35/month</strong></p>
-        <p style="color:red;font-size:12px;">Normal Price: RM70/month </p>
-    <p style="color:red;font-size:12px;">Half Price for 1st 18 months </p>   
+      <p class="promo-yellow">YEAR END PROMO: RM35/month</strong></p>
+       <p class="normal-price">Normal Price: RM70/month </p>
+  <p class="promo-yellow" style="font-size:12px;">Half Price for 1st 18 months</p>
     <p style="color:red;font-size:12px;">7-year warranty </p> 
   </div>
    <div class="buyout-box">
@@ -768,9 +779,9 @@ img, video {
   <h3>WD518AN</h3>
     <p style="color:#666666;">Hot / Ambient / Cold</p>
   <div class="price-box">
-    <p><strong>OHSEM PROMO: RM35/month</strong></p>
-        <p style="color:red;font-size:12px;">Normal Price: RM70/month </p>
-    <p style="color:red;font-size:12px;">Half Price for 1st 9 months </p>   
+   <p class="promo-green">YEAR END PROMO: RM35/month</strong></p>
+       <p class="normal-price">Normal Price: RM70/month </p>
+  <p class="promo-green" style="font-size:12px;">Half Price for 1st 9 months</p>
     <p style="color:red;font-size:12px;">7-year warranty </p> 
   </div>
    <div class="buyout-box">
@@ -795,9 +806,9 @@ img, video {
   <h3>WD210MN</h3>
     <p style="color:#666666;">Hot / Ambient</p>
   <div class="price-box">
-    <p><strong>YEAR END PROMO: RM30/month</strong></p>
-        <p style="color:red;font-size:12px;">Normal Price: RM60/month </p>
-    <p style="color:red;font-size:12px;">Half Price for 1st 18 months </p>   
+    <p class="promo-yellow">YEAR END PROMO: RM30/month</strong></p>
+       <p class="normal-price">Normal Price: RM60/month </p>
+  <p class="promo-yellow" style="font-size:12px;">Half Price for 1st 18 months</p>
     <p style="color:red;font-size:12px;">7-year warranty </p> 
   </div>
 
@@ -1861,6 +1872,7 @@ setupPriceChange("ac-model-2", "ac-price-2");
 /* 如果太大或太靠边，可以微调这两个数值 */</style>
 </body>
 </html>
+
 
 
 
