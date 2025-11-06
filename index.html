@@ -292,7 +292,7 @@ img, video {
   <img src="images/icons/whatsapp.png" alt="WhatsApp" />
   <span>Chat with Cindy！</span>
 </a>
-《<style>/* 🧱 产品区块的基础网格布局 */
+<style>/* 🧱 产品区块的基础网格布局 */
 .product-grid {
   display: grid;
   gap: 20px;
@@ -431,6 +431,8 @@ img, video {
 .navbar {
   position: fixed;
   top: 0;
+  left: 0;             /* 确保从最左边开始 */
+  width: 100%;         /* ✅ 让它占满整个页面宽度 */
   z-index: 1000;
   background: #fff;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
@@ -1799,6 +1801,7 @@ setupPriceChange("ac-model-2", "ac-price-2");
 /* 如果太大或太靠边，可以微调这两个数值 */</style>
 </body>
 </html>
+
 
 
 
