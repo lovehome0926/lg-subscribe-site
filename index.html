@@ -387,111 +387,141 @@
 
 <!-- 🔹 导航栏 -->
 <nav class="navbar">
-  <div class="navbar-container">
-    <a href="#home" class="nav-logo">Home</a>
+  <div class="nav-container">
+    <!-- Logo -->
+    <a href="#home" class="nav-logo">
+      <img src="images/lg_logo.png" alt="LG Subscribe" class="logo-img">
+      <span>LG Subscribe</span>
+    </a>
 
-    <!-- ✅ 汉堡菜单按钮（手机版才会出现） -->
+    <!-- 汉堡按钮（手机） -->
     <button class="menu-toggle" id="menuToggle">☰</button>
 
-    <!-- ✅ 菜单列表 -->
-    <div class="nav-links" id="navLinks">
-      <a href="#water-purifier">Water Purifier</a>
-      <a href="#air-purifier">Air Purifier</a>
-      <a href="#aircond">Air Conditioner</a>
-      <a href="#dehumidifier">Dehumidifier</a>
-      <a href="#washer-&-dryer">Washer & Dryer</a>
-      <a href="#styler">Styler</a>
-      <a href="#refrigerator">Refrigerator</a>
-      <a href="#vacuum">Vacuum</a>
-      <a href="#tv-&-soundbar">TV & Soundbar</a>
-      <a href="#xboom">Xboom</a>
-      <a href="#monitors">Monitors</a>
-      <a href="#dishwasher">Dishwasher</a>
-    </div>
+    <!-- 导航链接 -->
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#home">Home</a></li>
+      <li><a href="#water-purifier">Water Purifier</a></li>
+      <li><a href="#air-purifier">Air Purifier</a></li>
+      <li><a href="#aircond">Air Conditioner</a></li>
+      <li><a href="#dehumidifier">Dehumidifier</a></li>
+      <li><a href="#washer-&-dryer">Washer & Dryer</a></li>
+      <li><a href="#styler">Styler</a></li>
+      <li><a href="#refrigerator">Refrigerator</a></li>
+      <li><a href="#vacuum">Vacuum</a></li>
+      <li><a href="#tv-&-soundbar">TV & Soundbar</a></li>
+      <li><a href="#xboom">Xboom</a></li>
+      <li><a href="#monitors">Monitors</a></li>
+      <li><a href="#dishwasher">Dishwasher</a></li>
+    </ul>
   </div>
 </nav>
 
-  <style>
-/* 🔹 整个导航栏样式 */
+<!-- ✅ 导航栏样式 -->
+<style>
+/* === 基础样式 === */
 .navbar {
   position: sticky;
   top: 0;
-  z-index: 1000;
   width: 100%;
-  background-color: white;
-  border-bottom: 1px solid #eee;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+  z-index: 999;
+  transition: all 0.3s ease;
 }
 
-/* 🔹 导航栏内部容器 */
-.navbar-container {
+/* 内部容器 */
+.nav-container {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 16px;
+  padding: 12px 5%;
 }
 
-/* 🔹 Logo 或 Home 按钮 */
+/* Logo 样式 */
 .nav-logo {
-  font-weight: bold;
-  color: #d60000;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   text-decoration: none;
+  color: #222;
+  font-weight: 600;
   font-size: 18px;
 }
 
-/* 🔹 导航链接（电脑版） */
+.logo-img {
+  height: 30px;
+}
+
+/* 导航链接 */
 .nav-links {
   display: flex;
-  gap: 14px;
+  gap: 18px;
+  list-style: none;
 }
 
 .nav-links a {
   text-decoration: none;
   color: #333;
-  font-size: 14px;
-  padding: 8px 10px;
-  border-radius: 8px;
+  font-weight: 500;
+  padding: 8px 14px;
+  border-radius: 20px;
   transition: 0.3s;
 }
 
 .nav-links a:hover {
-  background-color: #ff4b4b;
-  color: white;
+  background: #d60000;
+  color: #fff;
 }
 
-/* 🔹 汉堡菜单按钮（手机） */
+/* === 手机版 === */
 .menu-toggle {
   display: none;
+  font-size: 26px;
   background: none;
   border: none;
-  font-size: 22px;
+  color: #333;
   cursor: pointer;
 }
 
-/* 🔹 手机样式 */
+/* 小屏幕下的菜单样式 */
 @media (max-width: 768px) {
-  .nav-links {
-    display: none;
-    flex-direction: column;
-    background-color: white;
-    position: absolute;
-    top: 60px;
-    left: 0;
-    width: 100%;
-    border-top: 1px solid #eee;
-    padding: 10px 0;
-  }
-
-  .nav-links.active {
-    display: flex;
-  }
-
   .menu-toggle {
     display: block;
   }
+
+  .nav-links {
+    position: fixed;
+    top: 60px;
+    right: -100%;
+    width: 70%;
+    height: 100vh;
+    background: white;
+    flex-direction: column;
+    gap: 18px;
+    align-items: flex-start;
+    padding: 30px 20px;
+    box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+    transition: right 0.3s ease;
+    overflow-y: auto;
+  }
+
+  .nav-links.active {
+    right: 0;
+  }
+
+  .nav-links a {
+    font-size: 16px;
+    width: 100%;
+  }
 }
 
+/* 点击选项后自动收起 */
+.nav-links a:active {
+  color: #d60000;
+}
 </style>
+
 <style>
 /* 🔹 Banner 主容器 */
 .hero {
@@ -1754,15 +1784,26 @@ function setupPriceChange(selectId, priceBoxId) {
 setupPriceChange("ac-model-1", "ac-price-1");
 setupPriceChange("ac-model-2", "ac-price-2");
 </script>
- <script>
-  // 手机汉堡菜单开关
-  document.getElementById("menuToggle").addEventListener("click", function () {
-    document.getElementById("navLinks").classList.toggle("active");
+<!-- ✅ 脚本：控制手机菜单开关 & 自动收起 -->
+<script>
+  const toggle = document.getElementById("menuToggle");
+  const navLinks = document.getElementById("navLinks");
+
+  toggle.addEventListener("click", () => {
+    navLinks.classList.toggle("active");
+  });
+
+  // 自动关闭菜单（选了分类后自动收起）
+  document.querySelectorAll(".nav-links a").forEach(link => {
+    link.addEventListener("click", () => {
+      navLinks.classList.remove("active");
+    });
   });
 </script>
 
 </body>
 </html>
+
 
 
 
