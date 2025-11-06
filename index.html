@@ -385,23 +385,30 @@
 </style>
 <body>
 
-<nav class="mobile-nav">
-  <div class="menu-toggle" onclick="toggleMenu()">☰</div>
-  <ul id="mobileMenu">
-  <li><a href="#home">Home</a></li>
-  <li><a href="#water-purifier">Water Purifier</a></li>
-  <li><a href="#air-purifier">Air Purifier</a></li>
-  <li><a href="#aircond">Air Conditioner</a></li>
-  <li><a href="#dehumidifier">Dehumidifier</a></li>
-  <li><a href="#washer-&-dryer">Washer & Dryer</a></li>
-  <li><a href="#styler">Styler</a></li>
-  <li><a href="#refrigerator">Refrigerator</a></li>
-  <li><a href="#vacuum">Vacuum</a></li>
-  <li><a href="#tv-&-soundbar">TV & Soundbar</a></li>
-  <li><a href="#xboom">Xboom</a></li>
-  <li><a href="#monitors">Monitors</a></li>
-  <li><a href="#dishwasher">Dishwasher</a></li>
-    </ul>
+<!-- 🔹 导航栏 -->
+<nav class="navbar">
+  <div class="navbar-container">
+    <a href="#home" class="nav-logo">Home</a>
+
+    <!-- ✅ 汉堡菜单按钮（手机版才会出现） -->
+    <button class="menu-toggle" id="menuToggle">☰</button>
+
+    <!-- ✅ 菜单列表 -->
+    <div class="nav-links" id="navLinks">
+      <a href="#water-purifier">Water Purifier</a>
+      <a href="#air-purifier">Air Purifier</a>
+      <a href="#aircond">Air Conditioner</a>
+      <a href="#dehumidifier">Dehumidifier</a>
+      <a href="#washer-&-dryer">Washer & Dryer</a>
+      <a href="#styler">Styler</a>
+      <a href="#refrigerator">Refrigerator</a>
+      <a href="#vacuum">Vacuum</a>
+      <a href="#tv-&-soundbar">TV & Soundbar</a>
+      <a href="#xboom">Xboom</a>
+      <a href="#monitors">Monitors</a>
+      <a href="#dishwasher">Dishwasher</a>
+    </div>
+  </div>
 </nav>
 
   <style>
@@ -617,7 +624,7 @@
 
 
 
-<nav class="desktop-nav">
+<nav class="category-nav">
   <button onclick="location.href='#home'">Home</button>
   <button onclick="location.href='#water-purifier'">Water Purifier</button>
   <button onclick="location.href='#air-purifier'">Air Purifier</button>
@@ -1775,5 +1782,6 @@ function toggleMenu() {
 </script>
 </body>
 </html>
+
 
 
