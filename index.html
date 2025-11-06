@@ -374,13 +374,14 @@
 }
 /* === 导航栏修正版 === */
 .navbar {
-  position: sticky;
+ position: fixed;
   top: 0;
+  left: 0;
   width: 100%;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(8px);
-  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-  z-index: 1100 !important;
+  background: white;
+  z-index: 999;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
 /* LOGO */
@@ -1744,6 +1745,7 @@ setupPriceChange("ac-model-2", "ac-price-2");
 
 </body>
 </html>
+
 
 
 
