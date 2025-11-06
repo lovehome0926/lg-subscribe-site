@@ -73,45 +73,43 @@ img, video {
   margin: 5px 0;
   box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
-.subscribe-btn, .buy-btn {
-  display: inline-block;
-  margin: 8px 5px 0 0;
-  padding: 8px 14px;
-  border-radius: 8px;
-  text-decoration: none;
-  font-weight: bold;
-  transition: 0.3s;
-}
-.subscribe-btn {
-  background: #d32f2f;
-  color: #fff;
-}
-.subscribe-btn:hover { background: #b71c1c; }
-.buy-btn {
-  background: #1976d2;
-  color: #fff;
-}
-.buy-btn:hover { background: #0d47a1; }
-</style>
-<style>
-  html {
-    scroll-behavior: smooth;
-  }
-  .trial-btn {
+/* 所有按钮统一基础样式 */
+.subscribe-btn,
+.buy-btn,
+.trial-btn {
     display: inline-block;
-    background-color: #28a745; /* 绿色背景 */
-    color: #ffffff; /* 白色文字 */
-    padding: 12px 24px; /* 上下12px，左右24px */
-    text-decoration: none; /* 去掉下划线 */
-    border-radius: 6px; /* 圆角 */
+    margin: 8px 5px 0 0;
+    padding: 12px 24px;       /* 统一大小 */
+    border-radius: 8px;       /* 统一圆角 */
+    text-decoration: none;    /* 去掉下划线 */
     font-weight: bold;
     font-size: 16px;
-    transition: background-color 0.3s ease;
+    transition: all 0.3s ease;
+    color: #fff;              /* 默认白色文字 */
 }
 
-.trial-btn:hover {
-    background-color: #218838; /* 悬停变深绿色 */
+/* 不同按钮颜色区分 */
+.subscribe-btn {
+    background-color: #d32f2f;
 }
+.subscribe-btn:hover {
+    background-color: #b71c1c;
+}
+
+.buy-btn {
+    background-color: #1976d2;
+}
+.buy-btn:hover {
+    background-color: #0d47a1;
+}
+
+.trial-btn {
+    background-color: #28a745;
+}
+.trial-btn:hover {
+    background-color: #218838;
+}
+
 </style>
 <style>
 .banner {
@@ -1834,6 +1832,7 @@ setupPriceChange("ac-model-2", "ac-price-2");
 /* 如果太大或太靠边，可以微调这两个数值 */</style>
 </body>
 </html>
+
 
 
 
