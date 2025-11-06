@@ -412,71 +412,81 @@
 </nav>
 
   <style>
-  /* ======= 基本样式 ======= */
-.desktop-nav ul {
-  list-style: none;
+/* 🔹 整个导航栏样式 */
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  width: 100%;
+  background-color: white;
+  border-bottom: 1px solid #eee;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+/* 🔹 导航栏内部容器 */
+.navbar-container {
   display: flex;
-  gap: 20px;
-  background: #fff;
-  padding: 10px 20px;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 16px;
 }
 
-.desktop-nav a {
-  text-decoration: none;
-  color: #333;
+/* 🔹 Logo 或 Home 按钮 */
+.nav-logo {
   font-weight: bold;
-}
-
-/* ======= 手机版导航栏 ======= */
-.mobile-nav {
-  display: none;
-  position: relative;
-  background: #fff;
-  padding: 10px 20px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
-
-.menu-toggle {
-  font-size: 24px;
-  cursor: pointer;
-  color: #333;
-}
-
-.mobile-nav ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: none; /* 默认收起 */
-  background: #fff;
-}
-
-.mobile-nav ul li {
-  border-top: 1px solid #eee;
-}
-
-.mobile-nav ul li a {
-  display: block;
-  padding: 10px;
-  color: #333;
+  color: #d60000;
   text-decoration: none;
+  font-size: 18px;
 }
 
-.mobile-nav ul li a:hover {
-  background: #f2f2f2;
+/* 🔹 导航链接（电脑版） */
+.nav-links {
+  display: flex;
+  gap: 14px;
 }
 
-/* ======= 响应式控制 ======= */
-@media screen and (min-width: 769px) {
-  .mobile-nav {
+.nav-links a {
+  text-decoration: none;
+  color: #333;
+  font-size: 14px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  transition: 0.3s;
+}
+
+.nav-links a:hover {
+  background-color: #ff4b4b;
+  color: white;
+}
+
+/* 🔹 汉堡菜单按钮（手机） */
+.menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+/* 🔹 手机样式 */
+@media (max-width: 768px) {
+  .nav-links {
     display: none;
+    flex-direction: column;
+    background-color: white;
+    position: absolute;
+    top: 60px;
+    left: 0;
+    width: 100%;
+    border-top: 1px solid #eee;
+    padding: 10px 0;
   }
-}
 
-@media screen and (max-width: 768px) {
-  .desktop-nav {
-    display: none;
+  .nav-links.active {
+    display: flex;
   }
-  .mobile-nav {
+
+  .menu-toggle {
     display: block;
   }
 }
@@ -1763,25 +1773,16 @@ function setupPriceChange(selectId, priceBoxId) {
 setupPriceChange("ac-model-1", "ac-price-1");
 setupPriceChange("ac-model-2", "ac-price-2");
 </script>
-  <script>
-function toggleMenu() {
-  const menu = document.getElementById("mobileMenu");
-  menu.style.display = (menu.style.display === "flex") ? "none" : "flex";
-}
+ <script>
+  // 手机汉堡菜单开关
+  document.getElementById("menuToggle").addEventListener("click", function () {
+    document.getElementById("navLinks").classList.toggle("active");
+  });
 </script>
-<script>
-  <script>
-function toggleMenu() {
-  const menu = document.getElementById("mobileMenu");
-  if (menu.style.display === "block") {
-    menu.style.display = "none";
-  } else {
-    menu.style.display = "block";
-  }
-}
-</script>
+
 </body>
 </html>
+
 
 
 
