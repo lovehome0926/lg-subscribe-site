@@ -1871,7 +1871,8 @@ setupPriceChange("ac-model-2", "ac-price-2");
 }
 
 /* 如果太大或太靠边，可以微调这两个数值 */</style>
-  <script>const WHATSAPP_PHONE = "60177473787";
+<script>
+const WHATSAPP_PHONE = "60177473787";
 
 document.querySelectorAll(".product-card").forEach(card => {
   const productID = card.dataset.productId; // 读取 data-product-id
@@ -1884,14 +1885,15 @@ document.querySelectorAll(".product-card").forEach(card => {
   const messageBuy = `Hello,%20I%20am%20interested%20in%20buying%20product%20${productID}%20outright.%20Please%20assist.%20Thank%20you!`;
   const messageTrial = `Hello,%20I%20am%20interested%20in%20the%2021-day%20free%20trial%20for%20product%20${productID}.%20Please%20assist.%20Thank%20you!`;
 
-  subscribeBtn.href = `https://wa.me/${WHATSAPP_PHONE}?text=${messageSubscribe}`;
-  buyBtn.href = `https://wa.me/${WHATSAPP_PHONE}?text=${messageBuy}`;
-  trialBtn.href = `https://wa.me/${WHATSAPP_PHONE}?text=${messageTrial}`;
+  if(subscribeBtn) subscribeBtn.href = `https://wa.me/${WHATSAPP_PHONE}?text=${messageSubscribe}`;
+  if(buyBtn) buyBtn.href = `https://wa.me/${WHATSAPP_PHONE}?text=${messageBuy}`;
+  if(trialBtn) trialBtn.href = `https://wa.me/${WHATSAPP_PHONE}?text=${messageTrial}`;
+});
+</script>
 
-  }
-});</script>
 </body>
 </html>
+
 
 
 
