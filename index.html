@@ -301,9 +301,9 @@ img, video {
 </style>
 </head>
 <!-- Floating WhatsApp Button -->
-<a href="https://wa.me/60177473787" class="whatsapp-float" target="_blank">
-  <img src="images/icons/whatsapp.png" alt="WhatsApp" />
-  <span>Chat with Cindy！</span>
+<a href="https://wa.me/60177473787?text=Hello,%20I%20am%20interested%20in%20applying%20or%20subscribing%20to%20your%20products.%20Please%20assist.%20Thank%20you!" 
+   target="_blank" class="whatsapp-float">
+   <img src="images/icons/whatsapp.png" alt="WhatsApp" />
 </a>
 <style>/* 🧱 产品区块的基础网格布局 */
 .product-grid {
@@ -371,33 +371,30 @@ img, video {
 <style>
 .whatsapp-float {
   position: fixed;
-  width: 180px;
-  height: 50px;
   bottom: 20px;
   right: 20px;
-  background-color: #25D366;
-  color: white;
-  border-radius: 30px;
+  z-index: 1000;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 600;
-  text-decoration: none;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-  z-index: 9999;
-  transition: all 0.3s ease;
+  cursor: pointer;
+  transition: transform 0.3s;
 }
 
 .whatsapp-float img {
-  width: 28px;
-  height: 28px;
-  margin-right: 10px;
+  width: 100%;
+  height: 100%;
 }
 
 .whatsapp-float:hover {
-  background-color: #20b358;
-  transform: scale(1.05);
+  transform: scale(1.1);
 }
+
   .price-box p {
   margin: 4px 0;
 }
@@ -1876,6 +1873,7 @@ setupPriceChange("ac-model-2", "ac-price-2");
 /* 如果太大或太靠边，可以微调这两个数值 */</style>
 </body>
 </html>
+
 
 
 
