@@ -1,5 +1,6 @@
+
 import React, { useState } from 'react';
-import { ShieldCheck, User, Key, ArrowRight, AlertCircle, Hash, Info } from 'lucide-react';
+import { ShieldCheck, User, Key, ArrowRight, AlertCircle, Hash, Globe } from 'lucide-react';
 import { Role, LanguageCode, Translation, AuthUser, Agent } from '../types';
 
 interface LoginProps {
@@ -19,14 +20,17 @@ export const Login: React.FC<LoginProps> = ({ language, setLanguage, translation
     e.preventDefault();
     setError(false);
 
+    const normalizedInput = idInput.trim();
+
     if (role === 'LSM') {
-      if (idInput === 'Joecindy@1123') {
+      if (normalizedInput === 'Joecindy@1123') {
         onLogin({ role: 'LSM' });
       } else {
         setError(true);
       }
     } else {
-      const agent = agents.find(a => String(a.id) === idInput);
+      // 代理 ID 不区分大小写匹配
+      const agent = agents.find(a => a.id.toUpperCase() === normalizedInput.toUpperCase());
       if (agent) {
         onLogin({ role: 'LM', agentId: agent.id });
       } else {
@@ -42,36 +46,44 @@ export const Login: React.FC<LoginProps> = ({ language, setLanguage, translation
   };
 
   return (
-    <div className="min-h-screen bg-[#F8F9FA] flex flex-col items-center justify-center p-6 font-sans">
-      <div className="w-full max-w-md space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700">
+    <div className="min-h-screen bg-[#F8F9FA] flex flex-col items-center justify-center p-6 font-sans relative overflow-hidden">
+      {/* 背景装饰 */}
+      <div className="absolute top-[-10%] right-[-10%] w-64 h-64 bg-red-50 rounded-full blur-3xl opacity-50"></div>
+      <div className="absolute bottom-[-10%] left-[-10%] w-64 h-64 bg-blue-50 rounded-full blur-3xl opacity-50"></div>
+
+      <div className="w-full max-w-md space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700 relative z-10">
         
         <div className="text-center space-y-2">
-          <div className="w-20 h-20 bg-[#A50034] rounded-[2rem] flex items-center justify-center text-white font-black text-3xl mx-auto shadow-2xl mb-4 rotate-3 border-4 border-white">LG</div>
+          <div className="w-20 h-20 bg-[#A50034] rounded-[2.2rem] flex items-center justify-center text-white font-black text-3xl mx-auto shadow-2xl mb-4 rotate-3 border-4 border-white">LG</div>
           <h1 className="text-3xl font-black text-gray-900 tracking-tight">{translations.loginTitle}</h1>
-          <div className="flex justify-center gap-2 pt-2">
-            <select 
-              value={language} 
-              onChange={(e) => setLanguage(e.target.value as LanguageCode)}
-              className="text-xs bg-white border border-gray-200 rounded-full px-4 py-1.5 outline-none font-bold shadow-sm"
-            >
-              <option value="zh">简体中文</option>
-              <option value="en">English</option>
-              <option value="ms">Bahasa Melayu</option>
-            </select>
+          
+          <div className="flex justify-center pt-2">
+             <div className="flex items-center gap-2 bg-white border border-gray-100 rounded-full px-4 py-2 shadow-sm">
+                <Globe size={14} className="text-gray-400" />
+                <select 
+                  value={language} 
+                  onChange={(e) => setLanguage(e.target.value as LanguageCode)}
+                  className="text-xs bg-transparent outline-none font-bold text-gray-600 appearance-none cursor-pointer"
+                >
+                  <option value="zh">简体中文</option>
+                  <option value="en">English</option>
+                  <option value="ms">Bahasa Melayu</option>
+                </select>
+             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-[2.5rem] p-8 shadow-2xl border border-gray-100">
-          <div className="flex p-1 bg-gray-100 rounded-2xl mb-8">
+        <div className="bg-white rounded-[2.5rem] p-8 shadow-[0_20px_60px_rgba(0,0,0,0.08)] border border-gray-50/50 backdrop-blur-sm">
+          <div className="flex p-1.5 bg-gray-100 rounded-2xl mb-8">
             <button 
               onClick={() => resetForm('LSM')}
-              className={`flex-1 py-3 rounded-xl flex items-center justify-center gap-2 text-xs font-black transition-all ${role === 'LSM' ? 'bg-white text-[#A50034] shadow-sm' : 'text-gray-400 hover:text-gray-600'}`}
+              className={`flex-1 py-3 rounded-xl flex items-center justify-center gap-2 text-[11px] font-black transition-all ${role === 'LSM' ? 'bg-white text-[#A50034] shadow-md scale-100' : 'text-gray-400 hover:text-gray-500 scale-95'}`}
             >
               <ShieldCheck size={16} /> {translations.loginLsm}
             </button>
             <button 
               onClick={() => resetForm('LM')}
-              className={`flex-1 py-3 rounded-xl flex items-center justify-center gap-2 text-xs font-black transition-all ${role === 'LM' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-400 hover:text-gray-600'}`}
+              className={`flex-1 py-3 rounded-xl flex items-center justify-center gap-2 text-[11px] font-black transition-all ${role === 'LM' ? 'bg-white text-blue-600 shadow-md scale-100' : 'text-gray-400 hover:text-gray-500 scale-95'}`}
             >
               <User size={16} /> {translations.loginLm}
             </button>
@@ -79,7 +91,7 @@ export const Login: React.FC<LoginProps> = ({ language, setLanguage, translation
 
           <form onSubmit={handleLogin} className="space-y-6">
             <div className="space-y-2">
-              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">
+              <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.15em] px-1">
                 {role === 'LSM' ? translations.passwordLabel : translations.agentCodeLabel}
               </label>
               <div className="relative group">
@@ -88,22 +100,16 @@ export const Login: React.FC<LoginProps> = ({ language, setLanguage, translation
                 </div>
                 <input 
                   type={role === 'LSM' ? "password" : "text"}
-                  className={`w-full bg-gray-50 border-0 ring-1 ring-gray-100 rounded-2xl pl-12 pr-6 py-4 text-sm font-bold outline-none focus:ring-2 ${role === 'LSM' ? 'focus:ring-[#A50034]' : 'focus:ring-blue-600'} transition-all`}
+                  className={`w-full bg-gray-50/50 border-0 ring-1 ring-gray-200 rounded-2xl pl-12 pr-6 py-4 text-sm font-bold outline-none focus:ring-2 ${role === 'LSM' ? 'focus:ring-[#A50034]' : 'focus:ring-blue-600'} transition-all`}
                   value={idInput}
                   onChange={(e) => setIdInput(e.target.value)}
-                  placeholder={role === 'LSM' ? "Enter LSM Password" : "Agent ID"}
-                  autoFocus
+                  placeholder={role === 'LSM' ? "Admin Access Only" : "M000000 / F000000"}
                 />
               </div>
-              {role === 'LSM' && (
-                <p className="text-[10px] text-gray-400 font-medium flex items-center gap-1 mt-1 px-1">
-                  <Info size={10} /> 提示: Joecindy@1123
-                </p>
-              )}
             </div>
 
             {error && (
-              <div className="flex items-center gap-2 text-red-500 bg-red-50 p-3 rounded-xl text-xs font-bold animate-shake duration-300">
+              <div className="flex items-center gap-2 text-red-500 bg-red-50 p-3 rounded-xl text-xs font-bold animate-pulse">
                 <AlertCircle size={14} />
                 {translations.loginError}
               </div>
