@@ -73,7 +73,7 @@
       window.addEventListener('error', function(e) {
         console.error('Runtime Error:', e);
         const text = document.getElementById('loading-text');
-        if (text) text.innerHTML = '<div style="color:red;padding:20px;text-align:center;">启动失败<br><small style="font-size:10px;opacity:0.6;">' + e.message + '</small></div>';
+        if (text) text.innerHTML = '<div style="color:red;padding:20px;text-align:center;">系统加载异常<br><small style="font-size:10px;opacity:0.6;">' + (e.message || '网络连接超时') + '</small></div>';
       });
     </script>
 <script type="module" src="/index.tsx"></script>
