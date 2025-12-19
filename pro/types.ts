@@ -37,6 +37,7 @@ export interface Product {
   dims: string;
   notes: string;
   sellingPoints: string[];
+  image: string;
 }
 
 export interface Translation {
@@ -71,4 +72,12 @@ export interface Translation {
   agentCodePlaceholder: string;
   loginBtn: string;
   logout: string;
+  addAgent: string;
+  deleteAgent: string;
+  confirmDelete: string;
+  agentName: string;
+  agentType: string;
+  cancel: string;
+  noProductFound: string;
+  askAiAboutProduct: string;
 }

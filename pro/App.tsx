@@ -82,7 +82,6 @@ const App: React.FC = () => {
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [copyFeedback, setCopyFeedback] = useState(false);
 
-  // LSM 代理管理相关
   const [showAddModal, setShowAddModal] = useState(false);
   const [newAgentName, setNewAgentName] = useState('');
   const [newAgentType, setNewAgentType] = useState<'FT' | 'PT'>('FT');
@@ -278,7 +277,6 @@ const App: React.FC = () => {
           
           {activeTab === 'schedule' && (
             <div className="animate-in fade-in slide-in-from-bottom-3 duration-500 space-y-4">
-              {/* 控制栏 */}
               <div className="flex justify-between items-center bg-white p-3 rounded-2xl shadow-md border border-gray-200">
                 <div className="flex items-center gap-2 bg-gray-50 px-3 py-2 rounded-xl border border-gray-200">
                   <Calendar size={14} className="text-[#A50034]" />
@@ -291,35 +289,26 @@ const App: React.FC = () => {
                 )}
               </div>
               
-              {/* 日历网格 */}
               <div className="bg-white rounded-[2rem] border-2 border-gray-300 shadow-2xl overflow-hidden">
-                {/* 星期标题 */}
                 <div className="grid grid-cols-7 bg-gray-200 border-b-2 border-gray-300">
                   {t.weekdays.map(wd => (
                     <div key={wd} className="py-2.5 text-center text-[11px] font-black text-gray-700 uppercase tracking-tighter">{wd}</div>
                   ))}
                 </div>
                 
-                {/* 日历天数 */}
                 <div className="grid grid-cols-7 bg-gray-100">
-                  {/* 填充月前空白 */}
                   {monthInfo.padding.map((_, i) => (
                     <div key={`pad-${i}`} className="min-h-[110px] border-r border-b border-gray-200 bg-gray-200/20"></div>
                   ))}
                   
-                  {/* 实际日期单元格 */}
                   {timetable.map(d => (
                     <div key={d.day} className={`min-h-[120px] border-r border-b-2 border-gray-200 flex flex-col transition-all relative ${d.isWeekend ? 'bg-red-50/40' : 'bg-white'}`}>
-                      {/* 日期头部 - 居中且适当放大 */}
                       <div className={`py-2 flex justify-center items-center border-b relative ${d.isWeekend ? 'bg-red-200/40 border-red-300' : 'bg-gray-200/30 border-gray-200'}`}>
                         <span className={`text-[16px] font-black leading-none drop-shadow-sm ${d.isWeekend ? 'text-red-700' : 'text-gray-900'}`}>{d.day}</span>
                         {d.isWeekend && <div className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full shadow-sm"></div>}
                       </div>
                       
-                      {/* 早晚班区块 */}
                       <div className="flex-1 flex flex-col p-1.5 gap-1.5">
-                        
-                        {/* 早班 AM 区块 */}
                         <div className="flex-1 rounded-lg bg-orange-100 border-2 border-orange-300 p-1 flex flex-col gap-0.5 relative group/slot">
                           <Sun size={10} className="text-orange-500 absolute top-0.5 right-0.5 opacity-40" />
                           {d.slot1.length > 0 ? d.slot1.map((name, i) => (
@@ -329,7 +318,6 @@ const App: React.FC = () => {
                           )) : <div className="text-[6px] text-gray-300 font-bold italic text-center py-1">--</div>}
                         </div>
 
-                        {/* 晚班 PM 区块 */}
                         <div className="flex-1 rounded-lg bg-indigo-100 border-2 border-indigo-300 p-1 flex flex-col gap-0.5 relative group/slot">
                           <Moon size={10} className="text-indigo-500 absolute top-0.5 right-0.5 opacity-40" />
                           {d.slot2.length > 0 ? d.slot2.map((name, i) => (
@@ -344,7 +332,6 @@ const App: React.FC = () => {
                 </div>
               </div>
 
-              {/* 底部备注提示 */}
               <div className="bg-white p-3 rounded-2xl border-2 border-gray-100 flex items-center gap-4 shadow-sm">
                 <div className="flex items-center gap-2 text-[10px] font-black text-orange-800 uppercase bg-orange-200/60 px-3 py-2 rounded-lg border border-orange-300">
                   <Sun size={12} fill="currentColor" /> AM 10-4
@@ -538,7 +525,6 @@ const App: React.FC = () => {
         </div>
       </main>
 
-      {/* Add Agent Modal */}
       {showAddModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm animate-in fade-in">
            <div className="bg-white w-full max-w-sm rounded-[3rem] p-8 shadow-2xl animate-in zoom-in slide-in-from-bottom-10 duration-500">
