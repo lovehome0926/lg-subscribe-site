@@ -3,34 +3,21 @@ import { GoogleGenAI } from "@google/genai";
 import { Language } from "../types";
 
 export const callGeminiCoach = async (prompt: string, language: Language) => {
-  // 检查 API Key
-  const apiKey = process.env.API_KEY;
-  
-  if (!apiKey) {
-    console.error("API Key is missing from process.env");
-    return "Error: API Key is not configured. Please check your environment variables.";
-  }
-
-  const ai = new GoogleGenAI({ apiKey: apiKey });
+  // 直接使用 process.env.API_KEY，由构建工具确保其可用
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY as string });
   
   const languageName = language === 'zh' ? 'Chinese' : language === 'en' ? 'English' : 'Malay';
   
   const systemInstruction = `
     You are a professional LG Subscribe Sales Mentor for the Malaysia market.
-    Your tone is encouraging, professional, and knowledgeable.
     
-    Context: LG Subscribe Malaysia offers home appliances via monthly subscription.
+    Task:
+    1. Answer in ${languageName}.
+    2. If the user asks about a specific LG product model (especially new ones like Microwaves, Styler, etc.), use the Google Search tool to find the LATEST official specifications and subscription-related info.
+    3. Provide "Winning Scripts" for sales agents.
+    4. Focus on LG Subscribe Malaysia context (maintenance included, low entry cost).
     
-    Key selling points:
-    1. Low initial cost.
-    2. Maintenance included (LG CareShip).
-    3. New appliance with full warranty.
-    
-    Instruction: 
-    - Answer in ${languageName}.
-    - Focus on handling objections.
-    - Provide specific "Winning Scripts".
-    - Keep responses concise for mobile viewing.
+    When using search results, ensure the tone remains professional and LG-branded.
   `;
 
   try {
@@ -40,12 +27,27 @@ export const callGeminiCoach = async (prompt: string, language: Language) => {
       config: {
         systemInstruction,
         temperature: 0.7,
+        tools: [{ googleSearch: {} }] // 启用 Google 搜索实现“自动学习”
       },
     });
 
-    return response.text || "AI response was empty. Please try again.";
+    // 提取回答文本
+    const text = response.text || "AI response was empty.";
+    
+    // 提取搜索来源链接
+    const sources = response.candidates?.[0]?.groundingMetadata?.groundingChunks
+      ?.map((chunk: any) => chunk.web)
+      .filter((web: any) => web && web.uri);
+
+    return {
+      text,
+      sources: sources || []
+    };
   } catch (error: any) {
     console.error("Gemini API Error:", error);
-    return `AI Service Error: ${error.message || "Unknown error"}`;
+    return {
+      text: `AI Service Error: ${error.message || "Unknown error"}. Make sure your API Key is correctly set during build.`,
+      sources: []
+    };
   }
 };
