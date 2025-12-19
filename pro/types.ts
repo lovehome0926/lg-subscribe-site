@@ -1,26 +1,31 @@
 
-export type Role = 'LSM' | 'LM';
-export type LanguageCode = 'zh' | 'en' | 'ms';
+export type Role = 'LSM' | 'Agent';
+export type Language = 'zh' | 'en' | 'ms';
+export type TabId = 'schedule' | 'ai' | 'salesKit' | 'agents';
+export type SalesKitSubTab = 'faq' | 'specs' | 'scripts';
 
-export interface AuthUser {
-  role: Role;
-  agentId?: string;
+export interface AuthState {
+  isLoggedIn: boolean;
+  role: Role | null;
+  agentId: number | null;
+}
+
+export interface UnavailableSlots {
+  [day: number]: number[]; // day index -> [1, 2] for Morning/Evening
 }
 
 export interface Agent {
-  id: string; // 修改为 string
+  id: number;
   name: string;
+  code: string;
   type: 'FT' | 'PT';
-  unavailable: Record<number, number[]>; // day -> [slot1, slot2]
+  unavailable: UnavailableSlots;
 }
 
 export interface DayInfo {
   day: number;
   dow: number;
   isWeekend: boolean;
-}
-
-export interface TimetableEntry extends DayInfo {
   slot1: string[];
   slot2: string[];
 }
@@ -59,22 +64,11 @@ export interface Translation {
   notes: string;
   copy: string;
   expertBtn: string;
-  unavailable: string;
   thinking: string;
-  noData: string;
-  loginTitle: string;
-  loginLsm: string;
-  loginLm: string;
-  passwordLabel: string;
-  agentCodeLabel: string;
+  loginLSM: string;
+  loginAgent: string;
+  passwordPlaceholder: string;
+  agentCodePlaceholder: string;
   loginBtn: string;
-  loginError: string;
   logout: string;
-  addAgent: string;
-  agentName: string;
-  agentType: string;
-  saveAgent: string;
-  cancel: string;
-  deleteAgent: string;
-  confirmDelete: string;
 }

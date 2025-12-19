@@ -1,5 +1,8 @@
 
 {
-  "name": "LG Subscribe Pro Management",
-  "description": "A comprehensive professional management system for LG Subscribe agents, featuring automated scheduling, an AI-powered sales coach, and a multi-language sales kit."
+  "name": "LG Subscribe Pro",
+  "description": "A professional management system for LG Subscribe Malaysia, featuring AI coaching, smart scheduling, and a comprehensive sales kit.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
 }

@@ -1,66 +1,55 @@
 
-import { LanguageCode, Translation, Product } from './types';
+import { Translation, Language, Product } from './types';
 
-export const LANGUAGES: Record<LanguageCode, Translation> = {
+export const LANGUAGES: Record<Language, Translation> = {
   zh: {
-    title: "LG Subscribe 专业管理",
+    title: "LG Subscribe 专业管理系统",
     schedule: "排班表",
-    salesKit: "销售工具",
-    aiCoach: "AI 教练",
-    agents: "团队管理",
+    salesKit: "销售工具箱",
+    aiCoach: "AI 话术教练",
+    agents: "代理管理",
     myAvailability: "填报时间",
-    generate: "一键排班",
-    ft: "全职",
-    pt: "兼职",
+    generate: "自动排班",
+    ft: "全职 (FT)",
+    pt: "兼职 (PT)",
     slot1: "早班 10am-4pm",
     slot2: "晚班 4pm-10pm",
-    searchPlaceholder: "搜索产品、常见问题...",
-    faq: "问答库",
+    searchPlaceholder: "搜索型号、尺寸、常见问题...",
+    faq: "常见问答",
     forms: "下载表格",
     scripts: "实战话术",
-    specs: "产品参数",
-    aiPlaceholder: "例如：客户说家里空间不够，如何推荐 WashTower？",
-    aiInstruction: "AI 导师已深度学习 LG 手册，为您提供专业建议",
+    specs: "规格参数",
+    aiPlaceholder: "例如：顾客家厨房太小，怎么推介 Built-in 净水器？",
+    aiInstruction: "AI 已学习 LG 最新手册，将提供专业安装建议与话术",
     am: "早",
     pm: "晚",
     weekdays: ["日", "一", "二", "三", "四", "五", "六"],
-    notes: "备注",
-    copy: "复制话术",
+    notes: "注意事项",
+    copy: "复制建议",
     expertBtn: "获取专家建议",
-    unavailable: "不可用时间",
     thinking: "AI 正在思考中...",
-    noData: "暂无数据",
-    loginTitle: "系统登录",
-    loginLsm: "管理员 (LSM)",
-    loginLm: "代理商 (LM)",
-    passwordLabel: "请输入管理员密码",
-    agentCodeLabel: "代理商代码 (例如 M000001)",
-    loginBtn: "立即登录",
-    loginError: "验证失败，请检查输入",
-    logout: "退出登录",
-    addAgent: "添加新代理",
-    agentName: "代理姓名",
-    agentType: "代理类型",
-    saveAgent: "保存代理",
-    cancel: "取消",
-    deleteAgent: "删除代理",
-    confirmDelete: "确定要删除该代理吗？",
+    loginLSM: "LSM 登录",
+    loginAgent: "LM 登录",
+    passwordPlaceholder: "请输入密码",
+    agentCodePlaceholder: "请输入 Agent Code (M/F000000)",
+    loginBtn: "进入系统",
+    logout: "注销"
   },
   en: {
-    title: "LG Subscribe Pro",
+    title: "LG Subscribe Pro System",
     schedule: "Timetable",
     salesKit: "Sales Kit",
     aiCoach: "AI Coach",
     agents: "Agents",
-    myAvailability: "Availability",
+    myAvailability: "My Availability",
     generate: "Auto-Gen",
     ft: "Full Time",
     pt: "Part Time",
     slot1: "Morning (10am-4pm)",
     slot2: "Evening (4pm-10pm)",
-    searchPlaceholder: "Search specs, FAQ...",
+    searchPlaceholder: "Search products, FAQ...",
     faq: "FAQ",
-    forms: "Forms",
+    forms: "Downloads",
     scripts: "Scripts",
     specs: "Specs",
     aiPlaceholder: "E.g.: 'Kitchen too small, how to answer?'",
@@ -71,27 +60,16 @@ export const LANGUAGES: Record<LanguageCode, Translation> = {
     notes: "Notes",
     copy: "Copy Script",
     expertBtn: "Get Advice",
-    unavailable: "Unavailable",
-    thinking: "Thinking...",
-    noData: "No data found",
-    loginTitle: "System Login",
-    loginLsm: "Manager (LSM)",
-    loginLm: "Agent (LM)",
-    passwordLabel: "Enter Admin Password",
-    agentCodeLabel: "Agent ID (e.g., M000001)",
-    loginBtn: "Sign In",
-    loginError: "Auth failed, please check inputs",
-    logout: "Sign Out",
-    addAgent: "Add New Agent",
-    agentName: "Agent Name",
-    agentType: "Agent Type",
-    saveAgent: "Save Agent",
-    cancel: "Cancel",
-    deleteAgent: "Delete Agent",
-    confirmDelete: "Are you sure to delete this agent?",
+    thinking: "AI is thinking...",
+    loginLSM: "LSM Login",
+    loginAgent: "LM Login",
+    passwordPlaceholder: "Enter Password",
+    agentCodePlaceholder: "Enter Agent Code (M/F000000)",
+    loginBtn: "Login",
+    logout: "Logout"
   },
   ms: {
-    title: "Sistem LG Subscribe",
+    title: "Sistem LG Subscribe Pro",
     schedule: "Jadual",
     salesKit: "Kit Jualan",
     aiCoach: "Jurulatih AI",
@@ -114,74 +92,55 @@ export const LANGUAGES: Record<LanguageCode, Translation> = {
     weekdays: ["Aha", "Isn", "Sel", "Rab", "Kha", "Jum", "Sab"],
     notes: "Nota",
     copy: "Salin Skrip",
-    expertBtn: "Nasihat AI",
-    unavailable: "Cuti/Tutup",
-    thinking: "Sedang berfikir...",
-    noData: "Tiada rekod",
-    loginTitle: "Log Masuk Sistem",
-    loginLsm: "Pengurus (LSM)",
-    loginLm: "Ejen (LM)",
-    passwordLabel: "Masukkan Kata Laluan Admin",
-    agentCodeLabel: "ID Ejen (cth, M000001)",
+    expertBtn: "Dapatkan Nasihat",
+    thinking: "AI sedang berfikir...",
+    loginLSM: "Log Masuk LSM",
+    loginAgent: "Log Masuk LM",
+    passwordPlaceholder: "Masukkan Kata Laluan",
+    agentCodePlaceholder: "Kod Ejen (M/F000000)",
     loginBtn: "Log Masuk",
-    loginError: "Gagal, sila semak maklumat",
-    logout: "Log Keluar",
-    addAgent: "Tambah Ejen Baru",
-    agentName: "Nama Ejen",
-    agentType: "Jenis Ejen",
-    saveAgent: "Simpan Ejen",
-    cancel: "Batal",
-    deleteAgent: "Padam Ejen",
-    confirmDelete: "Adakah anda pasti mahu memadam ejen ini?",
+    logout: "Log Keluar"
   }
 };
 
 export const PRODUCT_DATA: Product[] = [
   {
     id: "WU525BS",
-    name: "LG PuriCare™ Self-Service Tankless Water Purifier",
+    name: "LG PuriCare™ Built-in Water Purifier",
     category: "Water Purifier",
     dims: "Faucet: 40x192x375mm | Body: 170x491x391mm",
-    notes: "Requires power source and drain pipe. 180° rotating faucet.",
-    sellingPoints: ["4-Stage Filtration", "Auto Sterilization", "Space Saving"]
+    notes: "Needs space for power and drainage under cabinet. Faucet rotates 180°.",
+    sellingPoints: ["4-Stage Filtration", "Auto High-Temp Sterilization", "Space Saving"]
   },
   {
     id: "WT2520NHEGR",
     name: "LG WashTower™ Objet Collection",
-    category: "Washer & Dryer",
+    category: "Washer",
     dims: "600 x 1655 x 660 mm (25kg/20kg)",
-    notes: "Installation height min 1.7m. Unified central control.",
-    sellingPoints: ["AI DD™ Protection", "TurboWash™ 360", "Integrated Design"]
+    notes: "Requires >1.7m vertical clearance. Integrated central control.",
+    sellingPoints: ["AI DD™ Fabric Protection", "TurboWash™ 360", "Smart Pairing"]
   },
   {
     id: "GC-X24FFC7R",
     name: "LG InstaView™ Refrigerator",
     category: "Refrigerator",
     dims: "913 x 1790 x 735 mm (601L)",
-    notes: "Reserve 5cm space on sides for ventilation. UVnano™ Self-cleaning.",
-    sellingPoints: ["InstaView™ Glass", "LinearCooling™", "Hygiene Fresh+™"]
-  },
-  {
-    id: "S3RBN",
-    name: "LG Styler™ Steam Closet",
-    category: "Clothing Care",
-    dims: "445 x 1850 x 585 mm",
-    notes: "Requires flat surface, no plumbing needed (Water tank design).",
-    sellingPoints: ["Sanitize Clothes", "Pants Crease Care", "Odor Removal"]
+    notes: "Reserve 5cm gap on sides for ventilation. UVnano™ hygiene nozzle.",
+    sellingPoints: ["Knock Twice to See Inside", "LinearCooling™", "Hygiene Fresh+™"]
   }
 ];
 
 export const FAQ_DATA = [
-  { q: "What's the commitment period?", a: "Standard contract is 5 or 7 years with ownership transfer options at the end of the term." },
-  { q: "Is maintenance included in the subscription?", a: "Yes, LG CareShip includes expert maintenance every 3 or 4 months depending on the product." }
-];
-
-export const FORM_DATA = [
-  { name: "Subscription Application Form", type: "PDF", size: "1.2 MB" },
-  { name: "Direct Debit Authorization (DDA)", type: "PDF", size: "450 KB" }
-];
-
-export const SCRIPT_DATA = [
-  { title: "Opening Pitch: Savings focus", content: "Hi! Did you know you can get the latest LG WashTower for less than a cup of coffee a day? No huge upfront cost, and service is free!" },
-  { title: "Objection: Too long commitment", content: "I understand, but think of it as a worry-free service. In 5 years, most machines break once. With LG Subscribe, every repair is covered for $0." }
+  {
+    q: "Does the subscription price include maintenance?",
+    a: "Yes, all LG Subscribe contracts in Malaysia include LG CareShip professional maintenance (filters, sterilization, cleaning) for the entire contract period."
+  },
+  {
+    q: "What is the minimum contract period?",
+    a: "Contracts usually vary from 5 to 7 years depending on the model and current promotion."
+  },
+  {
+    q: "Can I move the machine to a new house?",
+    a: "Yes, relocation services are available through LG authorized service centers. Relocation fees may apply."
+  }
 ];
