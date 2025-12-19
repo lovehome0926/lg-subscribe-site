@@ -3,8 +3,15 @@ import { GoogleGenAI } from "@google/genai";
 import { LanguageCode, AICoachResponse, GroundingSource } from "../types";
 
 export const getAICoachResponse = async (prompt: string, language: LanguageCode): Promise<AICoachResponse> => {
-  // 直接从 process.env 获取，不进行本地覆盖
+  // 确保 API_KEY 存在，否则提前返回友好提示
   const apiKey = process.env.API_KEY;
+  
+  if (!apiKey) {
+    return {
+      text: "AI 导师未配置：系统检测到 API Key 缺失，请联系管理员或在设置中检查。"
+    };
+  }
+
   const ai = new GoogleGenAI({ apiKey });
   
   const langMap: Record<LanguageCode, string> = {
@@ -38,7 +45,6 @@ export const getAICoachResponse = async (prompt: string, language: LanguageCode)
 
     const text = response.text || "AI 导师暂时无法生成回复。";
     
-    // 提取搜索来源
     const sources: GroundingSource[] = [];
     const chunks = response.candidates?.[0]?.groundingMetadata?.groundingChunks;
     if (chunks) {
@@ -56,7 +62,7 @@ export const getAICoachResponse = async (prompt: string, language: LanguageCode)
   } catch (error) {
     console.error("Gemini API Error:", error);
     return {
-      text: "AI 导师暂时不可用：请确保已正确配置 API Key 并检查网络。"
+      text: "AI 导师暂时不可用：请检查网络连接或 API Key 配额。"
     };
   }
 };
