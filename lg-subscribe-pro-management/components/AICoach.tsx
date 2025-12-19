@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
-import { Sparkles, Send, Copy, Zap, Info } from 'lucide-react';
-import { Translation, LanguageCode } from '../types';
+import { Sparkles, Send, Copy, Zap, Info, ExternalLink, Globe } from 'lucide-react';
+import { Translation, LanguageCode, GroundingSource } from '../types';
 import { getAICoachResponse } from '../services/geminiService';
 
 interface AICoachProps {
@@ -11,19 +11,26 @@ interface AICoachProps {
 
 export const AICoach: React.FC<AICoachProps> = ({ translations, language }) => {
   const [input, setInput] = useState('');
-  const [response, setResponse] = useState('');
+  const [response, setResponse] = useState<string>('');
+  const [sources, setSources] = useState<GroundingSource[] | undefined>(undefined);
   const [loading, setLoading] = useState(false);
 
   const handleConsult = async () => {
     if (!input.trim()) return;
     setLoading(true);
+    setResponse('');
+    setSources(undefined);
+    
     const result = await getAICoachResponse(input, language);
-    setResponse(result);
+    setResponse(result.text);
+    setSources(result.sources);
     setLoading(false);
   };
 
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(response);
+    if (response) {
+      navigator.clipboard.writeText(response);
+    }
   };
 
   return (
@@ -71,9 +78,33 @@ export const AICoach: React.FC<AICoachProps> = ({ translations, language }) => {
               <Copy size={12} /> {translations.copy}
             </button>
           </div>
+          
           <div className="text-gray-700 text-[13px] font-medium leading-relaxed whitespace-pre-wrap p-4 bg-gray-50 rounded-2xl border border-gray-100 italic">
             {response}
           </div>
+
+          {sources && sources.length > 0 && (
+            <div className="mt-6 pt-4 border-t border-gray-100">
+              <div className="flex items-center gap-2 mb-3">
+                <Globe size={14} className="text-[#A50034]" />
+                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{translations.sources}</span>
+              </div>
+              <div className="flex flex-col gap-2">
+                {sources.map((source, idx) => (
+                  <a 
+                    key={idx} 
+                    href={source.uri} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between p-3 bg-gray-50 hover:bg-red-50 rounded-xl transition-all group border border-transparent hover:border-red-100"
+                  >
+                    <span className="text-[11px] font-bold text-gray-600 truncate mr-4 group-hover:text-[#A50034]">{source.title}</span>
+                    <ExternalLink size={12} className="text-gray-300 group-hover:text-[#A50034] shrink-0" />
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
