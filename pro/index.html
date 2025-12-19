@@ -24,27 +24,28 @@
             justify-content: center;
             background: #F8F9FA;
             z-index: 9999;
+            transition: opacity 0.5s ease;
         }
         .spinner {
-            width: 40px;
-            height: 40px;
-            border: 3px solid rgba(165, 0, 52, 0.1);
+            width: 32px;
+            height: 32px;
+            border: 2px solid rgba(165, 0, 52, 0.1);
             border-left-color: #A50034;
             border-radius: 50%;
-            animation: spin 0.8s linear infinite;
+            animation: spin 0.6s linear infinite;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
         .lg-badge {
-            width: 64px;
-            height: 64px;
+            width: 54px;
+            height: 54px;
             background: #A50034;
-            border-radius: 18px;
+            border-radius: 15px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
             font-weight: 900;
-            font-size: 24px;
+            font-size: 22px;
             margin-bottom: 20px;
             box-shadow: 0 10px 25px rgba(165, 0, 52, 0.2);
         }
@@ -70,7 +71,6 @@
     <div id="loading-fallback">
         <div class="lg-badge">LG</div>
         <div class="spinner"></div>
-        <div style="margin-top: 16px; color: #A50034; font-weight: 800; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase;">System Loading</div>
     </div>
     <div id="root"></div>
     <script type="module" src="index.tsx"></script>
