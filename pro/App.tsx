@@ -291,12 +291,12 @@ const App: React.FC = () => {
                 )}
               </div>
               
-              {/* 日历网格 - 进一步强化明晰度 */}
+              {/* 日历网格 */}
               <div className="bg-white rounded-[2rem] border-2 border-gray-300 shadow-2xl overflow-hidden">
                 {/* 星期标题 */}
                 <div className="grid grid-cols-7 bg-gray-200 border-b-2 border-gray-300">
                   {t.weekdays.map(wd => (
-                    <div key={wd} className="py-2.5 text-center text-[10px] font-black text-gray-600 uppercase tracking-tighter">{wd}</div>
+                    <div key={wd} className="py-2.5 text-center text-[11px] font-black text-gray-700 uppercase tracking-tighter">{wd}</div>
                   ))}
                 </div>
                 
@@ -309,31 +309,31 @@ const App: React.FC = () => {
                   
                   {/* 实际日期单元格 */}
                   {timetable.map(d => (
-                    <div key={d.day} className={`min-h-[110px] border-r border-b-2 border-gray-200 flex flex-col transition-all relative ${d.isWeekend ? 'bg-red-50/30' : 'bg-white'}`}>
-                      {/* 日期头部 - 居中且放大 */}
-                      <div className={`py-1.5 flex justify-center items-center border-b relative ${d.isWeekend ? 'bg-red-100/50 border-red-200' : 'bg-gray-100/40 border-gray-200'}`}>
-                        <span className={`text-[13px] font-black ${d.isWeekend ? 'text-red-700' : 'text-gray-900'}`}>{d.day}</span>
-                        {d.isWeekend && <div className="absolute top-1 right-1 w-1.5 h-1.5 bg-red-500 rounded-full shadow-sm"></div>}
+                    <div key={d.day} className={`min-h-[120px] border-r border-b-2 border-gray-200 flex flex-col transition-all relative ${d.isWeekend ? 'bg-red-50/40' : 'bg-white'}`}>
+                      {/* 日期头部 - 居中且适当放大 */}
+                      <div className={`py-2 flex justify-center items-center border-b relative ${d.isWeekend ? 'bg-red-200/40 border-red-300' : 'bg-gray-200/30 border-gray-200'}`}>
+                        <span className={`text-[16px] font-black leading-none drop-shadow-sm ${d.isWeekend ? 'text-red-700' : 'text-gray-900'}`}>{d.day}</span>
+                        {d.isWeekend && <div className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full shadow-sm"></div>}
                       </div>
                       
-                      {/* 早晚班区块 - 强化背景色与独立容器 */}
+                      {/* 早晚班区块 */}
                       <div className="flex-1 flex flex-col p-1.5 gap-1.5">
                         
-                        {/* 早班 AM 区块 - 更明显的橙色边界 */}
-                        <div className="flex-1 rounded-lg bg-orange-100/60 border-2 border-orange-300 p-1 flex flex-col gap-0.5 relative group/slot">
-                          <Sun size={10} className="text-orange-500 absolute top-0.5 right-0.5 opacity-30" />
+                        {/* 早班 AM 区块 */}
+                        <div className="flex-1 rounded-lg bg-orange-100 border-2 border-orange-300 p-1 flex flex-col gap-0.5 relative group/slot">
+                          <Sun size={10} className="text-orange-500 absolute top-0.5 right-0.5 opacity-40" />
                           {d.slot1.length > 0 ? d.slot1.map((name, i) => (
-                            <div key={i} className={`text-[7px] font-black px-1 py-0.5 rounded-md border shadow-sm truncate animate-in zoom-in duration-200 ${getAgentColor(name).bg} ${getAgentColor(name).text} ${getAgentColor(name).border}`}>
+                            <div key={i} className={`text-[7.5px] font-black px-1 py-0.5 rounded-md border shadow-sm truncate animate-in zoom-in duration-200 ${getAgentColor(name).bg} ${getAgentColor(name).text} ${getAgentColor(name).border}`}>
                               {name}
                             </div>
                           )) : <div className="text-[6px] text-gray-300 font-bold italic text-center py-1">--</div>}
                         </div>
 
-                        {/* 晚班 PM 区块 - 更明显的靛青色边界 */}
-                        <div className="flex-1 rounded-lg bg-indigo-100/60 border-2 border-indigo-300 p-1 flex flex-col gap-0.5 relative group/slot">
-                          <Moon size={10} className="text-indigo-500 absolute top-0.5 right-0.5 opacity-30" />
+                        {/* 晚班 PM 区块 */}
+                        <div className="flex-1 rounded-lg bg-indigo-100 border-2 border-indigo-300 p-1 flex flex-col gap-0.5 relative group/slot">
+                          <Moon size={10} className="text-indigo-500 absolute top-0.5 right-0.5 opacity-40" />
                           {d.slot2.length > 0 ? d.slot2.map((name, i) => (
-                            <div key={i} className={`text-[7px] font-black px-1 py-0.5 rounded-md border shadow-sm truncate animate-in zoom-in duration-200 brightness-95 ${getAgentColor(name).bg} ${getAgentColor(name).text} ${getAgentColor(name).border}`}>
+                            <div key={i} className={`text-[7.5px] font-black px-1 py-0.5 rounded-md border shadow-sm truncate animate-in zoom-in duration-200 brightness-95 ${getAgentColor(name).bg} ${getAgentColor(name).text} ${getAgentColor(name).border}`}>
                               {name}
                             </div>
                           )) : <div className="text-[6px] text-gray-300 font-bold italic text-center py-1">--</div>}
@@ -346,10 +346,10 @@ const App: React.FC = () => {
 
               {/* 底部备注提示 */}
               <div className="bg-white p-3 rounded-2xl border-2 border-gray-100 flex items-center gap-4 shadow-sm">
-                <div className="flex items-center gap-2 text-[9px] font-black text-orange-700 uppercase bg-orange-100 px-3 py-1.5 rounded-lg border border-orange-200">
+                <div className="flex items-center gap-2 text-[10px] font-black text-orange-800 uppercase bg-orange-200/60 px-3 py-2 rounded-lg border border-orange-300">
                   <Sun size={12} fill="currentColor" /> AM 10-4
                 </div>
-                <div className="flex items-center gap-2 text-[9px] font-black text-indigo-700 uppercase bg-indigo-100 px-3 py-1.5 rounded-lg border border-indigo-200">
+                <div className="flex items-center gap-2 text-[10px] font-black text-indigo-800 uppercase bg-indigo-200/60 px-3 py-2 rounded-lg border border-indigo-300">
                   <Moon size={12} fill="currentColor" /> PM 4-10
                 </div>
                 <div className="ml-auto flex items-center gap-1.5 text-[9px] font-black text-gray-500">
