@@ -1,180 +1,184 @@
 
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { 
-  Calendar, 
-  BookOpen, 
-  Search, 
-  Users, 
-  Sun, 
-  Moon, 
-  Sparkles, 
-  Send, 
-  Zap, 
-  Layers, 
-  CalendarDays,
-  Copy,
-  CheckCircle2,
-  AlertCircle,
-  Lock,
-  User,
-  LogOut,
-  Plus,
-  Trash2,
-  X,
-  ChevronRight,
-  Info,
-  ArrowRight,
-  ExternalLink,
-  Globe,
-  Clock
+  Calendar, Download, User, Users, FileText, X, Plus, Trash2, 
+  Clock, Sun, Moon, Zap, Lock, LogOut, FilePlus, Bell, Check,
+  Sparkles, ChevronRight, Menu, ShieldCheck, MapPin, UserPlus, ClipboardList, Package, ExternalLink,
+  Languages, AlertTriangle
 } from 'lucide-react';
+import { Agent, Memo, FormDoc, DayInfo, Tab, UserRole, CustomerRegistration } from './types';
+import { AGENT_COLORS, LANGUAGES, LG_MAROON } from './constants';
+import { optimizeScheduleWithAI } from './services/geminiService';
 
-import { 
-  Role, 
-  Language, 
-  TabId, 
-  SalesKitSubTab, 
-  Agent, 
-  DayInfo, 
-  Translation,
-  AuthState,
-  Product
-} from './types.ts';
-import { LANGUAGES, PRODUCT_DATA, FAQ_DATA } from './constants.tsx';
-import { callGeminiCoach } from './services/gemini.ts';
-import { NavItem } from './components/NavItem.tsx';
-
-const AGENT_COLORS = [
-  { bg: 'bg-blue-100', text: 'text-blue-800', border: 'border-blue-300' },
-  { bg: 'bg-emerald-100', text: 'text-emerald-800', border: 'border-emerald-300' },
-  { bg: 'bg-amber-100', text: 'text-amber-800', border: 'border-amber-300' },
-  { bg: 'bg-purple-100', text: 'text-purple-800', border: 'border-purple-300' },
-  { bg: 'bg-rose-100', text: 'text-rose-800', border: 'border-rose-300' },
-];
+const COMMON_PRODUCTS = ["WashTower", "Styler", "CordZero", "Water Purifier", "Air Purifier", "Refrigerator", "Dishwasher", "Dryer"];
+const FUZZY_DATES = ["這幾天", "本週末", "下週內", "下週末", "本月底", "下個月初"];
 
 const App: React.FC = () => {
-  const [auth, setAuth] = useState<AuthState>(() => {
-    try {
-      const saved = localStorage.getItem('lg_auth');
-      return saved ? JSON.parse(saved) : { isLoggedIn: false, role: null, agentId: null };
-    } catch {
-      return { isLoggedIn: false, role: null, agentId: null };
-    }
+  // --- Auth State ---
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userRole, setUserRole] = useState<UserRole>(null);
+  const [userCode, setUserCode] = useState('');
+  const [loginInput, setLoginInput] = useState('');
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+
+  // --- Localization State ---
+  const [language, setLanguage] = useState<keyof typeof LANGUAGES>('zh');
+  const t = LANGUAGES[language];
+
+  // --- App State ---
+  const [activeTab, setActiveTab] = useState<Tab>(Tab.Schedule);
+  const [selectedMonth, setSelectedMonth] = useState('2026-01');
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [confirmModal, setConfirmModal] = useState<{ 
+    show: boolean; 
+    action: (() => void) | null; 
+    title: string; 
+    message: string;
+    isAI?: boolean;
+  }>({ show: false, action: null, title: '', message: '' });
+
+  // --- Leads State ---
+  const [registrations, setRegistrations] = useState<CustomerRegistration[]>([
+    { id: 1, agentName: 'Agent Alan', agentCode: 'M100200', customerName: 'Mr. Tan', customerInfo: '8812', productInterest: 'WashTower / V10', location: 'Lotus PR', expectedDate: '本週末', timestamp: '2025-12-01 10:30', status: 'Pending' },
+    { id: 2, agentName: 'Agent Bella', agentCode: 'F300400', customerName: 'Ms. Lee', customerInfo: '0921', productInterest: 'Refrigerator (Double Door)', location: 'Brandshop Batu Pahat', expectedDate: '這幾天', timestamp: '2025-12-02 14:15', status: 'Pending' },
+  ]);
+
+  // --- Registration Form State ---
+  const [newLead, setNewLead] = useState({
+    customerName: '',
+    customerInfo: '',
+    productInterest: '',
+    location: 'Lotus PR' as 'Lotus PR' | 'Brandshop Batu Pahat',
+    expectedDate: ''
   });
 
-  useEffect(() => {
-    localStorage.setItem('lg_auth', JSON.stringify(auth));
-  }, [auth]);
+  // --- Data States ---
+  const [memos, setMemos] = useState<Memo[]>([
+    { id: 1, title: '2025 十二月業績獎勵方案', content: '年度最強促銷正式啟動，請各位代理留意庫存。', date: '2025-11-25', isNew: true },
+    { id: 2, title: '關於 WashTower 安裝高度的特別提醒', content: '安裝高度不宜超過 1.8m，以免影響用戶體驗。', date: '2025-11-20', isNew: false },
+  ]);
+  const [forms, setForms] = useState<FormDoc[]>([
+    { id: 101, title: 'LM 代理入職申請表 (最新)', size: '1.2MB', url: '#' },
+    { id: 102, title: 'Subscribe 續約/取消申請單', size: '0.9MB', url: '#' },
+  ]);
+  const [agents, setAgents] = useState<Agent[]>([
+    { id: 1, name: 'Agent Alan', code: 'M100200', type: 'FT', colorIdx: 0, unavailable: { 2: [1] } },
+    { id: 2, name: 'Agent Bella', code: 'F300400', type: 'PT', colorIdx: 1, unavailable: { 1: [1, 2] } },
+    { id: 3, name: 'Agent Chris', code: 'M500600', type: 'FT', colorIdx: 2, unavailable: { 5: [2] } },
+  ]);
+  const [timetable, setTimetable] = useState<DayInfo[]>([]);
 
-  const [loginMode, setLoginMode] = useState<Role>('LSM');
-  const [passwordInput, setPasswordInput] = useState('');
-  const [agentCodeInput, setAgentCodeInput] = useState('');
-  const [loginError, setLoginError] = useState('');
+  // --- Auth Logic ---
+  const handleLogin = async () => {
+    setIsLoggingIn(true);
+    const val = loginInput.trim().toUpperCase();
+    
+    // Simulate Login
+    setTimeout(() => {
+      if (val === 'LSM123') {
+        setUserRole('LSM'); setUserCode('Admin'); setIsLoggedIn(true);
+      } else if (/^[MF]\d{6}$/.test(val)) {
+        setUserRole('LM'); setUserCode(val); setIsLoggedIn(true);
+      } else {
+        alert(t.invalidLogin);
+      }
+      setIsLoggingIn(false);
+    }, 800);
+  };
 
-  const [activeTab, setActiveTab] = useState<TabId>('schedule');
-  const [language, setLanguage] = useState<Language>('zh');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedMonth] = useState('2026-01'); 
-  const [salesKitSubTab, setSalesKitSubTab] = useState<SalesKitSubTab>('specs');
-  
-  const [aiInput, setAiInput] = useState('');
-  const [aiResponse, setAiResponse] = useState<{ text: string, sources: any[] }>({ text: '', sources: [] });
-  const [isAiLoading, setIsAiLoading] = useState(false);
-  const [copyFeedback, setCopyFeedback] = useState(false);
-
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [newAgentName, setNewAgentName] = useState('');
-  const [newAgentType, setNewAgentType] = useState<'FT' | 'PT'>('FT');
-
-  const t: Translation = LANGUAGES[language] || LANGUAGES.zh;
-
-  const [agents, setAgents] = useState<Agent[]>(() => {
-    const saved = localStorage.getItem('lg_agents');
-    return saved ? JSON.parse(saved) : [
-      { id: 1, name: 'Kelvin', code: 'M100001', type: 'FT', unavailable: { 2: [1, 2], 5: [1] } },
-      { id: 2, name: 'Sarah', code: 'F200002', type: 'PT', unavailable: { 1: [1, 2], 10: [1] } },
-      { id: 3, name: 'Wei', code: 'M100003', type: 'FT', unavailable: { 7: [1, 2] } },
-      { id: 4, name: 'Siti', code: 'F200004', type: 'PT', unavailable: { 15: [2] } },
-    ];
-  });
-
-  useEffect(() => {
-    localStorage.setItem('lg_agents', JSON.stringify(agents));
-  }, [agents]);
-
-  const filteredProducts = useMemo(() => {
-    if (!searchQuery.trim()) return PRODUCT_DATA;
-    return PRODUCT_DATA.filter(p => 
-      p.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-      p.category.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  }, [searchQuery]);
-
-  const getAgentColor = useCallback((name: string) => {
-    const index = agents.findIndex(a => a.name === name);
-    return AGENT_COLORS[index % AGENT_COLORS.length] || AGENT_COLORS[0];
-  }, [agents]);
-
-  const handleLogin = (e: React.FormEvent) => {
+  // --- Lead Protection Logic ---
+  const handleSubmitLead = (e: React.FormEvent) => {
     e.preventDefault();
-    setLoginError('');
-    if (loginMode === 'LSM') {
-      if (passwordInput === 'Joecindy@1123') {
-        setAuth({ isLoggedIn: true, role: 'LSM', agentId: null });
-      } else {
-        setLoginError(language === 'zh' ? '密码错误' : 'Incorrect Password');
-      }
-    } else {
-      const agent = agents.find(a => a.code.toUpperCase() === agentCodeInput.trim().toUpperCase());
-      if (agent) {
-        setAuth({ isLoggedIn: true, role: 'Agent', agentId: agent.id });
-      } else {
-        setLoginError(language === 'zh' ? 'Agent Code 无效' : 'Invalid Agent Code');
-      }
+    if (!newLead.customerName || !newLead.customerInfo || !newLead.expectedDate) {
+      alert(t.fillAllInfo);
+      return;
+    }
+
+    const currentAgent = agents.find(a => a.code === userCode) || { name: userRole === 'LSM' ? 'LSM Admin' : 'Agent', code: userCode };
+
+    const reg: CustomerRegistration = {
+      id: Date.now(),
+      agentName: currentAgent.name,
+      agentCode: currentAgent.code,
+      customerName: newLead.customerName,
+      customerInfo: newLead.customerInfo,
+      productInterest: newLead.productInterest || 'N/A',
+      location: newLead.location,
+      expectedDate: newLead.expectedDate,
+      timestamp: new Date().toLocaleString(language === 'zh' ? 'zh-TW' : language === 'en' ? 'en-US' : 'ms-MY', { hour12: false }),
+      status: 'Pending'
+    };
+
+    setRegistrations([reg, ...registrations]);
+    setNewLead({ customerName: '', customerInfo: '', productInterest: '', location: 'Lotus PR', expectedDate: '' });
+    alert(t.leadSubmitted);
+  };
+
+  const deleteLead = (id: number) => {
+    if (confirm(t.confirmDeleteLead)) {
+      setRegistrations(registrations.filter(r => r.id !== id));
     }
   };
 
-  const handleLogout = () => {
-    setAuth({ isLoggedIn: false, role: null, agentId: null });
-    localStorage.removeItem('lg_auth');
-    setPasswordInput('');
-    setAgentCodeInput('');
-  };
-
+  // --- Schedule Logic ---
   const monthInfo = useMemo(() => {
     const [year, month] = selectedMonth.split('-').map(Number);
     const date = new Date(year, month, 0);
     const daysCount = date.getDate();
-    const firstDayOfMonth = new Date(year, month - 1, 1).getDay();
-    const days = Array.from({ length: daysCount }, (_, i) => {
+    return Array.from({ length: daysCount }, (_, i) => {
       const d = i + 1;
       const dow = new Date(year, month - 1, d).getDay();
       return { day: d, dow, isWeekend: dow === 0 || dow === 6 };
     });
-    const padding = Array.from({ length: firstDayOfMonth }, (_, i) => null);
-    return { days, padding };
   }, [selectedMonth]);
 
-  const [timetable, setTimetable] = useState<DayInfo[]>([]);
-
   useEffect(() => {
-    setTimetable(monthInfo.days.map(info => ({ ...info, slot1: [], slot2: [] })));
-  }, [monthInfo.days]);
+    setTimetable(monthInfo.map(info => ({ ...info, slot1: [], slot2: [] })));
+  }, [monthInfo]);
 
-  const autoGenerate = useCallback(() => {
-    let newTable: DayInfo[] = monthInfo.days.map(info => ({ ...info, slot1: [], slot2: [] }));
-    newTable.forEach(d => {
-      const available1 = agents.filter(a => !(a.unavailable[d.day] || []).includes(1));
-      d.slot1 = available1.slice(0, 2).map(a => a.name);
-      const available2 = agents.filter(a => !(a.unavailable[d.day] || []).includes(2) && !d.slot1.includes(a.name));
-      d.slot2 = available2.slice(0, 2).map(a => a.name);
+  const performBasicAutoGenerate = () => {
+    let newTable: DayInfo[] = monthInfo.map(info => ({ ...info, slot1: [], slot2: [] }));
+    
+    // Sort agents to rotate start positions slightly for fairness
+    const rotatedAgents = [...agents];
+
+    newTable.forEach((day, index) => {
+      // Rotate the agent list each day to distribute workload
+      const offset = index % rotatedAgents.length;
+      const dailyAgents = [...rotatedAgents.slice(offset), ...rotatedAgents.slice(0, offset)];
+
+      const findEligibleAgents = (slotNum: number, alreadyAssignedToday: string[]) => {
+        return dailyAgents.filter(agent => {
+          if ((agent.unavailable[day.day] || []).includes(slotNum)) return false;
+          if (alreadyAssignedToday.includes(agent.name)) return false;
+          return true;
+        });
+      };
+
+      // Assign Slot 1 (Min 1, Max 2)
+      const eligible1 = findEligibleAgents(1, []);
+      day.slot1 = eligible1.slice(0, 2).map(a => ({ name: a.name, color: AGENT_COLORS[a.colorIdx] }));
+      
+      // Assign Slot 2 (Min 1, Max 2)
+      const eligible2 = findEligibleAgents(2, day.slot1.map(s => s.name));
+      day.slot2 = eligible2.slice(0, 2).map(a => ({ name: a.name, color: AGENT_COLORS[a.colorIdx] }));
     });
     setTimetable(newTable);
-  }, [monthInfo.days, agents]);
+    setConfirmModal({ ...confirmModal, show: false });
+  };
 
-  const toggleSlot = useCallback((agentId: number, day: number, slot: number) => {
+  const handleAIScheduling = async () => {
+    setIsGenerating(true);
+    setConfirmModal({ ...confirmModal, show: false });
+    const optimized = await optimizeScheduleWithAI(agents, monthInfo);
+    setTimetable(optimized);
+    setIsGenerating(false);
+  };
+
+  const toggleAvailability = (agentCode: string, day: number, slot: number) => {
+    if (userRole === 'LM' && userCode !== agentCode) return;
     setAgents(prev => prev.map(a => {
-      if (a.id === agentId) {
+      if (a.code === agentCode) {
         const current = a.unavailable[day] || [];
         const next = current.includes(slot) ? current.filter(s => s !== slot) : [...current, slot];
         const newUnavail = { ...a.unavailable };
@@ -184,75 +188,90 @@ const App: React.FC = () => {
       }
       return a;
     }));
-  }, []);
+  };
+
+  // --- Management Logic ---
+  const addMemo = () => {
+    const title = prompt(t.memo + ": " + (language === 'zh' ? "標題" : "Title"));
+    if (!title) return;
+    const content = prompt(language === 'zh' ? "內容" : "Content") || "";
+    setMemos([{ id: Date.now(), title, content, date: new Date().toISOString().split('T')[0], isNew: true }, ...memos]);
+  };
+
+  const deleteMemo = (id: number) => { 
+    if (confirm(language === 'zh' ? "刪除此公告？" : "Delete memo?")) {
+      setMemos(prev => prev.filter(m => m.id !== id));
+    }
+  };
+
+  const addFormDoc = () => {
+    const title = prompt(t.forms + ": " + (language === 'zh' ? "名稱" : "Name"));
+    if (!title) return;
+    const size = prompt(language === 'zh' ? "檔案大小 (如 1.2MB)" : "Size (e.g. 1.2MB)") || "1.0MB";
+    setForms([{ id: Date.now(), title, size, url: "#" }, ...forms]);
+  };
+
+  const deleteFormDoc = (id: number) => {
+    if (confirm(language === 'zh' ? "刪除此表單？" : "Delete form?")) {
+      setForms(prev => prev.filter(f => f.id !== id));
+    }
+  };
 
   const addAgent = () => {
-    if (!newAgentName.trim()) return;
-    const newId = agents.length > 0 ? Math.max(...agents.map(a => a.id)) + 1 : 1;
-    const prefix = newAgentType === 'FT' ? 'M' : 'F';
-    const newCode = `${prefix}${100000 + newId}`;
-    setAgents(prev => [...prev, { id: newId, name: newAgentName.trim(), code: newCode, type: newAgentType, unavailable: {} }]);
-    setNewAgentName('');
-    setShowAddModal(false);
+    const name = prompt(t.enterAgentName);
+    if (!name) return;
+    const code = prompt(t.enterAgentCode);
+    if (!code) return;
+    const isPT = confirm(t.isPTConfirm);
+    setAgents([...agents, { id: Date.now(), name, code: code.toUpperCase(), type: isPT ? 'PT' : 'FT', colorIdx: agents.length % AGENT_COLORS.length, unavailable: {} }]);
   };
 
   const deleteAgent = (id: number) => {
-    if (window.confirm(t.confirmDelete)) {
+    if (confirm(t.confirmDeleteAgent)) {
       setAgents(prev => prev.filter(a => a.id !== id));
     }
   };
 
-  const handleAiConsult = async (customPrompt?: string) => {
-    const finalPrompt = customPrompt || aiInput;
-    if (!finalPrompt.trim()) return;
-    
-    setActiveTab('ai');
-    setIsAiLoading(true);
-    setAiResponse({ text: '', sources: [] });
-    setAiInput(finalPrompt);
-
-    try {
-      const result = await callGeminiCoach(finalPrompt, language);
-      setAiResponse(result);
-    } catch (err) {
-      setAiResponse({ text: "Network error. Please try again later.", sources: [] });
-    } finally {
-      setIsAiLoading(false);
-    }
-  };
-
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
-    setCopyFeedback(true);
-    setTimeout(() => setCopyFeedback(false), 2000);
-  };
-
-  if (!auth.isLoggedIn) {
+  // --- Render Login ---
+  if (!isLoggedIn) {
     return (
-      <div className="min-h-screen bg-[#A50034] flex flex-col items-center justify-center p-6 max-w-lg mx-auto">
-        <div className="w-full max-w-sm space-y-8 animate-in fade-in zoom-in duration-500">
-          <div className="text-center">
-            <div className="w-20 h-20 bg-white rounded-[2.5rem] flex items-center justify-center text-[#A50034] mx-auto shadow-2xl mb-6 ring-4 ring-white/20">
-              <span className="text-4xl font-black italic">LG</span>
-            </div>
-            <h1 className="text-2xl font-black text-white tracking-tight">Subscribe Pro</h1>
-          </div>
-          <div className="bg-white/10 backdrop-blur-xl p-1 rounded-2xl flex border border-white/20 shadow-inner">
-            <button onClick={() => setLoginMode('LSM')} className={`flex-1 py-3 rounded-xl text-xs font-black uppercase transition-all ${loginMode === 'LSM' ? 'bg-white text-[#A50034]' : 'text-white'}`}>LSM</button>
-            <button onClick={() => setLoginMode('Agent')} className={`flex-1 py-3 rounded-xl text-xs font-black uppercase transition-all ${loginMode === 'Agent' ? 'bg-white text-[#A50034]' : 'text-white'}`}>LM</button>
-          </div>
-          <form onSubmit={handleLogin} className="space-y-4">
-            <div className="relative group">
-              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-white/50">{loginMode === 'LSM' ? <Lock size={18} /> : <User size={18} />}</div>
-              <input type={loginMode === 'LSM' ? 'password' : 'text'} placeholder={loginMode === 'LSM' ? t.passwordPlaceholder : t.agentCodePlaceholder} className="w-full bg-white/20 border border-white/30 rounded-2xl pl-12 pr-6 py-4 text-white font-bold outline-none placeholder:text-white/40" value={loginMode === 'LSM' ? passwordInput : agentCodeInput} onChange={(e) => loginMode === 'LSM' ? setPasswordInput(e.target.value) : setAgentCodeInput(e.target.value)} />
-            </div>
-            {loginError && <div className="text-white bg-black/20 p-3 rounded-xl text-xs font-bold animate-shake flex gap-2 items-center"><AlertCircle size={14} />{loginError}</div>}
-            <button type="submit" className="w-full bg-white text-[#A50034] py-5 rounded-2xl font-black uppercase shadow-2xl active:scale-95 transition-all">{t.loginBtn}</button>
-          </form>
-          <div className="flex justify-center gap-4">
-            {(['zh', 'en', 'ms'] as Language[]).map(l => (
-              <button key={l} onClick={() => setLanguage(l)} className={`text-[10px] font-black uppercase px-3 py-1.5 rounded-full ${language === l ? 'bg-white/20 text-white' : 'text-white/40'}`}>{l}</button>
+      <div className="min-h-screen bg-[#F0F2F5] flex flex-col items-center justify-center p-6 font-sans">
+        <div className="w-full max-w-sm bg-white rounded-[3rem] shadow-2xl p-10 border border-white relative overflow-hidden animate-in fade-in zoom-in duration-500">
+          <div className="absolute top-0 left-0 w-full h-2 bg-[#A50034]"></div>
+          
+          <div className="flex justify-center gap-2 mb-6">
+            {['zh', 'en', 'ms'].map((lang) => (
+              <button key={lang} onClick={() => setLanguage(lang as any)} className={`px-3 py-1.5 text-[10px] font-black rounded-lg transition-all ${language === lang ? 'bg-[#A50034] text-white shadow-md scale-105' : 'text-gray-400 hover:bg-gray-100'}`}>
+                {lang.toUpperCase()}
+              </button>
             ))}
+          </div>
+
+          <div className="flex flex-col items-center mb-10 text-center">
+            <div className="w-20 h-20 bg-[#A50034] rounded-[2rem] flex items-center justify-center text-white text-4xl font-black italic shadow-xl mb-6 animate-bounce">LG</div>
+            <h1 className="text-2xl font-black text-gray-800 tracking-tight">{t.title}</h1>
+            <p className="text-[10px] text-gray-400 mt-2 font-bold uppercase tracking-widest">A Complete Home, Today.</p>
+          </div>
+          <div className="space-y-6">
+            <div className="relative">
+              <Lock className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-300" size={20} />
+              <input 
+                type="text" 
+                placeholder={t.loginTitle} 
+                className="w-full bg-gray-50 border-0 ring-1 ring-gray-100 rounded-2xl pl-14 pr-5 py-5 text-sm font-bold focus:ring-2 focus:ring-[#A50034] outline-none transition-all" 
+                value={loginInput} 
+                onChange={e => setLoginInput(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && handleLogin()}
+              />
+            </div>
+            <button 
+              onClick={handleLogin} 
+              disabled={isLoggingIn}
+              className="w-full bg-[#A50034] text-white py-5 rounded-2xl font-black text-sm shadow-[0_10px_20px_rgba(165,0,52,0.3)] active:scale-95 transition-all flex items-center justify-center gap-2"
+            >
+              {isLoggingIn ? <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div> : <ShieldCheck size={18} />}
+              {t.loginBtn}
+            </button>
           </div>
         </div>
       </div>
@@ -260,302 +279,373 @@ const App: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#FDFDFD] flex flex-col max-w-lg mx-auto shadow-2xl relative border-x border-gray-100">
-      <header className="bg-white/80 backdrop-blur-md border-b px-5 py-5 flex justify-between items-center sticky top-0 z-50">
+    <div className="min-h-screen bg-[#F9FAFB] text-gray-900 pb-28 font-sans select-none overflow-x-hidden">
+      <header className="bg-white/95 backdrop-blur-xl border-b sticky top-0 z-50 px-6 py-4 flex justify-between items-center shadow-sm">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-[#A50034] rounded-xl flex items-center justify-center text-white shadow-lg"><span className="text-xl font-black italic">LG</span></div>
-          <div>
-            <h1 className="text-sm font-black text-gray-900 leading-none">Subscribe Pro</h1>
-            <span className="text-[8px] font-black uppercase px-2 py-0.5 mt-1 inline-block rounded-sm bg-red-50 text-[#A50034] border border-red-100">{auth.role === 'LSM' ? 'Manager' : 'LM'}</span>
+          <div className="w-10 h-10 rounded-xl flex items-center justify-center text-white font-black text-sm shadow-md" style={{ backgroundColor: LG_MAROON }}>LG</div>
+          <div className="flex flex-col">
+             <span className="font-black tracking-tight text-xs uppercase leading-tight" style={{ color: LG_MAROON }}>{t.title}</span>
+             <span className="text-[10px] font-bold text-gray-400 leading-none">{userCode} • {userRole}</span>
           </div>
         </div>
-        <button onClick={handleLogout} className="w-10 h-10 bg-gray-50 border border-gray-100 rounded-full flex items-center justify-center text-gray-400"><LogOut size={16} /></button>
+        
+        <div className="flex items-center gap-2">
+          <div className="flex bg-gray-50 rounded-xl p-1 border border-gray-100">
+            {['zh', 'en', 'ms'].map((lang) => (
+              <button key={lang} onClick={() => setLanguage(lang as any)} className={`px-2 py-1 text-[9px] font-black rounded-lg transition-all ${language === lang ? 'bg-white text-[#A50034] shadow-sm' : 'text-gray-400'}`}>
+                {lang.toUpperCase()}
+              </button>
+            ))}
+          </div>
+          <button onClick={() => setIsLoggedIn(false)} className="bg-gray-50 p-2.5 rounded-xl text-gray-400 hover:text-[#A50034] transition-colors"><LogOut size={20}/></button>
+        </div>
       </header>
 
-      <main className="flex-1 overflow-y-auto pb-32">
-        <div className="p-2 md:p-3 space-y-4">
-          
-          {activeTab === 'schedule' && (
-            <div className="animate-in fade-in slide-in-from-bottom-3 duration-500 space-y-4">
-              <div className="flex justify-between items-center bg-white p-3 rounded-2xl shadow-md border border-gray-200">
-                <div className="flex items-center gap-2 bg-gray-50 px-3 py-2 rounded-xl border border-gray-200">
-                  <Calendar size={14} className="text-[#A50034]" />
-                  <span className="text-[10px] font-black text-gray-800 tracking-tight">{selectedMonth}</span>
+      <main className="max-w-md mx-auto p-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        
+        {/* Tab 1: Schedule */}
+        {activeTab === Tab.Schedule && (
+          <div className="space-y-4">
+            <div className="flex flex-col gap-3 bg-white p-6 rounded-[2.5rem] shadow-sm border border-gray-100">
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-2 font-black text-gray-800 text-sm">
+                  <Calendar size={18} style={{ color: LG_MAROON }} /> {selectedMonth}
                 </div>
-                {auth.role === 'LSM' && (
-                  <button onClick={autoGenerate} className="bg-[#A50034] text-white px-5 py-2.5 rounded-xl text-[10px] font-black shadow-lg flex items-center gap-2 active:scale-95 transition-all">
-                    <Zap size={12} fill="currentColor" /> {t.generate}
-                  </button>
-                )}
-              </div>
-              
-              <div className="bg-white rounded-[2rem] border-2 border-gray-300 shadow-2xl overflow-hidden">
-                <div className="grid grid-cols-7 bg-gray-200 border-b-2 border-gray-300">
-                  {t.weekdays.map(wd => (
-                    <div key={wd} className="py-2.5 text-center text-[11px] font-black text-gray-700 uppercase tracking-tighter">{wd}</div>
-                  ))}
-                </div>
-                
-                <div className="grid grid-cols-7 bg-gray-100">
-                  {monthInfo.padding.map((_, i) => (
-                    <div key={`pad-${i}`} className="min-h-[110px] border-r border-b border-gray-200 bg-gray-200/20"></div>
-                  ))}
-                  
-                  {timetable.map(d => (
-                    <div key={d.day} className={`min-h-[120px] border-r border-b-2 border-gray-200 flex flex-col transition-all relative ${d.isWeekend ? 'bg-red-50/40' : 'bg-white'}`}>
-                      <div className={`py-2 flex justify-center items-center border-b relative ${d.isWeekend ? 'bg-red-200/40 border-red-300' : 'bg-gray-200/30 border-gray-200'}`}>
-                        <span className={`text-[16px] font-black leading-none drop-shadow-sm ${d.isWeekend ? 'text-red-700' : 'text-gray-900'}`}>{d.day}</span>
-                        {d.isWeekend && <div className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full shadow-sm"></div>}
-                      </div>
-                      
-                      <div className="flex-1 flex flex-col p-1.5 gap-1.5">
-                        <div className="flex-1 rounded-lg bg-orange-100 border-2 border-orange-300 p-1 flex flex-col gap-0.5 relative group/slot">
-                          <Sun size={10} className="text-orange-500 absolute top-0.5 right-0.5 opacity-40" />
-                          {d.slot1.length > 0 ? d.slot1.map((name, i) => (
-                            <div key={i} className={`text-[7.5px] font-black px-1 py-0.5 rounded-md border shadow-sm truncate animate-in zoom-in duration-200 ${getAgentColor(name).bg} ${getAgentColor(name).text} ${getAgentColor(name).border}`}>
-                              {name}
-                            </div>
-                          )) : <div className="text-[6px] text-gray-300 font-bold italic text-center py-1">--</div>}
-                        </div>
-
-                        <div className="flex-1 rounded-lg bg-indigo-100 border-2 border-indigo-300 p-1 flex flex-col gap-0.5 relative group/slot">
-                          <Moon size={10} className="text-indigo-500 absolute top-0.5 right-0.5 opacity-40" />
-                          {d.slot2.length > 0 ? d.slot2.map((name, i) => (
-                            <div key={i} className={`text-[7.5px] font-black px-1 py-0.5 rounded-md border shadow-sm truncate animate-in zoom-in duration-200 brightness-95 ${getAgentColor(name).bg} ${getAgentColor(name).text} ${getAgentColor(name).border}`}>
-                              {name}
-                            </div>
-                          )) : <div className="text-[6px] text-gray-300 font-bold italic text-center py-1">--</div>}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="bg-white p-3 rounded-2xl border-2 border-gray-100 flex items-center gap-4 shadow-sm">
-                <div className="flex items-center gap-2 text-[10px] font-black text-orange-800 uppercase bg-orange-200/60 px-3 py-2 rounded-lg border border-orange-300">
-                  <Sun size={12} fill="currentColor" /> AM 10-4
-                </div>
-                <div className="flex items-center gap-2 text-[10px] font-black text-indigo-800 uppercase bg-indigo-200/60 px-3 py-2 rounded-lg border border-indigo-300">
-                  <Moon size={12} fill="currentColor" /> PM 4-10
-                </div>
-                <div className="ml-auto flex items-center gap-1.5 text-[9px] font-black text-gray-500">
-                  <Info size={12} /> STORE DUTY
+                <div className="flex gap-2">
+                  {userRole === 'LSM' && (
+                    <>
+                      <button onClick={() => setConfirmModal({ show: true, title: t.quickGen, message: t.quickGenMsg, action: performBasicAutoGenerate })} className="bg-gray-100 text-gray-600 px-4 py-2.5 rounded-2xl text-[10px] font-black flex items-center gap-1.5 active:scale-95 transition-all">
+                        <Zap size={14} fill="currentColor" /> {t.quickGen}
+                      </button>
+                      <button disabled={isGenerating} onClick={() => setConfirmModal({ show: true, title: t.generate, message: t.aiGenMsg, action: handleAIScheduling, isAI: true })} className={`text-white px-5 py-2.5 rounded-2xl text-[10px] font-black flex items-center gap-2 shadow-lg active:scale-95 transition-all relative group`} style={{ backgroundColor: LG_MAROON }}>
+                        <Sparkles size={14} fill="currentColor" className="group-hover:rotate-12 transition-transform" /> {isGenerating ? "..." : t.generate}
+                      </button>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
-          )}
-
-          {activeTab === 'ai' && (
-            <div className="animate-in fade-in slide-in-from-bottom-3 duration-500 space-y-6">
-              <div className="bg-gradient-to-br from-[#A50034] to-[#E60045] p-8 rounded-[3rem] text-white shadow-xl shadow-red-100 relative overflow-hidden">
-                <h2 className="text-2xl font-black mb-2 flex items-center gap-3"><Sparkles size={28} /> {t.aiCoach}</h2>
-                <p className="text-[11px] font-bold opacity-80 uppercase tracking-widest">{t.aiInstruction}</p>
-                <div className="mt-4 flex items-center gap-2 bg-white/20 px-3 py-1.5 rounded-full w-fit border border-white/20">
-                  <Globe size={12} className="animate-pulse" />
-                  <span className="text-[9px] font-black uppercase">Live Knowledge Auto-Learn</span>
+            {timetable.map(d => (
+              <div key={d.day} className={`bg-white rounded-[2.5rem] p-6 border shadow-sm transition-all ${d.isWeekend ? 'border-rose-100 ring-1 ring-rose-50' : 'border-gray-50'}`}>
+                <div className="flex justify-between items-center mb-5">
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-2xl font-black text-gray-900">{d.day}</span>
+                    <span className={`text-[10px] font-black uppercase tracking-widest ${d.isWeekend ? 'text-rose-500' : 'text-gray-400'}`}>{t.weekdays[d.dow]}</span>
+                  </div>
+                  {d.isWeekend && <span className="text-[8px] bg-rose-500 text-white px-2 py-0.5 rounded-full font-black uppercase">{t.peakDay}</span>}
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  {[1, 2].map(slotNum => {
+                    const slotKey = `slot${slotNum}` as 'slot1' | 'slot2';
+                    const shifts = d[slotKey] || [];
+                    const isVacant = shifts.length === 0;
+                    
+                    return (
+                      <div key={slotNum} className="space-y-3">
+                        <div className="text-[9px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-1">
+                          {slotNum === 1 ? <Sun size={14} className="text-orange-400" /> : <Moon size={14} className="text-indigo-400" />} {t[slotKey]}
+                        </div>
+                        <div className="flex flex-col gap-2 min-h-[44px]">
+                          {shifts.length > 0 ? shifts.map((s, i) => (
+                            <div key={i} className={`${s.color.bg} ${s.color.text} text-[10px] font-black py-3 px-4 rounded-2xl shadow-sm truncate animate-in zoom-in duration-300`}>{s.name}</div>
+                          )) : (
+                            <div className="flex items-center gap-2 p-3 bg-red-50 rounded-2xl border border-red-100 text-red-500 animate-pulse">
+                              <AlertTriangle size={12} />
+                              <span className="text-[9px] font-black uppercase tracking-tighter">{t.empty}</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
-              <div className="bg-white rounded-[2.5rem] p-7 shadow-xl border border-gray-50">
-                <textarea 
-                  className="w-full bg-gray-50 rounded-3xl p-6 text-sm font-semibold border-none outline-none min-h-[160px] resize-none ring-1 ring-gray-100 focus:ring-2 focus:ring-[#A50034]" 
-                  placeholder={t.aiPlaceholder} 
-                  value={aiInput} 
-                  onChange={(e) => setAiInput(e.target.value)} 
-                />
-                <button onClick={() => handleAiConsult()} disabled={isAiLoading || !aiInput.trim()} className={`w-full mt-6 py-5 rounded-3xl flex items-center justify-center gap-3 font-black text-sm shadow-xl transition-all ${isAiLoading ? 'bg-gray-100 text-gray-400' : 'bg-[#A50034] text-white active:scale-95 shadow-red-200'}`}>
-                  {isAiLoading ? <span className="animate-pulse flex items-center gap-2"><Clock size={16} /> {t.thinking}</span> : <><Send size={18} /> {t.expertBtn}</>}
-                </button>
+            ))}
+          </div>
+        )}
+
+        {/* Tab 2: Leads (Protection System) */}
+        {activeTab === Tab.Leads && (
+          <div className="space-y-6">
+            <div className="bg-white rounded-[2.5rem] p-8 border border-gray-100 shadow-xl overflow-hidden relative">
+              <div className="absolute top-0 right-0 w-24 h-24 bg-red-50 rounded-full -mr-12 -mt-12 flex items-center justify-center pt-8 pr-8 opacity-50">
+                <ShieldCheck size={48} className="text-[#A50034]" />
               </div>
-              {aiResponse.text && (
-                <div className="bg-white rounded-[2.5rem] p-7 shadow-sm border-l-4 border-[#A50034] space-y-6 animate-in zoom-in fade-in duration-500">
-                  <div className="flex items-center justify-between">
-                    <span className="font-black text-[10px] text-gray-400 uppercase tracking-widest bg-gray-50 px-3 py-1.5 rounded-full">Winning Advice</span>
-                    <button onClick={() => copyToClipboard(aiResponse.text)} className={`text-[10px] font-black px-4 py-2 rounded-full flex items-center gap-2 transition-all ${copyFeedback ? 'bg-green-50 text-green-600' : 'bg-red-50 text-[#A50034]'}`}>
-                      {copyFeedback ? <CheckCircle2 size={12} /> : <Copy size={12} />} {copyFeedback ? 'Copied' : t.copy}
-                    </button>
+              <h2 className="text-xl font-black text-gray-900 mb-2 flex items-center gap-2">
+                <ShieldCheck className="text-[#A50034]" /> {t.leadProtection}
+              </h2>
+              <p className="text-xs text-gray-400 font-bold mb-8">{t.aiThinking.split('。')[0]}</p>
+
+              <form onSubmit={handleSubmitLead} className="space-y-5">
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 mb-1 block">{t.customerName}</label>
+                    <input type="text" value={newLead.customerName} onChange={e => setNewLead({...newLead, customerName: e.target.value})} className="w-full bg-gray-50 border-0 ring-1 ring-gray-100 rounded-2xl px-5 py-4 text-sm font-bold focus:ring-2 focus:ring-[#A50034] outline-none transition-all" placeholder="e.g. Mr. Tan" />
                   </div>
-                  <div className="text-gray-700 text-[13px] font-semibold leading-relaxed whitespace-pre-wrap italic border-gray-50 p-2">{aiResponse.text}</div>
-                  
-                  {aiResponse.sources.length > 0 && (
-                    <div className="pt-4 border-t border-gray-100">
-                      <p className="text-[10px] font-black text-gray-400 uppercase mb-3 flex items-center gap-2"><Globe size={14} className="text-blue-500" /> Sources Found</p>
-                      <div className="flex flex-col gap-2">
-                        {aiResponse.sources.map((src, i) => (
-                          <a key={i} href={src.uri} target="_blank" rel="noopener noreferrer" className="text-[11px] font-bold text-blue-600 flex items-center gap-2 hover:bg-blue-50 p-2 rounded-xl transition-all truncate border border-transparent hover:border-blue-100">
-                            <ExternalLink size={12} /> {src.title || "Latest Product Detail"}
-                          </a>
-                        ))}
+                  <div>
+                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 mb-1 block">{t.customerInfo}</label>
+                    <input type="text" value={newLead.customerInfo} onChange={e => setNewLead({...newLead, customerInfo: e.target.value})} className="w-full bg-gray-50 border-0 ring-1 ring-gray-100 rounded-2xl px-5 py-4 text-sm font-bold focus:ring-2 focus:ring-[#A50034] outline-none transition-all" placeholder={t.customerInfo} />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 mb-1 block">{t.productInterest}</label>
+                    <input 
+                      type="text" 
+                      value={newLead.productInterest} 
+                      onChange={e => setNewLead({...newLead, productInterest: e.target.value})} 
+                      className="w-full bg-gray-50 border-0 ring-1 ring-gray-100 rounded-2xl px-5 py-4 text-sm font-bold focus:ring-2 focus:ring-[#A50034] outline-none transition-all" 
+                      placeholder="e.g. WashTower, Refrigerator..." 
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="col-span-1">
+                      <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 mb-1 block">{t.visitLocation}</label>
+                      <select value={newLead.location} onChange={e => setNewLead({...newLead, location: e.target.value as any})} className="w-full bg-gray-50 border-0 ring-1 ring-gray-100 rounded-2xl px-4 py-4 text-sm font-bold focus:ring-2 focus:ring-[#A50034] outline-none appearance-none transition-all">
+                        <option value="Lotus PR">Lotus PR</option>
+                        <option value="Brandshop Batu Pahat">Batu Pahat Brandshop</option>
+                      </select>
+                    </div>
+                    <div className="col-span-1">
+                      <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 mb-1 block">{t.visitDate}</label>
+                      <input 
+                        type="text" 
+                        value={newLead.expectedDate} 
+                        onChange={e => setNewLead({...newLead, expectedDate: e.target.value})} 
+                        className="w-full bg-gray-50 border-0 ring-1 ring-gray-100 rounded-2xl px-5 py-4 text-sm font-bold focus:ring-2 focus:ring-[#A50034] outline-none transition-all" 
+                        placeholder={t.visitDate} 
+                      />
+                    </div>
+                  </div>
+                </div>
+                <button type="submit" className="w-full py-4 rounded-2xl text-white font-black text-sm shadow-lg flex items-center justify-center gap-2 active:scale-95 transition-all" style={{ backgroundColor: LG_MAROON }}>
+                  <UserPlus size={18} /> {t.submitLead}
+                </button>
+              </form>
+            </div>
+
+            <div className="space-y-4">
+              <h3 className="text-[11px] font-black text-gray-400 uppercase tracking-widest ml-2 flex items-center gap-2">
+                <ClipboardList size={14} /> {t.leadHistory} ({registrations.length})
+              </h3>
+              {registrations.map(lead => (
+                <div key={lead.id} className="bg-white rounded-[2rem] p-6 border border-gray-100 shadow-sm relative group animate-in fade-in duration-300">
+                  <div className="flex justify-between items-start">
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center text-[#A50034]">
+                        <User size={24} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <h4 className="text-sm font-black text-gray-900 truncate">{lead.customerName}</h4>
+                          <span className="text-[10px] font-bold text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full flex-shrink-0">{lead.customerInfo}</span>
+                        </div>
+                        <div className="flex flex-col gap-1 mt-1">
+                          <span className="flex items-center gap-1 text-[10px] text-gray-400 font-bold"><MapPin size={10} className="text-[#A50034]" /> {lead.location}</span>
+                          <span className="flex items-center gap-1 text-[10px] text-gray-400 font-bold"><Package size={10} className="text-blue-500" /> {lead.productInterest}</span>
+                        </div>
                       </div>
                     </div>
-                  )}
+                    {userRole === 'LSM' && (
+                      <button onClick={() => deleteLead(lead.id)} className="text-gray-200 hover:text-red-500 transition-colors p-2"><Trash2 size={18} /></button>
+                    )}
+                  </div>
+                  
+                  <div className="mt-4 p-4 bg-gray-50/50 rounded-2xl border border-gray-50 grid grid-cols-2 gap-4">
+                    <div className="flex flex-col">
+                      <span className="text-[8px] font-black text-gray-400 uppercase tracking-widest">{t.reportAgent}</span>
+                      <span className="text-[10px] font-black text-gray-700">{lead.agentName}</span>
+                    </div>
+                    <div className="flex flex-col items-end">
+                      <span className="text-[8px] font-black text-gray-400 uppercase tracking-widest">{t.expectedVisit}</span>
+                      <span className="text-[10px] font-black text-[#A50034]">{lead.expectedDate}</span>
+                    </div>
+                    <div className="flex flex-col col-span-2 pt-2 border-t border-gray-100">
+                      <span className="text-[8px] font-black text-gray-400 uppercase tracking-widest">{t.regDate}</span>
+                      <span className="text-[10px] font-black text-gray-500 flex items-center gap-1">
+                        <Clock size={10} /> {lead.timestamp}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="absolute -top-2 -right-2">
+                     <div className="bg-emerald-500 text-white text-[8px] font-black px-3 py-1 rounded-full shadow-lg flex items-center gap-1 border border-white">
+                       <ShieldCheck size={10} /> {t.protectionActive}
+                     </div>
+                  </div>
+                </div>
+              ))}
+              {registrations.length === 0 && (
+                <div className="bg-white/50 rounded-[2rem] p-10 border border-dashed border-gray-200 text-center">
+                   <p className="text-xs text-gray-400 font-bold italic">{t.noLeads}</p>
                 </div>
               )}
             </div>
-          )}
+          </div>
+        )}
 
-          {activeTab === 'salesKit' && (
-            <div className="animate-in fade-in slide-in-from-bottom-3 duration-500 space-y-6">
-              <div className="relative group">
-                <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-300" size={20} />
-                <input type="text" placeholder={t.searchPlaceholder} className="w-full bg-white border-none ring-1 ring-gray-100 rounded-[2rem] pl-16 pr-8 py-5 text-sm font-bold shadow-xl outline-none focus:ring-2 focus:ring-[#A50034] transition-all" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
-              </div>
-
-              <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
-                {['Microwave', 'WashTower', 'Water Purifier', 'Dishwasher'].map(tag => (
-                  <button key={tag} onClick={() => setSearchQuery(tag)} className="bg-white px-5 py-2.5 rounded-full text-[10px] font-black text-gray-400 border border-gray-100 whitespace-nowrap shadow-sm hover:border-[#A50034] hover:text-[#A50034] transition-all active:scale-95">{tag}</button>
-                ))}
-              </div>
-              
-              <div className="flex gap-2 p-1.5 bg-gray-100/80 rounded-[1.5rem] border border-white">
-                {(['specs', 'faq', 'scripts'] as SalesKitSubTab[]).map(tab => (
-                  <button key={tab} onClick={() => setSalesKitSubTab(tab)} className={`flex-1 py-3 text-[10px] font-black rounded-xl uppercase transition-all ${salesKitSubTab === tab ? 'bg-white shadow-lg text-[#A50034]' : 'text-gray-500'}`}>{t[tab]}</button>
-                ))}
-              </div>
-
-              <div className="space-y-6">
-                {salesKitSubTab === 'specs' && (
-                  <>
-                    {filteredProducts.length > 0 ? (
-                      filteredProducts.map(p => (
-                        <div key={p.id} className="bg-white rounded-[2.5rem] border border-gray-100 shadow-xl overflow-hidden group hover:shadow-2xl transition-all duration-500">
-                          <div className="h-56 relative overflow-hidden">
-                            <img src={p.image} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
-                            <div className="absolute bottom-6 left-6 right-6 text-white">
-                               <p className="text-[10px] font-black uppercase tracking-widest opacity-80 mb-1">{p.category}</p>
-                               <h3 className="text-lg font-black leading-tight">{p.name}</h3>
-                            </div>
-                          </div>
-                          <div className="p-7 space-y-6">
-                            <div className="flex flex-wrap gap-2">
-                               {p.sellingPoints.map(sp => (
-                                 <span key={sp} className="text-[9px] font-black px-3 py-1.5 bg-red-50 text-[#A50034] rounded-full border border-red-100 flex items-center gap-1.5"><Zap size={10} fill="currentColor" /> {sp}</span>
-                               ))}
-                            </div>
-                            <div className="bg-gray-50 p-6 rounded-[2rem] space-y-4 border border-gray-100">
-                              <div className="flex items-center gap-3 text-[10px] font-black text-gray-400 uppercase tracking-widest"><Layers size={14} /> Spec Sheet</div>
-                              <p className="text-xs font-bold text-gray-700 ml-1">{p.dims}</p>
-                              <div className="h-px bg-gray-200" />
-                              <div className="flex items-start gap-3 text-red-600/90 italic">
-                                <Info size={14} className="mt-0.5 flex-shrink-0" />
-                                <p className="text-[11px] font-bold leading-relaxed">{p.notes}</p>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      ))
-                    ) : (
-                      <div className="bg-white rounded-[3rem] p-10 border border-dashed border-gray-200 flex flex-col items-center text-center animate-in zoom-in duration-500">
-                        <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center text-gray-300 mb-6 shadow-inner"><Search size={32} /></div>
-                        <p className="text-sm font-black text-gray-800">{t.noProductFound}</p>
-                        <p className="text-xs text-gray-400 mt-2 font-medium">AI can live-learn about "{searchQuery}" instantly.</p>
-                        <button 
-                          onClick={() => handleAiConsult(`Professional spec guide for LG ${searchQuery}: Key selling points, dimensions, and subscription benefits in Malaysia market.`)}
-                          className="mt-8 flex items-center gap-3 bg-gradient-to-r from-[#A50034] to-[#E60045] text-white px-8 py-5 rounded-[2rem] font-black text-sm shadow-2xl active:scale-95 transition-all shadow-red-200"
-                        >
-                          <Sparkles size={18} /> {t.askAiAboutProduct} <ArrowRight size={16} />
-                        </button>
-                      </div>
+        {/* Tab 3: Management */}
+        {activeTab === Tab.Management && (
+          <div className="space-y-8 pb-10">
+            <h2 className="text-2xl font-black text-gray-900 tracking-tight px-2">{userRole === 'LSM' ? t.adminConsole : t.docCenter}</h2>
+            
+            <div className="bg-white rounded-[3rem] p-8 border border-gray-100 shadow-xl space-y-8">
+               {/* Memos Section */}
+               <div className="space-y-6">
+                 <div className="flex items-center justify-between">
+                    <h3 className="text-sm font-black uppercase tracking-widest flex items-center gap-2" style={{ color: LG_MAROON }}><Bell size={18} /> {t.memo}</h3>
+                    {userRole === 'LSM' && (
+                      <button onClick={addMemo} className="bg-black text-white px-4 py-2 rounded-2xl text-[10px] font-black flex items-center gap-1 active:scale-95 transition-all">
+                        <Plus size={14} /> {t.upload}
+                      </button>
                     )}
-                  </>
-                )}
-                
-                {salesKitSubTab === 'faq' && FAQ_DATA.map((f, i) => (
-                  <div key={i} className="bg-white p-6 rounded-[2rem] border border-gray-100 shadow-sm flex gap-4 hover:bg-gray-50/50 transition-all">
-                    <div className="w-10 h-10 bg-red-50 text-[#A50034] rounded-2xl flex-shrink-0 flex items-center justify-center font-black italic">Q</div>
-                    <div>
-                      <p className="text-sm font-black text-gray-800 mb-2 leading-snug">{f.q}</p>
-                      <p className="text-xs text-gray-500 font-medium leading-relaxed">{f.a}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {activeTab === 'agents' && (
-            <div className="animate-in fade-in slide-in-from-bottom-3 duration-500 space-y-6">
-              <div className="flex justify-between items-center px-1">
-                <h2 className="text-xl font-black text-gray-900 tracking-tight">{auth.role === 'LSM' ? 'Agent Fleet' : t.myAvailability}</h2>
-                {auth.role === 'LSM' && (
-                  <button onClick={() => setShowAddModal(true)} className="w-12 h-12 bg-[#A50034] text-white rounded-2xl flex items-center justify-center shadow-lg active:scale-90 transition-all hover:bg-[#820029]"><Plus size={24} /></button>
-                )}
-              </div>
-
-              <div className="grid gap-6">
-                {agents.filter(a => auth.role === 'LSM' || a.id === auth.agentId).map(agent => (
-                  <div key={agent.id} className="bg-white rounded-[2.5rem] p-8 border border-gray-100 shadow-xl relative overflow-hidden group">
-                    <div className="flex items-center justify-between mb-8">
-                      <div className="flex items-center gap-5">
-                        <div className={`w-16 h-16 ${getAgentColor(agent.name).bg} ${getAgentColor(agent.name).text} rounded-3xl flex items-center justify-center text-2xl font-black shadow-inner`}>{agent.name[0]}</div>
-                        <div>
-                          <h3 className="text-lg font-black text-gray-900 flex items-center gap-2">
-                            {agent.name}
-                            {auth.agentId === agent.id && <span className="text-[8px] bg-green-100 text-green-700 px-2 py-0.5 rounded-sm font-black tracking-widest uppercase">Me</span>}
-                          </h3>
-                          <div className="text-[9px] text-gray-400 font-black uppercase tracking-widest mt-1.5">{agent.type === 'FT' ? 'Full Time' : 'Part Time'} • {agent.code}</div>
-                        </div>
-                      </div>
-                      {auth.role === 'LSM' && (
-                        <button onClick={() => deleteAgent(agent.id)} className="p-3 bg-gray-50 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-2xl transition-all"><Trash2 size={18} /></button>
-                      )}
-                    </div>
-                    
-                    <div className="grid grid-cols-4 gap-3">
-                      {monthInfo.days.slice(0, 12).map(({ day, dow, isWeekend }) => {
-                        const unavail = agent.unavailable[day] || [];
-                        const isEditable = auth.role === 'LSM' || auth.agentId === agent.id;
-                        return (
-                          <div key={day} className={`rounded-[1.5rem] border-2 p-2.5 transition-all ${isWeekend ? 'bg-red-50/40 border-red-100' : 'bg-gray-50/50 border-gray-200 shadow-inner'}`}>
-                            <div className="text-center text-[10px] font-black py-1 text-gray-600 mb-1.5">{day}<span className="text-[7px] block opacity-50 uppercase">{t.weekdays[dow]}</span></div>
-                            <div className="flex flex-col gap-2">
-                              <button disabled={!isEditable} onClick={() => toggleSlot(agent.id, day, 1)} className={`w-full aspect-square rounded-xl flex items-center justify-center transition-all border-2 ${unavail.includes(1) ? 'bg-orange-500 border-orange-600 text-white shadow-md' : 'bg-white text-gray-300 border-gray-100'}`}><Sun size={14} /></button>
-                              <button disabled={!isEditable} onClick={() => toggleSlot(agent.id, day, 2)} className={`w-full aspect-square rounded-xl flex items-center justify-center transition-all border-2 ${unavail.includes(2) ? 'bg-indigo-600 border-indigo-700 text-white shadow-md' : 'bg-white text-gray-300 border-gray-100'}`}><Moon size={14} /></button>
+                 </div>
+                 <div className="space-y-4">
+                    {memos.map(m => (
+                      <div key={m.id} className="p-5 bg-gray-50 rounded-[2rem] border border-gray-100 relative group transition-all hover:bg-white hover:shadow-md">
+                         <div className="flex items-start justify-between mb-2">
+                            <div className="flex-1">
+                               <div className="flex items-center gap-2">
+                                  <p className="text-xs font-black text-gray-800">{m.title}</p>
+                                  {m.isNew && <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>}
+                               </div>
+                               <p className="text-[10px] text-gray-400 font-bold uppercase mt-1">{m.date}</p>
                             </div>
-                          </div>
-                        );
-                      })}
-                    </div>
+                            {userRole === 'LSM' && (
+                              <button onClick={() => deleteMemo(m.id)} className="p-2 text-gray-300 hover:text-red-500 transition-colors"><Trash2 size={18} /></button>
+                            )}
+                         </div>
+                         {m.content && <p className="text-[11px] text-gray-500 font-medium leading-relaxed">{m.content}</p>}
+                      </div>
+                    ))}
+                 </div>
+               </div>
+
+               {/* Forms Section */}
+               <div className="pt-6 border-t border-gray-50">
+                  <div className="flex items-center justify-between mb-6">
+                    <h3 className="text-sm font-black text-blue-600 uppercase tracking-widest flex items-center gap-2"><FilePlus size={18} /> {t.forms}</h3>
+                    {userRole === 'LSM' && (
+                      <button onClick={addFormDoc} className="bg-blue-600 text-white px-4 py-2 rounded-2xl text-[10px] font-black flex items-center gap-1 active:scale-95 transition-all">
+                        <Plus size={14} /> {t.upload}
+                      </button>
+                    )}
                   </div>
-                ))}
-              </div>
+                  <div className="grid grid-cols-1 gap-3">
+                     {forms.map(f => (
+                       <div key={f.id} className="bg-white p-5 rounded-[2.5rem] border border-gray-100 shadow-sm flex items-center justify-between hover:border-blue-200 transition-all active:scale-[0.98]">
+                          <div className="flex items-center gap-4">
+                             <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center shadow-inner"><Download size={24}/></div>
+                             <div>
+                                <p className="text-xs font-black text-gray-800">{f.title}</p>
+                                <p className="text-[10px] text-gray-400 font-bold">{f.size}</p>
+                             </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            {userRole === 'LSM' && (
+                              <button onClick={() => deleteFormDoc(f.id)} className="p-2 text-gray-300 hover:text-red-500 transition-colors"><Trash2 size={18} /></button>
+                            )}
+                            <a href={f.url} target="_blank" rel="noopener noreferrer" className="font-black text-[10px] uppercase bg-red-50 px-3 py-2 rounded-xl active:bg-red-100 transition-colors flex items-center gap-1" style={{ color: LG_MAROON }}>
+                              {t.get} <ExternalLink size={10} />
+                            </a>
+                          </div>
+                       </div>
+                     ))}
+                  </div>
+               </div>
             </div>
-          )}
-        </div>
+
+            {/* Agent Management Section */}
+            <div className="space-y-6 pt-4">
+              <div className="flex items-center justify-between px-2">
+                 <h3 className="text-[11px] font-black text-gray-400 uppercase tracking-widest">{userRole === 'LSM' ? t.status : t.personalSettings}</h3>
+                 {userRole === 'LSM' && <button onClick={addAgent} className="text-[10px] font-black uppercase tracking-widest" style={{ color: LG_MAROON }}>+ {language === 'zh' ? '新增' : 'Add'}</button>}
+              </div>
+              {agents.filter(a => userRole === 'LSM' || a.code === userCode).map(agent => (
+                <div key={agent.id} className="bg-white rounded-[3.5rem] p-8 border border-gray-100 shadow-xl relative overflow-hidden group">
+                  <div className={`absolute left-0 top-0 bottom-0 w-2 ${AGENT_COLORS[agent.colorIdx].bg}`}></div>
+                  <div className="flex items-center justify-between mb-8">
+                    <div className="flex items-center gap-5">
+                      <div className={`w-16 h-16 ${AGENT_COLORS[agent.colorIdx].bg} text-white rounded-[1.5rem] flex items-center justify-center text-2xl font-black shadow-lg`}>
+                        {agent.name[0]}
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2 mb-1">
+                          <h3 className="text-xl font-black text-gray-900 leading-none">{agent.name}</h3>
+                          <span className={`text-[8px] font-black px-1.5 py-0.5 rounded-md border ${agent.type === 'FT' ? 'bg-black text-white border-black' : 'bg-white text-gray-500 border-gray-200'}`}>
+                            {agent.type}
+                          </span>
+                        </div>
+                        <p className="text-[11px] font-black text-gray-400 uppercase tracking-[0.2em]">{agent.code}</p>
+                      </div>
+                    </div>
+                    {userRole === 'LSM' && <Trash2 size={22} className="text-gray-200 hover:text-red-500 cursor-pointer transition-colors" onClick={() => deleteAgent(agent.id)} />}
+                  </div>
+                  
+                  <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4 px-1">{t.markUnavail}</p>
+                  <div className="grid grid-cols-4 gap-3">
+                    {monthInfo.map(({ day, dow, isWeekend }) => {
+                      const unavail = agent.unavailable[day] || [];
+                      return (
+                        <div key={day} className={`rounded-[1.5rem] border p-1.5 transition-all ${isWeekend ? 'bg-rose-50/50 border-rose-100' : 'bg-gray-50/50 border-gray-100 shadow-inner'}`}>
+                          <div className={`text-center text-[10px] font-black py-1 mb-1.5 text-gray-400`}>{day} <span className="text-[8px] opacity-40">({t.weekdays[dow]})</span></div>
+                          <div className="flex gap-2">
+                            <button onClick={() => toggleAvailability(agent.code, day, 1)} className={`flex-1 aspect-square rounded-xl flex items-center justify-center transition-all ${unavail.includes(1) ? 'bg-[#A50034] text-white shadow-lg scale-105' : 'bg-white text-gray-200 border border-gray-100'}`}><Sun size={16} /></button>
+                            <button onClick={() => toggleAvailability(agent.code, day, 2)} className={`flex-1 aspect-square rounded-xl flex items-center justify-center transition-all ${unavail.includes(2) ? 'bg-indigo-600 text-white shadow-lg scale-105' : 'bg-white text-gray-200 border border-gray-100'}`}><Moon size={16} /></button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </main>
 
-      {showAddModal && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm animate-in fade-in">
-           <div className="bg-white w-full max-w-sm rounded-[3rem] p-8 shadow-2xl animate-in zoom-in slide-in-from-bottom-10 duration-500">
-              <h2 className="text-xl font-black text-gray-900 mb-8 flex items-center gap-3"><Plus className="text-[#A50034]" /> {t.addAgent}</h2>
-              <div className="space-y-6">
-                <div>
-                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">{t.agentName}</label>
-                  <input type="text" value={newAgentName} onChange={(e) => setNewAgentName(e.target.value)} className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-6 py-4 text-sm font-bold mt-2 outline-none focus:ring-2 focus:ring-[#A50034] transition-all" placeholder="Agent Name..." />
-                </div>
-                <div>
-                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">{t.agentType}</label>
-                  <div className="grid grid-cols-2 gap-3 mt-2">
-                    <button onClick={() => setNewAgentType('FT')} className={`py-3.5 rounded-2xl text-[11px] font-black uppercase transition-all ${newAgentType === 'FT' ? 'bg-[#A50034] text-white shadow-lg shadow-red-100' : 'bg-gray-50 text-gray-400 border border-gray-100'}`}>Full Time</button>
-                    <button onClick={() => setNewAgentType('PT')} className={`py-3.5 rounded-2xl text-[11px] font-black uppercase transition-all ${newAgentType === 'PT' ? 'bg-[#A50034] text-white shadow-lg shadow-red-100' : 'bg-gray-50 text-gray-400 border border-gray-100'}`}>Part Time</button>
-                  </div>
-                </div>
-                <div className="pt-4 flex gap-3">
-                   <button onClick={() => setShowAddModal(false)} className="flex-1 py-4 bg-gray-50 text-gray-400 rounded-2xl font-black text-sm uppercase transition-all">Cancel</button>
-                   <button onClick={addAgent} className="flex-1 py-4 bg-[#A50034] text-white rounded-2xl font-black text-sm uppercase shadow-xl active:scale-95 transition-all shadow-red-200">Create</button>
-                </div>
+      <footer className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-2xl border-t border-gray-100 flex justify-around items-center px-8 pb-10 pt-4 z-50 shadow-[0_-10px_30px_rgba(0,0,0,0.03)]">
+        <button onClick={() => setActiveTab(Tab.Schedule)} className={`flex flex-col items-center gap-1 transition-all active:scale-90 ${activeTab === Tab.Schedule ? 'text-[#A50034]' : 'text-gray-400'}`}>
+           <Calendar size={24} className={activeTab === Tab.Schedule ? 'stroke-[2.5px]' : 'stroke-[2px]'} />
+           <span className="text-[10px] font-black">{t.schedule}</span>
+        </button>
+        <button onClick={() => setActiveTab(Tab.Leads)} className={`flex flex-col items-center gap-1 transition-all active:scale-90 ${activeTab === Tab.Leads ? 'text-[#A50034]' : 'text-gray-400'}`}>
+           <ShieldCheck size={24} className={activeTab === Tab.Leads ? 'stroke-[2.5px]' : 'stroke-[2px]'} />
+           <span className="text-[10px] font-black">{t.leads}</span>
+        </button>
+        <button onClick={() => setActiveTab(Tab.Management)} className={`flex flex-col items-center gap-1 transition-all active:scale-90 ${activeTab === Tab.Management ? 'text-[#A50034]' : 'text-gray-400'}`}>
+           <Users size={24} className={activeTab === Tab.Management ? 'stroke-[2.5px]' : 'stroke-[2px]'} />
+           <span className="text-[10px] font-black">{userRole === 'LSM' ? '管理控制' : '文檔/帳號'}</span>
+        </button>
+      </footer>
+
+      {confirmModal.show && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-[100] flex items-center justify-center p-8 animate-in fade-in duration-300">
+           <div className="bg-white w-full max-sm:max-w-xs rounded-[3.5rem] p-10 shadow-[0_30px_60px_rgba(0,0,0,0.5)] space-y-8 animate-in zoom-in duration-300 text-center relative overflow-hidden">
+              {confirmModal.isAI && <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 animate-pulse"></div>}
+              <div className={`w-20 h-20 rounded-[2rem] flex items-center justify-center mx-auto shadow-inner ${confirmModal.isAI ? 'bg-purple-50 text-purple-600' : 'bg-red-50 text-[#A50034]'}`}>
+                {confirmModal.isAI ? <Sparkles size={36} /> : <Zap size={36} />}
+              </div>
+              <div>
+                 <h3 className="text-2xl font-black text-gray-900">{confirmModal.title}</h3>
+                 <p className="text-sm text-gray-500 font-bold mt-4 leading-relaxed">{confirmModal.message}</p>
+              </div>
+              <div className="flex flex-col gap-3">
+                 <button onClick={() => confirmModal.action?.()} className={`w-full py-5 text-white rounded-3xl font-black text-sm shadow-xl active:scale-95 transition-all`} style={{ backgroundColor: LG_MAROON }}>{t.confirmBtn}</button>
+                 <button onClick={() => setConfirmModal({ ...confirmModal, show: false })} className="w-full py-5 bg-gray-50 text-gray-400 rounded-3xl font-black text-xs active:scale-95">{t.backBtn}</button>
               </div>
            </div>
         </div>
       )}
 
-      <footer className="fixed bottom-0 left-0 right-0 max-w-lg mx-auto bg-white/90 backdrop-blur-xl border-t border-gray-100 flex justify-around items-center px-4 pb-10 pt-4 z-50">
-        <NavItem id="schedule" icon={Calendar} label={t.schedule} activeTab={activeTab} onClick={setActiveTab} />
-        <NavItem id="ai" icon={Sparkles} label={t.aiCoach} activeTab={activeTab} onClick={setActiveTab} />
-        <NavItem id="salesKit" icon={BookOpen} label={t.salesKit} activeTab={activeTab} onClick={setActiveTab} />
-        <NavItem id="agents" icon={Users} label={auth.role === 'LSM' ? 'Agents' : t.myAvailability} activeTab={activeTab} onClick={setActiveTab} />
-      </footer>
+      {isGenerating && (
+        <div className="fixed inset-0 bg-white/90 backdrop-blur-xl z-[200] flex flex-col items-center justify-center p-8">
+           <div className="relative mb-10">
+             <div className="w-24 h-24 rounded-full border-4 border-gray-100 border-t-[#A50034] animate-spin"></div>
+             <Sparkles className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[#A50034] animate-pulse" size={32} />
+           </div>
+           <h2 className="text-2xl font-black text-gray-900 mb-2">Gemini is Thinking...</h2>
+           <p className="text-sm text-gray-400 font-bold text-center max-w-xs leading-relaxed uppercase tracking-widest">{t.aiThinking}</p>
+        </div>
+      )}
     </div>
   );
 };
