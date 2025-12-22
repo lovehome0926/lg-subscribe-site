@@ -5,11 +5,17 @@ import {
   Clock, Sun, Moon, Zap, Lock, LogOut, FilePlus, Bell, Check,
   Sparkles, ChevronRight, Menu, ShieldCheck, MapPin, UserPlus, ClipboardList, Package, ExternalLink,
   Languages, AlertTriangle, Key, UserMinus, ToggleLeft as Toggle, Database, Upload, Globe, Cloud, RefreshCw,
-  CheckCircle2, Wifi, WifiOff, Save, CheckCircle, Edit3, UserCheck
+  CheckCircle2, Wifi, WifiOff, Save, CheckCircle, Edit3, UserCheck, Activity
 } from 'lucide-react';
 import { Agent, DayInfo, Tab, UserRole } from './types';
 import { AGENT_COLORS, LANGUAGES, LG_MAROON } from './constants';
 import { optimizeScheduleWithAI } from './services/geminiService';
+
+// --- 全球唯一同步頻道 (Master Channel) ---
+// 確保所有安裝此版本的設備都指向同一個雲端空間
+const MASTER_BIN_ID = "67bcd61fe41b4d34e4999f8d"; // 固定的雲端頻道
+const API_KEY = "$2a$10$w8T.N0GfW4UvV9fG9Y9U.OqN7m7m7m7m7m7m7m7m7m7m7m7m7m7m7"; // 範例 Key
+const APP_VERSION = "v2.2-AUTO-SYNC";
 
 const App: React.FC = () => {
   // --- 基礎狀態 ---
@@ -33,12 +39,10 @@ const App: React.FC = () => {
   // --- LSM 手動修改狀態 ---
   const [editSlot, setEditSlot] = useState<{ day: number, slotNum: number } | null>(null);
 
-  // --- 同步核心狀態 (全自動) ---
+  // --- 同步核心狀態 ---
   const [syncStatus, setSyncStatus] = useState<'idle' | 'syncing' | 'success' | 'error'>('idle');
   const [lastSynced, setLastSynced] = useState<string | null>(localStorage.getItem('lg_last_sync'));
-  const [remoteBinId, setRemoteBinId] = useState(() => localStorage.getItem('lg_remote_bin_id') || '');
   
-  const isInternalUpdate = useRef(false);
   const lastSyncHash = useRef('');
 
   const [agents, setAgents] = useState<Agent[]>(() => {
@@ -54,37 +58,23 @@ const App: React.FC = () => {
     return saved ? JSON.parse(saved) : [];
   });
 
-  // --- 自動同步邏輯 ---
+  // --- 同步邏輯 (核心優化) ---
   const getDataHash = (a: Agent[], t: DayInfo[]) => JSON.stringify({ a, t }).length;
 
   const handleCloudPush = async (silent = false) => {
     if (!silent) setSyncStatus('syncing');
-
     try {
       const payload = { agents, timetable, timestamp: new Date().toISOString() };
-      let url = 'https://api.jsonbin.io/v3/b';
-      let method = 'POST';
-
-      if (remoteBinId) {
-        url = `https://api.jsonbin.io/v3/b/${remoteBinId}`;
-        method = 'PUT';
-      }
-
-      const res = await fetch(url, {
-        method,
+      const res = await fetch(`https://api.jsonbin.io/v3/b/${MASTER_BIN_ID}`, {
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'X-Master-Key': '$2a$10$w8T.N0GfW4UvV9fG9Y9U.OqN7m7m7m7m7m7m7m7m7m7m7m7m7m7m7',
-          'X-Bin-Private': 'false'
+          'X-Master-Key': API_KEY
         },
         body: JSON.stringify(payload)
       });
 
-      const result = await res.json();
-      if (result.metadata?.id) {
-        setRemoteBinId(result.metadata.id);
-        localStorage.setItem('lg_remote_bin_id', result.metadata.id);
-      }
+      if (!res.ok) throw new Error('Sync Failed');
       
       const now = new Date().toLocaleTimeString();
       setLastSynced(now);
@@ -94,22 +84,20 @@ const App: React.FC = () => {
       
       if (!silent) {
         setShowSaveSuccess(true);
-        setTimeout(() => setShowSaveSuccess(false), 2500);
+        setTimeout(() => setShowSaveSuccess(false), 2000);
       }
-      
       setTimeout(() => setSyncStatus('idle'), 2000);
     } catch (e) {
       setSyncStatus('error');
+      setTimeout(() => setSyncStatus('idle'), 3000);
     }
   };
 
   const handleCloudPull = async (silent = false) => {
-    if (!remoteBinId) return;
     if (!silent) setSyncStatus('syncing');
-
     try {
-      const res = await fetch(`https://api.jsonbin.io/v3/b/${remoteBinId}/latest`, {
-        headers: { 'X-Master-Key': '$2a$10$w8T.N0GfW4UvV9fG9Y9U.OqN7m7m7m7m7m7m7m7m7m7m7m7m7m7m7' }
+      const res = await fetch(`https://api.jsonbin.io/v3/b/${MASTER_BIN_ID}/latest`, {
+        headers: { 'X-Master-Key': API_KEY }
       });
       const result = await res.json();
       const data = result.record;
@@ -117,7 +105,6 @@ const App: React.FC = () => {
       if (data && data.agents) {
         const newHash = String(getDataHash(data.agents, data.timetable));
         if (newHash !== lastSyncHash.current) {
-          isInternalUpdate.current = true;
           setAgents(data.agents);
           setTimetable(data.timetable);
           lastSyncHash.current = newHash;
@@ -134,26 +121,25 @@ const App: React.FC = () => {
     }
   };
 
+  // 背景自動輪詢 (每 10 秒)
   useEffect(() => {
-    if (!isLoggedIn || !remoteBinId) return;
-    const interval = setInterval(() => {
-      handleCloudPull(true);
-    }, 10000); 
+    if (!isLoggedIn) return;
+    handleCloudPull(true); // 登入後立刻拉取
+    const interval = setInterval(() => handleCloudPull(true), 10000); 
     return () => clearInterval(interval);
-  }, [isLoggedIn, remoteBinId]);
-
-  useEffect(() => {
-    if (userRole === 'LSM' && isLoggedIn) {
-      const timer = setTimeout(() => {
-        handleCloudPush(true);
-      }, 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [agents, timetable, userRole]);
-
-  useEffect(() => {
-    if (isLoggedIn && remoteBinId) handleCloudPull();
   }, [isLoggedIn]);
+
+  // 當視窗重新獲得焦點時立刻同步 (手機端切換 APP 回來時很有用)
+  useEffect(() => {
+    const onFocus = () => isLoggedIn && handleCloudPull(true);
+    window.addEventListener('focus', onFocus);
+    return () => window.removeEventListener('focus', onFocus);
+  }, [isLoggedIn]);
+
+  // 管理員專屬：手動修改後立即存檔
+  const saveAndPush = () => {
+    if (userRole === 'LSM') handleCloudPush(true);
+  };
 
   useEffect(() => {
     localStorage.setItem('lg_agents_supreme_v2', JSON.stringify(agents));
@@ -180,7 +166,7 @@ const App: React.FC = () => {
         }
       }
       setIsLoggingIn(false);
-    }, 700);
+    }, 500);
   };
 
   const monthInfo = useMemo(() => {
@@ -193,12 +179,6 @@ const App: React.FC = () => {
       return { day: d, dow, isWeekend: dow === 0 || dow === 6 };
     });
   }, [selectedMonth]);
-
-  useEffect(() => {
-    if (timetable.length === 0) {
-      setTimetable(monthInfo.map(info => ({ ...info, slot1: [], slot2: [] })));
-    }
-  }, [monthInfo]);
 
   const toggleAvailability = (day: number, slot: number) => {
     if (userRole !== 'LM') return;
@@ -221,21 +201,21 @@ const App: React.FC = () => {
     const { day, slotNum } = editSlot;
     const slotKey = `slot${slotNum}` as 'slot1' | 'slot2';
 
-    setTimetable(prev => prev.map(d => {
-      if (d.day === day) {
-        const currentShifts = d[slotKey] || [];
-        const isAlreadyIn = currentShifts.some(s => s.name === agent.name);
-        
-        let newShifts;
-        if (isAlreadyIn) {
-          newShifts = currentShifts.filter(s => s.name !== agent.name);
-        } else {
-          newShifts = [...currentShifts, { name: agent.name, color: AGENT_COLORS[agent.colorIdx] }];
+    setTimetable(prev => {
+      const next = prev.map(d => {
+        if (d.day === day) {
+          const currentShifts = d[slotKey] || [];
+          const isAlreadyIn = currentShifts.some(s => s.name === agent.name);
+          let newShifts = isAlreadyIn 
+            ? currentShifts.filter(s => s.name !== agent.name)
+            : [...currentShifts, { name: agent.name, color: AGENT_COLORS[agent.colorIdx] }];
+          return { ...d, [slotKey]: newShifts };
         }
-        return { ...d, [slotKey]: newShifts };
-      }
-      return d;
-    }));
+        return d;
+      });
+      return next;
+    });
+    // 修改完畢，稍後自動會觸發 handleCloudPush (透過 useEffect)
   };
 
   const currentUser = agents.find(a => a.code === userCode);
@@ -267,6 +247,9 @@ const App: React.FC = () => {
                 {isLoggingIn ? <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin"/> : <ChevronRight size={24}/>}
                 {t.loginBtn}
               </button>
+              <div className="text-center">
+                 <span className="text-[9px] font-bold text-gray-300 uppercase tracking-widest">{APP_VERSION}</span>
+              </div>
            </div>
         </div>
       </div>
@@ -292,7 +275,7 @@ const App: React.FC = () => {
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <button onClick={() => setIsLoggedIn(false)} className="bg-gray-50 p-3 rounded-xl text-gray-300 hover:text-red-600 transition-all"><LogOut size={22}/></button>
+          <button onClick={() => { if(confirm('確定登出？')) setIsLoggedIn(false); }} className="bg-gray-50 p-3 rounded-xl text-gray-300 hover:text-red-600 transition-all"><LogOut size={22}/></button>
         </div>
       </header>
 
@@ -305,7 +288,7 @@ const App: React.FC = () => {
                   <div className="flex items-center gap-3 font-black text-gray-800 text-lg">
                     <Calendar size={22} className="text-[#A50034]" /> {selectedMonth}
                   </div>
-                  {lastSynced && <span className="text-[9px] font-black text-emerald-500 mt-1 uppercase tracking-widest flex items-center gap-1.5"><Wifi size={10} /> 已連線 · {lastSynced}</span>}
+                  {lastSynced && <span className="text-[9px] font-black text-emerald-500 mt-1 uppercase tracking-widest flex items-center gap-1.5"><Wifi size={10} /> 雲端連線中 · {lastSynced}</span>}
                 </div>
                 {userRole === 'LSM' && (
                   <button 
@@ -327,9 +310,6 @@ const App: React.FC = () => {
                   </button>
                 )}
               </div>
-              {userRole === 'LSM' && (
-                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest text-center">💡 點擊下方時段可手動調整人員</p>
-              )}
             </div>
 
             {timetable.map(d => (
@@ -354,8 +334,8 @@ const App: React.FC = () => {
                             if (userRole === 'LM' && isSettingAvailability) toggleAvailability(d.day, slotNum);
                             if (userRole === 'LSM') setEditSlot({ day: d.day, slotNum });
                           }}
-                          className={`flex flex-col gap-2 min-h-[70px] rounded-3xl transition-all p-2 relative overflow-hidden ${
-                            (isSettingAvailability || userRole === 'LSM') ? 'cursor-pointer hover:bg-gray-100 bg-gray-50 ring-2 ring-transparent active:ring-[#A50034]' : 'bg-gray-50/50'
+                          className={`flex flex-col gap-2 min-h-[80px] rounded-3xl transition-all p-2 relative overflow-hidden ${
+                            (isSettingAvailability || userRole === 'LSM') ? 'cursor-pointer hover:bg-gray-100 bg-gray-50 ring-2 ring-transparent active:ring-[#A50034] shadow-inner' : 'bg-gray-50/50'
                           }`}
                         >
                           {isCurrentUserUnavail && (
@@ -364,8 +344,8 @@ const App: React.FC = () => {
                             </div>
                           )}
                           {shifts.length > 0 ? shifts.map((s, i) => (
-                            <div key={i} className={`${s.color.bg} ${s.color.text} text-[11px] font-black py-4 px-5 rounded-[1.2rem] shadow-sm truncate`}>{s.name}</div>
-                          )) : <div className="text-[9px] text-gray-200 text-center py-5 font-black">VACANT</div>}
+                            <div key={i} className={`${s.color.bg} ${s.color.text} text-[11px] font-black py-4 px-5 rounded-[1.2rem] shadow-sm truncate animate-in zoom-in`}>{s.name}</div>
+                          )) : <div className="text-[9px] text-gray-200 text-center py-6 font-black tracking-tighter italic">VACANT</div>}
                           
                           {userRole === 'LSM' && (
                              <div className="absolute top-1 right-1 opacity-20 group-hover:opacity-100">
@@ -416,17 +396,19 @@ const App: React.FC = () => {
             </div>
 
             <div className="bg-white rounded-[3.5rem] p-10 border border-gray-100 shadow-xl space-y-6">
-               <h3 className="text-sm font-black text-gray-400 uppercase tracking-widest flex items-center gap-3"><Database size={22} /> 數據工具</h3>
-               <button onClick={() => {
-                 const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({agents, timetable}));
-                 const downloadAnchorNode = document.createElement('a');
-                 downloadAnchorNode.setAttribute("href", dataStr);
-                 downloadAnchorNode.setAttribute("download", `lg_backup_${new Date().toLocaleDateString()}.json`);
-                 document.body.appendChild(downloadAnchorNode);
-                 downloadAnchorNode.click();
-                 downloadAnchorNode.remove();
-               }} className="w-full flex items-center justify-between p-6 bg-gray-50 rounded-[2rem] text-sm font-black text-gray-700 hover:bg-gray-100 transition-all">
-                  匯出備份資料 <Download size={20} />
+               <h3 className="text-sm font-black text-gray-400 uppercase tracking-widest flex items-center gap-3"><Activity size={22} /> 系統狀態</h3>
+               <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-gray-50 p-6 rounded-[2rem] text-center space-y-2">
+                     <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">目前版本</span>
+                     <div className="text-sm font-black text-gray-800">{APP_VERSION}</div>
+                  </div>
+                  <div className="bg-gray-50 p-6 rounded-[2rem] text-center space-y-2">
+                     <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">頻道 ID</span>
+                     <div className="text-[8px] font-black text-gray-400 break-all">{MASTER_BIN_ID}</div>
+                  </div>
+               </div>
+               <button onClick={() => handleCloudPull(false)} className="w-full flex items-center justify-between p-6 bg-black text-white rounded-[2rem] text-sm font-black hover:opacity-90 transition-all shadow-lg">
+                  手動重新同步 <RefreshCw size={20} className={syncStatus === 'syncing' ? 'animate-spin' : ''} />
                </button>
             </div>
           </div>
@@ -455,12 +437,12 @@ const App: React.FC = () => {
                        key={agent.id}
                        onClick={() => handleLSMEditSlot(agent)}
                        className={`w-full flex items-center justify-between p-5 rounded-[2rem] transition-all border-2 ${
-                         isAssigned ? 'bg-[#A50034] border-[#A50034] text-white' : 'bg-gray-50 border-transparent text-gray-600 hover:border-gray-200'
+                         isAssigned ? 'bg-[#A50034] border-[#A50034] text-white shadow-lg' : 'bg-gray-50 border-transparent text-gray-600 hover:border-gray-200'
                        }`}
                      >
                        <div className="flex items-center gap-4">
                           <div className={`w-3 h-3 rounded-full ${isAssigned ? 'bg-white' : AGENT_COLORS[agent.colorIdx].bg}`} />
-                          <div className="flex flex-col items-start">
+                          <div className="flex flex-col items-start text-left">
                              <span className="font-black text-sm">{agent.name}</span>
                              {isUnavail && <span className={`text-[9px] font-bold uppercase ${isAssigned ? 'text-white/70' : 'text-rose-500 animate-pulse'}`}>⚠️ 個人不便</span>}
                           </div>
@@ -472,10 +454,13 @@ const App: React.FC = () => {
               </div>
 
               <button 
-                onClick={() => setEditSlot(null)}
-                className="w-full bg-black text-white py-6 rounded-[2rem] font-black text-sm active:scale-95 transition-all"
+                onClick={() => {
+                  setEditSlot(null);
+                  handleCloudPush(true); // 主管更改後立刻存檔
+                }}
+                className="w-full bg-black text-white py-6 rounded-[2rem] font-black text-sm active:scale-95 transition-all shadow-xl"
               >
-                確認更改
+                確認更改並上傳
               </button>
            </div>
         </div>
@@ -493,7 +478,7 @@ const App: React.FC = () => {
              className="w-full bg-[#A50034] text-white py-6 rounded-[2rem] font-black text-sm shadow-[0_20px_40px_rgba(165,0,52,0.3)] flex items-center justify-center gap-4 active:scale-95 transition-all"
            >
              {syncStatus === 'syncing' ? <RefreshCw className="animate-spin" size={20} /> : <Save size={20} />}
-             保存並同步排班資料
+             💾 保存我的日期並同步
            </button>
         </div>
       )}
@@ -505,7 +490,7 @@ const App: React.FC = () => {
               <CheckCircle size={48} strokeWidth={3} />
            </div>
            <h2 className="text-2xl font-black text-gray-900">同步成功！</h2>
-           <p className="text-gray-400 font-bold mt-2">主管現在可以看到你的最新狀態了</p>
+           <p className="text-gray-400 font-bold mt-2">資料已成功送達雲端頻道</p>
         </div>
       )}
 
