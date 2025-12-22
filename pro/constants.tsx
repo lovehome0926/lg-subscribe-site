@@ -71,6 +71,14 @@ export const LANGUAGES = {
     availabilityMode: "可用性設定模式",
     selectUnavail: "標記不方便日期",
     selectAvail: "標記可上班日期",
+    cloudSync: "雲端同步",
+    syncKey: "同步密鑰 (自定義)",
+    pushCloud: "上傳至雲端",
+    pullCloud: "從雲端下載",
+    syncSuccess: "同步成功！",
+    syncError: "同步失敗，請檢查密鑰或網路",
+    syncPlaceholder: "輸入您的私密同步代碼",
+    syncWarning: "注意：下載雲端資料將覆蓋目前的本地排班資料。"
   },
   en: {
     title: "LG Subscribe Supreme",
@@ -132,6 +140,14 @@ export const LANGUAGES = {
     availabilityMode: "Availability Mode",
     selectUnavail: "Mark Unavailable",
     selectAvail: "Mark Available",
+    cloudSync: "Cloud Sync",
+    syncKey: "Sync Secret Key",
+    pushCloud: "Push to Cloud",
+    pullCloud: "Pull from Cloud",
+    syncSuccess: "Synced successfully!",
+    syncError: "Sync failed. Check key or network.",
+    syncPlaceholder: "Enter your private sync code",
+    syncWarning: "Warning: Pulling cloud data will overwrite your local duty roster."
   },
   ms: {
     title: "LG Subscribe Supreme",
@@ -193,6 +209,14 @@ export const LANGUAGES = {
     availabilityMode: "Mod Ketersediaan",
     selectUnavail: "Tanda Tidak Tersedia",
     selectAvail: "Tanda Tersedia",
+    cloudSync: "Awan Segerak",
+    syncKey: "Kunci Rahsia",
+    pushCloud: "Hantar ke Awan",
+    pullCloud: "Ambil dari Awan",
+    syncSuccess: "Berjaya segerak!",
+    syncError: "Gagal segerak.",
+    syncPlaceholder: "Masukkan kod segerak",
+    syncWarning: "Amaran: Mengambil data awan akan menggantikan jadual tempatan anda."
   }
 };
 
