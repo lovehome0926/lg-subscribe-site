@@ -5,13 +5,11 @@ import {
   Clock, Sun, Moon, Zap, Lock, LogOut, FilePlus, Bell, Check,
   Sparkles, ChevronRight, Menu, ShieldCheck, MapPin, UserPlus, ClipboardList, Package, ExternalLink,
   Languages, AlertTriangle, Key, UserMinus, ToggleLeft as Toggle, Database, Upload, Globe, Cloud, RefreshCw,
-  CheckCircle2, Wifi, WifiOff, Save, CheckCircle
+  CheckCircle2, Wifi, WifiOff, Save, CheckCircle, Edit3, UserCheck
 } from 'lucide-react';
 import { Agent, DayInfo, Tab, UserRole } from './types';
 import { AGENT_COLORS, LANGUAGES, LG_MAROON } from './constants';
 import { optimizeScheduleWithAI } from './services/geminiService';
-
-const DEFAULT_SYNC_KEY = "LG_SUPREME_GLOBAL_CHANNEL_V1";
 
 const App: React.FC = () => {
   // --- 基礎狀態 ---
@@ -32,6 +30,9 @@ const App: React.FC = () => {
   const [isSettingAvailability, setIsSettingAvailability] = useState(false);
   const [showSaveSuccess, setShowSaveSuccess] = useState(false);
   
+  // --- LSM 手動修改狀態 ---
+  const [editSlot, setEditSlot] = useState<{ day: number, slotNum: number } | null>(null);
+
   // --- 同步核心狀態 (全自動) ---
   const [syncStatus, setSyncStatus] = useState<'idle' | 'syncing' | 'success' | 'error'>('idle');
   const [lastSynced, setLastSynced] = useState<string | null>(localStorage.getItem('lg_last_sync'));
@@ -133,7 +134,6 @@ const App: React.FC = () => {
     }
   };
 
-  // 背景自動同步 (每 10 秒檢查一次雲端)
   useEffect(() => {
     if (!isLoggedIn || !remoteBinId) return;
     const interval = setInterval(() => {
@@ -142,7 +142,6 @@ const App: React.FC = () => {
     return () => clearInterval(interval);
   }, [isLoggedIn, remoteBinId]);
 
-  // 管理員專屬：每當 AI 生成或修改人員時，自動備份到雲端
   useEffect(() => {
     if (userRole === 'LSM' && isLoggedIn) {
       const timer = setTimeout(() => {
@@ -152,7 +151,6 @@ const App: React.FC = () => {
     }
   }, [agents, timetable, userRole]);
 
-  // 初始載入時連線雲端
   useEffect(() => {
     if (isLoggedIn && remoteBinId) handleCloudPull();
   }, [isLoggedIn]);
@@ -215,6 +213,28 @@ const App: React.FC = () => {
         return { ...a, unavailable: newRecord };
       }
       return a;
+    }));
+  };
+
+  const handleLSMEditSlot = (agent: Agent) => {
+    if (!editSlot) return;
+    const { day, slotNum } = editSlot;
+    const slotKey = `slot${slotNum}` as 'slot1' | 'slot2';
+
+    setTimetable(prev => prev.map(d => {
+      if (d.day === day) {
+        const currentShifts = d[slotKey] || [];
+        const isAlreadyIn = currentShifts.some(s => s.name === agent.name);
+        
+        let newShifts;
+        if (isAlreadyIn) {
+          newShifts = currentShifts.filter(s => s.name !== agent.name);
+        } else {
+          newShifts = [...currentShifts, { name: agent.name, color: AGENT_COLORS[agent.colorIdx] }];
+        }
+        return { ...d, [slotKey]: newShifts };
+      }
+      return d;
     }));
   };
 
@@ -294,7 +314,6 @@ const App: React.FC = () => {
                       const res = await optimizeScheduleWithAI(agents, monthInfo);
                       setTimetable(res);
                       setIsGenerating(false);
-                      // AI 生成後自動保存到雲端
                       handleCloudPush(true);
                     }} 
                     className="text-white px-6 py-3 rounded-[1.5rem] text-[11px] font-black flex items-center gap-2 shadow-xl shadow-[#A50034]/20 bg-[#A50034]"
@@ -308,11 +327,8 @@ const App: React.FC = () => {
                   </button>
                 )}
               </div>
-              {isSettingAvailability && (
-                <div className="bg-rose-50 p-5 rounded-[2rem] border border-rose-100 flex items-center gap-3 animate-in slide-in-from-top duration-300">
-                   <AlertTriangle size={18} className="text-rose-500 shrink-0" />
-                   <p className="text-[10px] font-bold text-rose-600">請點選你「不可以」上班的時間，系統會自動避開。</p>
-                </div>
+              {userRole === 'LSM' && (
+                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest text-center">💡 點擊下方時段可手動調整人員</p>
               )}
             </div>
 
@@ -334,8 +350,13 @@ const App: React.FC = () => {
                           {slotNum === 1 ? <Sun size={16} className="text-orange-300" /> : <Moon size={16} className="text-indigo-300" />} {t[`slot${slotNum}` as 'slot1' | 'slot2']}
                         </div>
                         <div 
-                          onClick={() => isSettingAvailability && toggleAvailability(d.day, slotNum)}
-                          className={`flex flex-col gap-2 min-h-[70px] rounded-3xl transition-all p-2 relative overflow-hidden ${isSettingAvailability ? 'cursor-pointer hover:bg-gray-100 bg-gray-50 ring-2 ring-transparent active:ring-[#A50034]' : 'bg-gray-50/50'}`}
+                          onClick={() => {
+                            if (userRole === 'LM' && isSettingAvailability) toggleAvailability(d.day, slotNum);
+                            if (userRole === 'LSM') setEditSlot({ day: d.day, slotNum });
+                          }}
+                          className={`flex flex-col gap-2 min-h-[70px] rounded-3xl transition-all p-2 relative overflow-hidden ${
+                            (isSettingAvailability || userRole === 'LSM') ? 'cursor-pointer hover:bg-gray-100 bg-gray-50 ring-2 ring-transparent active:ring-[#A50034]' : 'bg-gray-50/50'
+                          }`}
                         >
                           {isCurrentUserUnavail && (
                             <div className="absolute inset-0 bg-rose-500/20 backdrop-blur-[1px] flex items-center justify-center z-10 border-2 border-rose-500/30 rounded-3xl">
@@ -345,6 +366,12 @@ const App: React.FC = () => {
                           {shifts.length > 0 ? shifts.map((s, i) => (
                             <div key={i} className={`${s.color.bg} ${s.color.text} text-[11px] font-black py-4 px-5 rounded-[1.2rem] shadow-sm truncate`}>{s.name}</div>
                           )) : <div className="text-[9px] text-gray-200 text-center py-5 font-black">VACANT</div>}
+                          
+                          {userRole === 'LSM' && (
+                             <div className="absolute top-1 right-1 opacity-20 group-hover:opacity-100">
+                               <Edit3 size={10} />
+                             </div>
+                          )}
                         </div>
                       </div>
                     );
@@ -405,6 +432,54 @@ const App: React.FC = () => {
           </div>
         )}
       </main>
+
+      {/* LSM 手動指派彈窗 */}
+      {editSlot && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[200] flex items-end sm:items-center justify-center p-4 animate-in fade-in">
+           <div className="bg-white w-full max-w-sm rounded-[3rem] p-10 space-y-8 shadow-2xl animate-in slide-in-from-bottom duration-300">
+              <div className="flex justify-between items-center">
+                 <div className="space-y-1">
+                    <h3 className="text-xl font-black text-gray-900">第 {editSlot.day} 號時段調整</h3>
+                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{editSlot.slotNum === 1 ? '早班 AM' : '晚班 PM'} 指派人員</p>
+                 </div>
+                 <button onClick={() => setEditSlot(null)} className="p-3 bg-gray-50 rounded-2xl text-gray-400 hover:text-rose-500"><X size={24} /></button>
+              </div>
+
+              <div className="space-y-3 max-h-[40vh] overflow-y-auto px-1">
+                 {agents.map(agent => {
+                   const isAssigned = (timetable.find(d => d.day === editSlot.day)?.[`slot${editSlot.slotNum}` as 'slot1' | 'slot2'] || []).some(s => s.name === agent.name);
+                   const isUnavail = agent.unavailable[editSlot.day]?.includes(editSlot.slotNum);
+                   
+                   return (
+                     <button 
+                       key={agent.id}
+                       onClick={() => handleLSMEditSlot(agent)}
+                       className={`w-full flex items-center justify-between p-5 rounded-[2rem] transition-all border-2 ${
+                         isAssigned ? 'bg-[#A50034] border-[#A50034] text-white' : 'bg-gray-50 border-transparent text-gray-600 hover:border-gray-200'
+                       }`}
+                     >
+                       <div className="flex items-center gap-4">
+                          <div className={`w-3 h-3 rounded-full ${isAssigned ? 'bg-white' : AGENT_COLORS[agent.colorIdx].bg}`} />
+                          <div className="flex flex-col items-start">
+                             <span className="font-black text-sm">{agent.name}</span>
+                             {isUnavail && <span className={`text-[9px] font-bold uppercase ${isAssigned ? 'text-white/70' : 'text-rose-500 animate-pulse'}`}>⚠️ 個人不便</span>}
+                          </div>
+                       </div>
+                       {isAssigned ? <Check size={20} /> : <Plus size={20} className="text-gray-300" />}
+                     </button>
+                   );
+                 })}
+              </div>
+
+              <button 
+                onClick={() => setEditSlot(null)}
+                className="w-full bg-black text-white py-6 rounded-[2rem] font-black text-sm active:scale-95 transition-all"
+              >
+                確認更改
+              </button>
+           </div>
+        </div>
+      )}
 
       {/* 代理專用：保存並同步按鈕 */}
       {isSettingAvailability && userRole === 'LM' && (
