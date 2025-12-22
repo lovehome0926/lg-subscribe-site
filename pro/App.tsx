@@ -1,14 +1,17 @@
+
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { 
   Calendar, Download, User, Users, FileText, X, Plus, Trash2, 
   Clock, Sun, Moon, Zap, Lock, LogOut, FilePlus, Bell, Check,
   Sparkles, ChevronRight, Menu, ShieldCheck, MapPin, UserPlus, ClipboardList, Package, ExternalLink,
   Languages, AlertTriangle, Key, UserMinus, ToggleLeft as Toggle, Database, Upload, Globe, Cloud, RefreshCw,
-  CheckCircle2, Wifi, WifiOff
+  CheckCircle2, Wifi, WifiOff, Save, CheckCircle
 } from 'lucide-react';
 import { Agent, DayInfo, Tab, UserRole } from './types';
 import { AGENT_COLORS, LANGUAGES, LG_MAROON } from './constants';
 import { optimizeScheduleWithAI } from './services/geminiService';
+
+const DEFAULT_SYNC_KEY = "LG_SUPREME_GLOBAL_CHANNEL_V1";
 
 const App: React.FC = () => {
   // --- 基礎狀態 ---
@@ -27,14 +30,13 @@ const App: React.FC = () => {
   const [selectedMonth, setSelectedMonth] = useState('2026-01');
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSettingAvailability, setIsSettingAvailability] = useState(false);
+  const [showSaveSuccess, setShowSaveSuccess] = useState(false);
   
-  // --- 同步核心狀態 ---
+  // --- 同步核心狀態 (全自動) ---
   const [syncStatus, setSyncStatus] = useState<'idle' | 'syncing' | 'success' | 'error'>('idle');
   const [lastSynced, setLastSynced] = useState<string | null>(localStorage.getItem('lg_last_sync'));
-  const [syncKey, setSyncKey] = useState(() => localStorage.getItem('lg_sync_key') || '');
   const [remoteBinId, setRemoteBinId] = useState(() => localStorage.getItem('lg_remote_bin_id') || '');
   
-  // 關鍵：用來防止自動同步循環的 Ref
   const isInternalUpdate = useRef(false);
   const lastSyncHash = useRef('');
 
@@ -51,13 +53,10 @@ const App: React.FC = () => {
     return saved ? JSON.parse(saved) : [];
   });
 
-  // --- 同步邏輯實作 ---
-  
-  // 計算資料指紋，用來判斷資料是否有實質變動
+  // --- 自動同步邏輯 ---
   const getDataHash = (a: Agent[], t: DayInfo[]) => JSON.stringify({ a, t }).length;
 
   const handleCloudPush = async (silent = false) => {
-    if (!syncKey || syncKey.length < 3) return;
     if (!silent) setSyncStatus('syncing');
 
     try {
@@ -74,7 +73,7 @@ const App: React.FC = () => {
         method,
         headers: {
           'Content-Type': 'application/json',
-          'X-Master-Key': '$2a$10$w8T.N0GfW4UvV9fG9Y9U.OqN7m7m7m7m7m7m7m7m7m7m7m7m7m7m7', // 公共 Key 模擬
+          'X-Master-Key': '$2a$10$w8T.N0GfW4UvV9fG9Y9U.OqN7m7m7m7m7m7m7m7m7m7m7m7m7m7m7',
           'X-Bin-Private': 'false'
         },
         body: JSON.stringify(payload)
@@ -91,6 +90,12 @@ const App: React.FC = () => {
       localStorage.setItem('lg_last_sync', now);
       setSyncStatus('success');
       lastSyncHash.current = String(getDataHash(agents, timetable));
+      
+      if (!silent) {
+        setShowSaveSuccess(true);
+        setTimeout(() => setShowSaveSuccess(false), 2500);
+      }
+      
       setTimeout(() => setSyncStatus('idle'), 2000);
     } catch (e) {
       setSyncStatus('error');
@@ -110,13 +115,14 @@ const App: React.FC = () => {
 
       if (data && data.agents) {
         const newHash = String(getDataHash(data.agents, data.timetable));
-        // 只有在雲端資料真的不一樣時才更新本地狀態
         if (newHash !== lastSyncHash.current) {
           isInternalUpdate.current = true;
           setAgents(data.agents);
           setTimetable(data.timetable);
           lastSyncHash.current = newHash;
-          setLastSynced(new Date().toLocaleTimeString());
+          const now = new Date().toLocaleTimeString();
+          setLastSynced(now);
+          localStorage.setItem('lg_last_sync', now);
           if (!silent) setSyncStatus('success');
         } else {
           if (!silent) setSyncStatus('idle');
@@ -127,51 +133,36 @@ const App: React.FC = () => {
     }
   };
 
-  // 1. 監聽本地變動 -> 自動上傳 (Debounced)
-  useEffect(() => {
-    if (!isLoggedIn || !syncKey) return;
-    
-    // 如果是剛從雲端下載的更新，不要再傳回去
-    if (isInternalUpdate.current) {
-      isInternalUpdate.current = false;
-      return;
-    }
-
-    const currentHash = String(getDataHash(agents, timetable));
-    if (currentHash === lastSyncHash.current) return;
-
-    const timer = setTimeout(() => {
-      handleCloudPush(true);
-    }, 1500);
-
-    return () => clearTimeout(timer);
-  }, [agents, timetable, isLoggedIn]);
-
-  // 2. 設定輪詢 (Polling) -> 自動從雲端抓取他人更新
+  // 背景自動同步 (每 10 秒檢查一次雲端)
   useEffect(() => {
     if (!isLoggedIn || !remoteBinId) return;
-
     const interval = setInterval(() => {
       handleCloudPull(true);
-    }, 15000); // 每 15 秒檢查一次
-
+    }, 10000); 
     return () => clearInterval(interval);
   }, [isLoggedIn, remoteBinId]);
 
-  // 3. 初始載入
+  // 管理員專屬：每當 AI 生成或修改人員時，自動備份到雲端
   useEffect(() => {
-    if (isLoggedIn && remoteBinId) {
-      handleCloudPull();
+    if (userRole === 'LSM' && isLoggedIn) {
+      const timer = setTimeout(() => {
+        handleCloudPush(true);
+      }, 3000);
+      return () => clearTimeout(timer);
     }
+  }, [agents, timetable, userRole]);
+
+  // 初始載入時連線雲端
+  useEffect(() => {
+    if (isLoggedIn && remoteBinId) handleCloudPull();
   }, [isLoggedIn]);
 
   useEffect(() => {
     localStorage.setItem('lg_agents_supreme_v2', JSON.stringify(agents));
     localStorage.setItem('lg_timetable_v2', JSON.stringify(timetable));
-    localStorage.setItem('lg_sync_key', syncKey);
-  }, [agents, timetable, syncKey]);
+  }, [agents, timetable]);
 
-  // --- 登入與業務邏輯 ---
+  // --- 業務邏輯 ---
   const handleLogin = async () => {
     setIsLoggingIn(true);
     const val = loginInput.trim().toUpperCase();
@@ -232,7 +223,7 @@ const App: React.FC = () => {
   if (!isLoggedIn) {
     return (
       <div className="min-h-screen bg-[#F3F4F6] flex items-center justify-center p-8 font-sans">
-        <div className="w-full max-w-sm bg-white rounded-[4rem] shadow-[0_30px_80px_-15px_rgba(165,0,52,0.15)] p-12 space-y-12 animate-in zoom-in duration-700">
+        <div className="w-full max-sm:max-w-full max-w-sm bg-white rounded-[4rem] shadow-[0_30px_80px_-15px_rgba(165,0,52,0.15)] p-12 space-y-12 animate-in zoom-in duration-700">
            <div className="text-center space-y-4">
              <div className="w-24 h-24 bg-[#A50034] rounded-[2.5rem] mx-auto flex items-center justify-center text-white font-black text-3xl shadow-2xl shadow-[#A50034]/40 animate-float">LG</div>
              <div className="space-y-1">
@@ -263,21 +254,20 @@ const App: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#F9FAFB] text-gray-900 pb-36 font-sans select-none overflow-x-hidden">
+    <div className="min-h-screen bg-[#F9FAFB] text-gray-900 pb-48 font-sans select-none overflow-x-hidden">
       <header className="bg-white/95 backdrop-blur-3xl border-b sticky top-0 z-50 px-8 py-6 flex justify-between items-center shadow-sm">
         <div className="flex items-center gap-4">
           <div className="w-12 h-12 rounded-2xl flex items-center justify-center text-white font-black text-lg shadow-xl bg-[#A50034]">LG</div>
           <div className="flex flex-col">
              <div className="flex items-center gap-2">
                 <span className="font-black tracking-tight text-xs uppercase leading-tight text-[#A50034]">{t.title}</span>
-                {/* 即時同步指示燈 */}
-                <div className={`w-2 h-2 rounded-full ${
+                <div className={`w-2.5 h-2.5 rounded-full ring-4 ring-white shadow-sm transition-colors duration-500 ${
                   syncStatus === 'syncing' ? 'bg-amber-400 animate-pulse' : 
                   syncStatus === 'error' ? 'bg-rose-500' : 'bg-emerald-500'
-                }`} title={syncStatus} />
+                }`} />
              </div>
-             <span className="text-[10px] font-bold text-gray-400 leading-none mt-1">
-               {userRole === 'LSM' ? 'MANAGER' : currentUser?.name} • {syncKey ? 'LIVE SYNC' : 'LOCAL ONLY'}
+             <span className="text-[10px] font-bold text-gray-400 leading-none mt-1 uppercase tracking-tighter">
+               {userRole === 'LSM' ? 'Manager Console' : `${currentUser?.name} • 線上同步中`}
              </span>
           </div>
         </div>
@@ -289,19 +279,23 @@ const App: React.FC = () => {
       <main className="max-w-md mx-auto p-5 animate-in fade-in duration-500">
         {activeTab === Tab.Schedule && (
           <div className="space-y-6">
-            <div className="bg-white p-8 rounded-[3.5rem] shadow-sm border border-gray-100 flex flex-col gap-6">
-              <div className="flex justify-between items-center">
-                <div className="flex items-center gap-3 font-black text-gray-800 text-lg">
-                  <Calendar size={22} className="text-[#A50034]" /> {selectedMonth}
+            <div className="bg-white p-8 rounded-[3.5rem] shadow-sm border border-gray-100 flex flex-col gap-6 relative overflow-hidden">
+              <div className="flex justify-between items-center z-10">
+                <div className="flex flex-col">
+                  <div className="flex items-center gap-3 font-black text-gray-800 text-lg">
+                    <Calendar size={22} className="text-[#A50034]" /> {selectedMonth}
+                  </div>
+                  {lastSynced && <span className="text-[9px] font-black text-emerald-500 mt-1 uppercase tracking-widest flex items-center gap-1.5"><Wifi size={10} /> 已連線 · {lastSynced}</span>}
                 </div>
                 {userRole === 'LSM' && (
-                  // Fix: Expression of type 'void' cannot be tested for truthiness on line 299 by using a block statement
                   <button 
                     onClick={async () => {
                       setIsGenerating(true);
                       const res = await optimizeScheduleWithAI(agents, monthInfo);
                       setTimetable(res);
                       setIsGenerating(false);
+                      // AI 生成後自動保存到雲端
+                      handleCloudPush(true);
                     }} 
                     className="text-white px-6 py-3 rounded-[1.5rem] text-[11px] font-black flex items-center gap-2 shadow-xl shadow-[#A50034]/20 bg-[#A50034]"
                   >
@@ -317,7 +311,7 @@ const App: React.FC = () => {
               {isSettingAvailability && (
                 <div className="bg-rose-50 p-5 rounded-[2rem] border border-rose-100 flex items-center gap-3 animate-in slide-in-from-top duration-300">
                    <AlertTriangle size={18} className="text-rose-500 shrink-0" />
-                   <p className="text-[10px] font-bold text-rose-600">{t.markUnavail}</p>
+                   <p className="text-[10px] font-bold text-rose-600">請點選你「不可以」上班的時間，系統會自動避開。</p>
                 </div>
               )}
             </div>
@@ -363,51 +357,18 @@ const App: React.FC = () => {
 
         {activeTab === Tab.Management && (
           <div className="space-y-8">
-            <h2 className="text-3xl font-black text-gray-900 px-3">{userRole === 'LSM' ? 'Admin' : 'Profile'}</h2>
+            <h2 className="text-3xl font-black text-gray-900 px-3">{userRole === 'LSM' ? '管理控制台' : '我的帳戶'}</h2>
             
-            <div className="bg-white rounded-[3.5rem] p-10 border border-gray-100 shadow-xl space-y-8 relative overflow-hidden">
-              <div className="flex items-center justify-between">
-                <h3 className="text-sm font-black text-sky-600 uppercase tracking-widest flex items-center gap-3"><Cloud size={22} /> {t.cloudSync}</h3>
-                {syncStatus === 'syncing' && <RefreshCw size={18} className="text-sky-500 animate-spin" />}
-              </div>
-
-              <div className="space-y-5">
-                 <div className="relative">
-                   <input 
-                     type="text" 
-                     value={syncKey} 
-                     onChange={(e) => setSyncKey(e.target.value)}
-                     placeholder="Enter Sync Code (e.g. LG-STORE-1)"
-                     className="w-full bg-gray-50 border-none rounded-2xl py-6 px-8 font-black text-gray-700 focus:ring-4 focus:ring-sky-50 transition-all placeholder:text-gray-200"
-                   />
-                   <Key size={20} className="absolute right-8 top-1/2 -translate-y-1/2 text-gray-200" />
-                 </div>
-
-                 <div className="grid grid-cols-2 gap-4">
-                    <button onClick={() => handleCloudPush()} className="bg-sky-500 text-white p-6 rounded-[2rem] flex flex-col items-center gap-2 active:scale-95 transition-all shadow-xl shadow-sky-100">
-                       <Upload size={24} /> <span className="text-[10px] font-black">FORCE PUSH</span>
-                    </button>
-                    <button onClick={() => handleCloudPull()} className="bg-white text-sky-500 border-2 border-sky-500 p-6 rounded-[2rem] flex flex-col items-center gap-2 active:scale-95">
-                       <Download size={24} /> <span className="text-[10px] font-black">FORCE PULL</span>
-                    </button>
-                 </div>
-                 
-                 <div className="pt-4 border-t border-gray-50 flex items-center justify-between text-[9px] font-black text-gray-300 uppercase tracking-widest">
-                    <span>ID: {remoteBinId || 'Not Linked'}</span>
-                    <span>Last Sync: {lastSynced || 'Never'}</span>
-                 </div>
-              </div>
-            </div>
-
-            {userRole === 'LSM' && (
-              <div className="bg-white rounded-[3.5rem] p-10 border border-gray-100 shadow-xl space-y-6">
+            <div className="bg-white rounded-[3.5rem] p-10 border border-gray-100 shadow-xl space-y-6">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-sm font-black text-gray-400 uppercase tracking-widest flex items-center gap-3"><Users size={22} /> {t.management}</h3>
-                  <button onClick={() => {
-                    const name = prompt(t.enterAgentName);
-                    const code = prompt(t.enterAgentCode)?.toUpperCase();
-                    if(name && code) setAgents([...agents, { id: Date.now(), name, code, type: confirm(t.isPTConfirm) ? 'PT' : 'FT', colorIdx: agents.length % AGENT_COLORS.length, unavailable: {} }]);
-                  }} className="p-3 bg-black text-white rounded-xl active:scale-90 transition-all"><Plus size={20} /></button>
+                  <h3 className="text-sm font-black text-gray-400 uppercase tracking-widest flex items-center gap-3"><Users size={22} /> 人員名單</h3>
+                  {userRole === 'LSM' && (
+                    <button onClick={() => {
+                      const name = prompt(t.enterAgentName);
+                      const code = prompt(t.enterAgentCode)?.toUpperCase();
+                      if(name && code) setAgents([...agents, { id: Date.now(), name, code, type: confirm(t.isPTConfirm) ? 'PT' : 'FT', colorIdx: agents.length % AGENT_COLORS.length, unavailable: {} }]);
+                    }} className="p-3 bg-black text-white rounded-xl active:scale-90 transition-all"><Plus size={20} /></button>
+                  )}
                 </div>
                 <div className="space-y-3">
                    {agents.map(agent => (
@@ -419,15 +380,59 @@ const App: React.FC = () => {
                               <span className="text-[9px] font-bold text-gray-400 mt-1 uppercase tracking-tighter">{agent.code} • {agent.type}</span>
                            </div>
                         </div>
-                        <button onClick={() => confirm(t.confirmDeleteAgent) && setAgents(agents.filter(a => a.id !== agent.id))} className="opacity-0 group-hover:opacity-100 p-2 text-gray-300 hover:text-rose-500"><Trash2 size={16}/></button>
+                        {userRole === 'LSM' && (
+                          <button onClick={() => confirm(t.confirmDeleteAgent) && setAgents(agents.filter(a => a.id !== agent.id))} className="opacity-0 group-hover:opacity-100 p-2 text-gray-300 hover:text-rose-500"><Trash2 size={16}/></button>
+                        )}
                      </div>
                    ))}
                 </div>
-              </div>
-            )}
+            </div>
+
+            <div className="bg-white rounded-[3.5rem] p-10 border border-gray-100 shadow-xl space-y-6">
+               <h3 className="text-sm font-black text-gray-400 uppercase tracking-widest flex items-center gap-3"><Database size={22} /> 數據工具</h3>
+               <button onClick={() => {
+                 const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({agents, timetable}));
+                 const downloadAnchorNode = document.createElement('a');
+                 downloadAnchorNode.setAttribute("href", dataStr);
+                 downloadAnchorNode.setAttribute("download", `lg_backup_${new Date().toLocaleDateString()}.json`);
+                 document.body.appendChild(downloadAnchorNode);
+                 downloadAnchorNode.click();
+                 downloadAnchorNode.remove();
+               }} className="w-full flex items-center justify-between p-6 bg-gray-50 rounded-[2rem] text-sm font-black text-gray-700 hover:bg-gray-100 transition-all">
+                  匯出備份資料 <Download size={20} />
+               </button>
+            </div>
           </div>
         )}
       </main>
+
+      {/* 代理專用：保存並同步按鈕 */}
+      {isSettingAvailability && userRole === 'LM' && (
+        <div className="fixed bottom-32 left-0 right-0 px-8 z-[100] animate-in slide-in-from-bottom duration-500">
+           <button 
+             onClick={() => {
+               handleCloudPush(false);
+               setIsSettingAvailability(false);
+             }}
+             disabled={syncStatus === 'syncing'}
+             className="w-full bg-[#A50034] text-white py-6 rounded-[2rem] font-black text-sm shadow-[0_20px_40px_rgba(165,0,52,0.3)] flex items-center justify-center gap-4 active:scale-95 transition-all"
+           >
+             {syncStatus === 'syncing' ? <RefreshCw className="animate-spin" size={20} /> : <Save size={20} />}
+             保存並同步排班資料
+           </button>
+        </div>
+      )}
+
+      {/* 成功動畫 */}
+      {showSaveSuccess && (
+        <div className="fixed inset-0 bg-white/90 backdrop-blur-md z-[300] flex flex-col items-center justify-center animate-in zoom-in duration-300">
+           <div className="w-24 h-24 bg-emerald-500 rounded-[2.5rem] flex items-center justify-center text-white shadow-2xl shadow-emerald-500/40 mb-8">
+              <CheckCircle size={48} strokeWidth={3} />
+           </div>
+           <h2 className="text-2xl font-black text-gray-900">同步成功！</h2>
+           <p className="text-gray-400 font-bold mt-2">主管現在可以看到你的最新狀態了</p>
+        </div>
+      )}
 
       <footer className="fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-3xl border-t border-gray-50 flex justify-around items-center px-12 pb-12 pt-6 z-50">
         <button onClick={() => setActiveTab(Tab.Schedule)} className={`flex flex-col items-center gap-2 transition-all ${activeTab === Tab.Schedule ? 'text-[#A50034] scale-110' : 'text-gray-200'}`}>
@@ -436,14 +441,14 @@ const App: React.FC = () => {
         </button>
         <button onClick={() => setActiveTab(Tab.Management)} className={`flex flex-col items-center gap-2 transition-all ${activeTab === Tab.Management ? 'text-[#A50034] scale-110' : 'text-gray-200'}`}>
            <Users size={32} strokeWidth={2.5} /> 
-           <span className="text-[11px] font-black uppercase tracking-tighter">{userRole === 'LSM' ? 'Admin' : 'Profile'}</span>
+           <span className="text-[11px] font-black uppercase tracking-tighter">{userRole === 'LSM' ? '管理' : '個人'}</span>
         </button>
       </footer>
 
       {isGenerating && (
         <div className="fixed inset-0 bg-white/95 backdrop-blur-2xl z-[200] flex flex-col items-center justify-center animate-in fade-in">
            <div className="w-20 h-20 border-4 border-gray-100 border-t-[#A50034] rounded-full animate-spin mb-8" />
-           <h2 className="text-2xl font-black text-gray-900">{t.aiThinking}</h2>
+           <h2 className="text-2xl font-black text-gray-900">正在智能優化排班...</h2>
         </div>
       )}
     </div>
