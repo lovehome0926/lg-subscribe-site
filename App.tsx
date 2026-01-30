@@ -7,7 +7,7 @@ import Home from './components/Home';
 import AdminDashboard from './components/AdminDashboard';
 import AgentTools from './components/AgentTools';
 import Footer from './components/Footer';
-import { X, Briefcase, Lock, ShieldCheck, UserCheck } from 'lucide-react';
+import { X, Briefcase, Lock, ShieldCheck } from 'lucide-react';
 
 const App: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -19,9 +19,15 @@ const App: React.FC = () => {
   const [language, setLanguage] = useState<Language>('en');
   
   const safeStorage = {
-    get: (key: string) => { try { return localStorage.getItem(key); } catch(e) { return null; } },
-    set: (key: string, val: string) => { try { localStorage.setItem(key, val); } catch(e) {} },
-    remove: (key: string) => { try { localStorage.removeItem(key); } catch(e) {} }
+    get: (key: string) => { 
+      try { return localStorage.getItem(key); } catch(e) { return null; } 
+    },
+    set: (key: string, val: string) => { 
+      try { localStorage.setItem(key, val); } catch(e) {} 
+    },
+    remove: (key: string) => { 
+      try { localStorage.removeItem(key); } catch(e) {} 
+    }
   };
 
   const [brandingLogo, setBrandingLogo] = useState<string | null>(() => safeStorage.get('lg_branding_logo'));
@@ -59,12 +65,13 @@ const App: React.FC = () => {
 
   useEffect(() => {
     const initApp = async () => {
+      // 容错计时器：防止数据库初始化死锁
       const failsafe = setTimeout(() => {
         if (!isReady) {
-          console.warn("App: Initialization failsafe triggered.");
+          console.warn("App: Initialization failsafe triggered. Forcing ready state.");
           setIsReady(true);
         }
-      }, 3000);
+      }, 4000);
 
       try {
         const storedVersion = Number(safeStorage.get('lg_data_version') || 0);
@@ -76,7 +83,7 @@ const App: React.FC = () => {
         const dbProducts = await getProductsDB();
         setProducts(dbProducts.length > 0 ? dbProducts : INITIAL_PRODUCTS);
 
-        // 核心：下线代理 (Agent) 追踪逻辑
+        // 处理代理参数
         const params = new URLSearchParams(window.location.search);
         const wa = params.get('wa');
         const name = params.get('name');
@@ -85,7 +92,6 @@ const App: React.FC = () => {
           const agent = { id: wa, name: decodeURIComponent(name), whatsapp: wa };
           setActiveAgent(agent);
           safeStorage.set('active_agent', JSON.stringify(agent));
-          // 静默清理 URL 参数，保持用户界面整洁，同时参数已持久化到 localStorage
           window.history.replaceState({}, '', window.location.pathname + window.location.hash);
         } else {
           const savedAgent = safeStorage.get('active_agent');
@@ -111,7 +117,8 @@ const App: React.FC = () => {
 
         setIsReady(true);
       } catch (err) {
-        console.error("App: Boot error:", err);
+        console.error("App: Initialization error handled.", err);
+        setProducts(INITIAL_PRODUCTS);
         setIsReady(true); 
       } finally {
         clearTimeout(failsafe);
@@ -132,23 +139,10 @@ const App: React.FC = () => {
     await saveProductsDB(resolved);
   };
 
-  const handleReset = async () => {
-    if (confirm("FACTORY RESET: Are you sure? This will delete everything.")) {
-      localStorage.clear();
-      await saveProductsDB(INITIAL_PRODUCTS);
-      location.reload();
-    }
-  };
-
-  if (!isReady) return (
-    <div className="h-screen w-screen flex flex-col items-center justify-center bg-[#05090f] text-white">
-      <div className="w-10 h-10 border-2 border-lg-red border-t-transparent rounded-full animate-spin mb-4"></div>
-      <p className="text-[10px] font-black uppercase tracking-[0.5em] opacity-30">Authenticating Assets...</p>
-    </div>
-  );
+  if (!isReady) return null; // 由 index.html 的加载层负责
 
   return (
-    <div className="min-h-screen bg-white font-sans text-gray-950 antialiased selection:bg-lg-red selection:text-white">
+    <div className="min-h-screen bg-white font-sans text-gray-950 antialiased selection:bg-lg-red selection:text-white overflow-x-hidden">
       <Navbar 
         currentRoute={currentRoute} 
         activeAgent={activeAgent} 
@@ -158,7 +152,7 @@ const App: React.FC = () => {
         brandingLogo={brandingLogo}
       />
       
-      <main className="pt-24">
+      <main className="pt-24 min-h-screen">
         {currentRoute === AppRoute.HOME ? (
           <>
             <Home 
@@ -192,15 +186,13 @@ const App: React.FC = () => {
             onReset={handleReset}
           />
         ) : (
-          <div className="py-40 text-center space-y-12 px-6 animate-in fade-in slide-in-from-bottom-10 duration-1000">
+          <div className="py-40 text-center space-y-12 px-6">
             <div className="flex flex-col items-center gap-6">
-              <div className="w-24 h-24 bg-gray-50 rounded-[40px] flex items-center justify-center text-lg-red mb-4 shadow-2xl border border-gray-100">
-                <Lock size={40} />
+              <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center text-lg-red mb-4 shadow-xl border border-gray-100">
+                <Lock size={32} />
               </div>
               <h2 className="text-4xl md:text-7xl font-black uppercase tracking-tighter">System Terminal</h2>
-              <p className="text-gray-400 font-bold uppercase tracking-widest text-[10px] max-w-xs mx-auto opacity-60">Admin clearance required to modify showroom catalog.</p>
             </div>
-            
             <div className="flex flex-col items-center gap-6">
               <button 
                 onClick={() => {
@@ -208,53 +200,53 @@ const App: React.FC = () => {
                   if (pin === "8888") {
                     setIsAdminAuth(true);
                     setCurrentRoute(AppRoute.ADMIN);
-                  } else if (pin !== null) {
-                    alert("ACCESS DENIED: Authentication mismatch.");
                   }
                 }} 
-                className="bg-lg-red text-white px-20 py-6 rounded-full font-black uppercase text-[11px] tracking-[0.3em] shadow-[0_30px_60px_rgba(230,0,68,0.3)] hover:bg-black transition-all"
+                className="bg-lg-red text-white px-16 py-6 rounded-full font-black uppercase text-[11px] tracking-[0.3em] shadow-xl"
               >
-                Authenticate
+                Access System
               </button>
-              <button onClick={() => setCurrentRoute(AppRoute.HOME)} className="text-[9px] font-black uppercase tracking-widest text-gray-300 hover:text-lg-red transition-colors">Exit Terminal</button>
+              <button onClick={() => setCurrentRoute(AppRoute.HOME)} className="text-[9px] font-black uppercase tracking-widest text-gray-300 hover:text-lg-red transition-colors">Return to Front View</button>
             </div>
           </div>
         )}
       </main>
 
-      {/* 赚钱工具：下线通过这里生成推广链接 */}
-      <div className="fixed bottom-10 right-10 z-[50] group">
-        <div className="absolute bottom-full right-0 mb-6 w-56 bg-black text-white p-5 rounded-[30px] text-[10px] font-black uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-all pointer-events-none shadow-3xl">
-          <div className="flex items-center gap-3 mb-2">
-            <ShieldCheck className="text-lg-red" size={20} />
-            <span>Downline Portal</span>
-          </div>
-          生成你的推广链接，赚取 LG 官方佣金。
-        </div>
+      {/* 快捷工具入口 */}
+      <div className="fixed bottom-10 right-10 z-[50]">
         <button 
           onClick={() => {
             const agentPanel = document.getElementById('agent-tools-modal');
             if (agentPanel) agentPanel.classList.toggle('hidden');
           }}
-          className="w-18 h-18 md:w-20 md:h-20 bg-black text-white rounded-full flex items-center justify-center shadow-3xl hover:bg-lg-red transition-all duration-500 hover:scale-110 active:scale-90"
+          className="w-16 h-16 bg-black text-white rounded-full flex items-center justify-center shadow-2xl hover:bg-lg-red transition-all duration-500 hover:scale-110 active:scale-90"
         >
-          <Briefcase size={28} />
+          <Briefcase size={24} />
         </button>
       </div>
 
       <div id="agent-tools-modal" className="fixed inset-0 z-[2000] bg-white hidden overflow-y-auto">
-         <div className="absolute top-10 right-10 z-[2010]">
+         <div className="sticky top-0 right-0 p-8 flex justify-end z-[2010]">
             <button 
               onClick={() => document.getElementById('agent-tools-modal')?.classList.add('hidden')}
-              className="p-5 bg-gray-50 rounded-full hover:bg-gray-100 transition-colors shadow-sm border border-gray-100"
+              className="p-4 bg-gray-50 rounded-full hover:bg-gray-100 transition-colors border border-gray-100 shadow-sm"
             >
               <X size={24} />
             </button>
          </div>
-         <AgentTools />
+         <div className="mt-[-80px]">
+           <AgentTools />
+         </div>
       </div>
     </div>
   );
+
+  function handleReset() {
+    if (confirm("FACTORY RESET: All data will be wiped.")) {
+      localStorage.clear();
+      location.reload();
+    }
+  }
 };
 
 export default App;

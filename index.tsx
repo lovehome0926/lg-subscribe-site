@@ -1,7 +1,7 @@
+import './index.css';
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App';
-import './index.css';
 
 console.log("System: React mounting sequence initiated...");
 
@@ -21,7 +21,7 @@ if (rootElement) {
     rootElement.innerHTML = `
       <div style="height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; background:#05090f; color:#e60044; font-family:sans-serif; text-align:center; padding:20px;">
         <h1 style="font-size:24px; font-weight:900;">UNABLE TO MOUNT APP</h1>
-        <p style="font-size:12px; opacity:0.5; margin-top:10px;">Please check the browser console for more details.</p>
+        <p style="font-size:12px; opacity:0.5; margin-top:10px;">Please check the browser console for security or parsing errors.</p>
       </div>
     `;
   }
