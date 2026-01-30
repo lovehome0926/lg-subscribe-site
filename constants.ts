@@ -1,16 +1,9 @@
-
 import { Product } from './types';
 
-/**
- * 【Master 数据配置说明】
- * 如果你想让所有客户打开网站时都看到最新的产品资料：
- * 1. 在管理后台 (Admin Dashboard) -> Backup 选项卡中点击 "Export Database JSON"。
- * 2. 将导出的 JSON 文件内容复制。
- * 3. 替换掉下方 INITIAL_PRODUCTS 数组中的内容。
- * 4. 重新推送代码并部署。
- */
+// 强制更新版本号。如果修改了下方的 INITIAL_PRODUCTS，请将此数字加 1，以强制所有用户更新缓存。
+export const DATA_VERSION: number = 2; 
+
 export const INITIAL_PRODUCTS: Product[] = [
-  // 您可以将后台导出的 JSON 粘贴在下面这个数组中
   {
     id: 'AC-V13ENS',
     category: 'Air Conditioner',
@@ -91,6 +84,6 @@ export const INITIAL_PRODUCTS: Product[] = [
   }
 ];
 
-export const CATEGORIES = [
+export const CATEGORIES: string[] = [
   'Water Purifier', 'Air Purifier', 'Air Conditioner', 'Washer & Dryer', 'Refrigerator', 'TV & Soundbar'
 ];
