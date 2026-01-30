@@ -1,13 +1,13 @@
 
 import React, { useState, useEffect } from 'react';
-import { Product, AppRoute, Agent, Language, Multilingual, SiteSettings, StoreLocation } from './types';
-import { INITIAL_PRODUCTS, CATEGORIES as DEFAULT_CATEGORIES } from './constants';
-import { getProductsDB, saveProductsDB } from './utils/db';
-import Navbar from './components/Navbar';
-import Home from './components/Home';
-import AdminDashboard from './components/AdminDashboard';
-import AgentTools from './components/AgentTools';
-import Footer from './components/Footer';
+import { Product, AppRoute, Agent, Language, SiteSettings } from './types.js';
+import { INITIAL_PRODUCTS, CATEGORIES as DEFAULT_CATEGORIES } from './constants.js';
+import { getProductsDB, saveProductsDB } from './utils/db.js';
+import Navbar from './components/Navbar.js';
+import Home from './components/Home.js';
+import AdminDashboard from './components/AdminDashboard.js';
+import AgentTools from './components/AgentTools.js';
+import Footer from './components/Footer.js';
 
 const App: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -54,6 +54,9 @@ const App: React.FC = () => {
 
   useEffect(() => {
     const init = async () => {
+      // 强制在 2.5 秒后解锁，防止任何异步逻辑卡死导致页面进不去
+      const forceReady = setTimeout(() => setIsReady(true), 2500);
+
       try {
         const savedSettings = localStorage.getItem('lg_site_settings');
         if (savedSettings) setSiteSettings(prev => ({ ...prev, ...JSON.parse(savedSettings) }));
@@ -64,7 +67,6 @@ const App: React.FC = () => {
         const savedCats = localStorage.getItem('lg_categories');
         if (savedCats) setCategories(JSON.parse(savedCats));
 
-        // 重要：如果本地没有修改过的数据，直接加载 INITIAL_PRODUCTS (代码中的公开数据)
         const dbProducts = await getProductsDB();
         if (dbProducts && dbProducts.length > 0) {
           setProducts(dbProducts);
@@ -74,8 +76,8 @@ const App: React.FC = () => {
         }
 
         const params = new URLSearchParams(window.location.search);
-        const agentWa = params.get('wa');
-        const agentName = params.get('name');
+        const agentWa = params.get('wa') || params.get('agent_wa');
+        const agentName = params.get('name') || params.get('agent_name');
 
         if (agentWa) {
           const newAgent: Agent = { id: Date.now().toString(), name: agentName || 'Official Partner', whatsapp: agentWa };
@@ -89,19 +91,33 @@ const App: React.FC = () => {
         const handleHash = () => {
           const h = window.location.hash.replace('#', '');
           if (h === 'admin') setCurrentRoute(AppRoute.ADMIN);
-          else if (h.includes('agent-tools')) setCurrentRoute(AppRoute.HOME); // Handled by conditional rendering
           else setCurrentRoute(AppRoute.HOME);
         };
         window.addEventListener('hashchange', handleHash);
         handleHash();
 
-      } catch (e) { console.error(e); } finally { setTimeout(() => setIsReady(true), 500); }
+      } catch (e) { 
+        console.error("Initialization error:", e); 
+      } finally { 
+        clearTimeout(forceReady);
+        setIsReady(true); 
+      }
     };
     init();
   }, []);
 
+  useEffect(() => {
+    if (isReady) {
+      const loader = document.getElementById('initial-loader');
+      if (loader) {
+        loader.style.opacity = '0';
+        setTimeout(() => loader.remove(), 600);
+      }
+    }
+  }, [isReady]);
+
   const resetToMaster = async () => {
-    if(confirm("确定要重置为 GitHub 上的公开产品数据吗？这会覆盖你本地的所有修改。")) {
+    if(confirm("确定要重置为 master 预设数据吗？")) {
       setProducts(INITIAL_PRODUCTS);
       await saveProductsDB(INITIAL_PRODUCTS);
       location.reload();
@@ -118,7 +134,7 @@ const App: React.FC = () => {
         setLanguage={setLanguage}
         brandingLogo={brandingLogo}
       />
-      <main className="flex-grow pt-16">
+      <main className="flex-grow pt-20">
         {!isReady ? null : currentRoute === AppRoute.ADMIN ? (
           isAdminAuth ? (
             <AdminDashboard 
@@ -142,8 +158,8 @@ const App: React.FC = () => {
           ) : (
             <div className="flex flex-col items-center justify-center min-h-[60vh] p-10 fade-in text-center">
               <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center text-3xl mb-8 shadow-inner">🔐</div>
-              <h2 className="text-xl font-black uppercase tracking-widest mb-6 text-gray-400">Studio Core Access</h2>
-              <button onClick={() => { if(prompt("Enter PIN to access Admin:") === "8888") setIsAdminAuth(true); }} className="bg-lg-red text-white px-12 py-5 rounded-full font-black uppercase tracking-widest text-[10px] shadow-2xl hover:scale-105 transition active:scale-95">Verify Authorization</button>
+              <h2 className="text-xl font-black uppercase tracking-widest mb-6 text-gray-400">Restricted Access</h2>
+              <button onClick={() => { if(prompt("Enter PIN:") === "8888") setIsAdminAuth(true); }} className="bg-lg-red text-white px-12 py-5 rounded-full font-black uppercase tracking-widest text-[10px] shadow-2xl hover:scale-105 transition active:scale-95">Verify Identity</button>
             </div>
           )
         ) : window.location.hash.includes('agent-tools') ? (
