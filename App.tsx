@@ -56,34 +56,22 @@ const App: React.FC = () => {
     const init = async () => {
       try {
         const savedSettings = localStorage.getItem('lg_site_settings');
-        if (savedSettings) {
-          const parsed = JSON.parse(savedSettings);
-          setSiteSettings(prev => ({ ...prev, ...parsed }));
-        }
+        if (savedSettings) setSiteSettings(prev => ({ ...prev, ...JSON.parse(savedSettings) }));
 
-        const savedLogo = localStorage.getItem('lg_branding_logo');
-        if (savedLogo) setBrandingLogo(savedLogo);
-        
-        const savedHero = localStorage.getItem('lg_branding_hero');
-        if (savedHero) setBrandingHero(savedHero);
+        setBrandingLogo(localStorage.getItem('lg_branding_logo'));
+        setBrandingHero(localStorage.getItem('lg_branding_hero'));
 
         const savedCats = localStorage.getItem('lg_categories');
-        if (savedCats) {
-          try {
-            const parsed = JSON.parse(savedCats);
-            if (Array.isArray(parsed) && parsed.length > 0) setCategories(parsed);
-          } catch (e) { }
-        }
+        if (savedCats) setCategories(JSON.parse(savedCats));
 
-        let initialProducts: Product[] = [];
+        // 重要：如果本地没有修改过的数据，直接加载 INITIAL_PRODUCTS (代码中的公开数据)
         const dbProducts = await getProductsDB();
         if (dbProducts && dbProducts.length > 0) {
-          initialProducts = dbProducts;
+          setProducts(dbProducts);
         } else {
-          initialProducts = INITIAL_PRODUCTS;
+          setProducts(INITIAL_PRODUCTS);
           await saveProductsDB(INITIAL_PRODUCTS);
         }
-        setProducts(initialProducts);
 
         const params = new URLSearchParams(window.location.search);
         const agentWa = params.get('wa');
@@ -95,51 +83,29 @@ const App: React.FC = () => {
           localStorage.setItem('lg_active_agent', JSON.stringify(newAgent));
         } else {
           const stored = localStorage.getItem('lg_active_agent');
-          if (stored) {
-            try { setActiveAgent(JSON.parse(stored)); } catch { localStorage.removeItem('lg_active_agent'); }
-          }
+          if (stored) setActiveAgent(JSON.parse(stored));
         }
 
         const handleHash = () => {
           const h = window.location.hash.replace('#', '');
           if (h === 'admin') setCurrentRoute(AppRoute.ADMIN);
+          else if (h.includes('agent-tools')) setCurrentRoute(AppRoute.HOME); // Handled by conditional rendering
           else setCurrentRoute(AppRoute.HOME);
         };
         window.addEventListener('hashchange', handleHash);
         handleHash();
 
-        setIsReady(true);
-      } catch (e) {
-        setIsReady(true);
-      }
+      } catch (e) { console.error(e); } finally { setTimeout(() => setIsReady(true), 500); }
     };
     init();
   }, []);
 
-  useEffect(() => {
-    if (isReady) {
-      const loader = document.getElementById('initial-loader');
-      if (loader) {
-        loader.style.opacity = '0';
-        setTimeout(() => loader.remove(), 400);
-      }
+  const resetToMaster = async () => {
+    if(confirm("确定要重置为 GitHub 上的公开产品数据吗？这会覆盖你本地的所有修改。")) {
+      setProducts(INITIAL_PRODUCTS);
+      await saveProductsDB(INITIAL_PRODUCTS);
+      location.reload();
     }
-  }, [isReady]);
-
-  const updateSiteSettings = (next: SiteSettings) => {
-    setSiteSettings(next);
-    localStorage.setItem('lg_site_settings', JSON.stringify(next));
-  };
-
-  const updateProducts = async (next: Product[] | ((p: Product[]) => Product[])) => {
-    const nextProducts = typeof next === 'function' ? next(products) : next;
-    setProducts(nextProducts);
-    await saveProductsDB(nextProducts);
-  };
-
-  const updateCategories = (next: string[]) => {
-    setCategories(next);
-    localStorage.setItem('lg_categories', JSON.stringify(next));
   };
 
   return (
@@ -157,21 +123,27 @@ const App: React.FC = () => {
           isAdminAuth ? (
             <AdminDashboard 
               products={products} 
-              setProducts={updateProducts} 
+              setProducts={async (next) => {
+                const nextP = typeof next === 'function' ? next(products) : next;
+                setProducts(nextP);
+                await saveProductsDB(nextP);
+              }} 
               categories={categories}
-              setCategories={updateCategories}
+              setCategories={(c) => { setCategories(c); localStorage.setItem('lg_categories', JSON.stringify(c)); }}
               language={language} 
               brandingLogo={brandingLogo}
               updateBrandingLogo={(l) => { setBrandingLogo(l); if(l) localStorage.setItem('lg_branding_logo', l); }}
               brandingHero={brandingHero}
               updateBrandingHero={(h) => { setBrandingHero(h); if(h) localStorage.setItem('lg_branding_hero', h); }}
               siteSettings={siteSettings}
-              updateSiteSettings={updateSiteSettings}
+              updateSiteSettings={(s) => { setSiteSettings(s); localStorage.setItem('lg_site_settings', JSON.stringify(s)); }}
+              onReset={resetToMaster}
             />
           ) : (
             <div className="flex flex-col items-center justify-center min-h-[60vh] p-10 fade-in text-center">
+              <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center text-3xl mb-8 shadow-inner">🔐</div>
               <h2 className="text-xl font-black uppercase tracking-widest mb-6 text-gray-400">Studio Core Access</h2>
-              <button onClick={() => { if(prompt("Enter PIN to access Admin:") === "8888") setIsAdminAuth(true); }} className="bg-lg-red text-white px-12 py-5 rounded-full font-black uppercase tracking-widest text-[10px] shadow-2xl hover:scale-105 transition">Verify Authorization</button>
+              <button onClick={() => { if(prompt("Enter PIN to access Admin:") === "8888") setIsAdminAuth(true); }} className="bg-lg-red text-white px-12 py-5 rounded-full font-black uppercase tracking-widest text-[10px] shadow-2xl hover:scale-105 transition active:scale-95">Verify Authorization</button>
             </div>
           )
         ) : window.location.hash.includes('agent-tools') ? (

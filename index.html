@@ -9,6 +9,14 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script>
+    // 防止 process 未定义导致的卡死
+    window.process = {
+      env: {
+        API_KEY: "" // 这里留空，系统会尝试从执行环境注入
+      }
+    };
+  </script>
   <script type="importmap">
 {
   "imports": {
@@ -58,6 +66,12 @@
     .animate-bounce-subtle { animation: bounce-subtle 2.5s infinite ease-in-out; }
     input, button, select { outline: none !important; }
     ::selection { background-color: rgba(230, 0, 68, 0.1); color: #e60044; }
+    
+    /* 自定义滚动条 */
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #e60044; }
   </style>
 </head>
 <body>
