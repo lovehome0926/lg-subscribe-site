@@ -3,10 +3,9 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig({
   plugins: [react()],
-  // 核心：使用相对路径确保在任何子目录下都能正确运行
+  // Use relative path for all assets to support GitHub Pages sub-folders
   base: './', 
   define: {
-    // 注入环境变量，确保代码中引用 process.env.API_KEY 不会崩溃
     'process.env.API_KEY': JSON.stringify(process.env.API_KEY || '')
   },
   build: {
@@ -18,7 +17,7 @@ export default defineConfig({
       output: {
         manualChunks: {
           vendor: ['react', 'react-dom'],
-          ui: ['lucide-react']
+          icons: ['lucide-react']
         }
       }
     }
