@@ -51,10 +51,8 @@ const App: React.FC = () => {
     };
   });
 
-  // Extremely resilient healing logic to prevent "Cannot read property of undefined" crashes
   const healProduct = (p: any): Product => {
     if (!p || typeof p !== 'object') return INITIAL_PRODUCTS[0];
-
     const ensureMultilingual = (val: any): Multilingual => {
       if (val && typeof val === 'object') {
         return { 
@@ -63,15 +61,12 @@ const App: React.FC = () => {
           ms: String(val.ms || val.en || val.cn || '') 
         };
       }
-      if (typeof val === 'string') {
-        return { en: val, cn: val, ms: val };
-      }
-      return { en: '', cn: '', ms: '' };
+      return { en: String(val || ''), cn: String(val || ''), ms: String(val || '') };
     };
 
     return {
       ...p,
-      id: String(p.id || `M-${Date.now()}-${Math.random().toString(16)}`),
+      id: String(p.id || `M-${Date.now()}`),
       category: String(p.category || 'General'),
       name: String(p.name || 'Unnamed Product'),
       subName: ensureMultilingual(p.subName),
@@ -95,43 +90,38 @@ const App: React.FC = () => {
   useEffect(() => {
     if (isReady) {
       safeStorage.set('lg_site_settings', JSON.stringify(siteSettings));
+      // Immediate loader removal attempt
+      const loader = document.getElementById('initial-loader');
+      if (loader) {
+        loader.style.opacity = '0';
+        setTimeout(() => loader.remove(), 500);
+      }
     }
   }, [siteSettings, isReady]);
 
   useEffect(() => {
     const init = async () => {
+      // Shorter failsafe to get user in quickly
       const failsafe = setTimeout(() => {
-        if (!isReady) {
-          console.warn("Failsafe activated. Forcing app entry.");
-          setIsReady(true);
-        }
-      }, 4000);
+        setIsReady(true);
+      }, 3000);
 
       try {
         const lastVersionStr = safeStorage.get('lg_data_version');
         const lastVersion = lastVersionStr ? parseInt(lastVersionStr) : 0;
         
         let finalProducts: Product[] = [];
-        
         if (lastVersion < DATA_VERSION) {
           finalProducts = INITIAL_PRODUCTS.map(healProduct);
-          await saveProductsDB(finalProducts).catch(e => console.error("Initial DB sync failed", e));
+          await saveProductsDB(finalProducts);
           safeStorage.set('lg_data_version', DATA_VERSION.toString());
         } else {
-          try {
-            const dbProducts = await getProductsDB();
-            const validProducts = (Array.isArray(dbProducts) ? dbProducts : [])
-              .filter(p => p && (p.id || p.name))
-              .map(healProduct);
-            finalProducts = validProducts.length > 0 ? validProducts : INITIAL_PRODUCTS.map(healProduct);
-          } catch (e) {
-            console.error("Database restore failed, using defaults.");
-            finalProducts = INITIAL_PRODUCTS.map(healProduct);
-          }
+          const dbProducts = await getProductsDB();
+          finalProducts = (dbProducts.length > 0 ? dbProducts : INITIAL_PRODUCTS).map(healProduct);
         }
-        
         setProducts(finalProducts);
 
+        // Affiliate logic
         const params = new URLSearchParams(window.location.search);
         const wa = params.get('wa');
         const name = params.get('name');
@@ -141,20 +131,14 @@ const App: React.FC = () => {
           const newAgent: Agent = { id: Date.now().toString(), name: name || 'Partner', whatsapp: cleanWa };
           setActiveAgent(newAgent);
           safeStorage.set('lg_active_agent', JSON.stringify(newAgent));
-          
-          const url = new URL(window.location.href);
-          url.searchParams.delete('wa');
-          url.searchParams.delete('name');
-          window.history.replaceState({}, '', url.toString());
+          window.history.replaceState({}, '', window.location.pathname + window.location.hash);
         } else {
           const stored = safeStorage.get('lg_active_agent');
           if (stored) {
             try {
               const parsed = JSON.parse(stored);
-              if (parsed && parsed.whatsapp) setActiveAgent(parsed);
-            } catch(e) {
-              safeStorage.remove('lg_active_agent');
-            }
+              if (parsed?.whatsapp) setActiveAgent(parsed);
+            } catch(e) {}
           }
         }
 
@@ -167,8 +151,7 @@ const App: React.FC = () => {
         handleHash();
 
       } catch (err) {
-        console.error("Initialization error:", err);
-        setProducts(INITIAL_PRODUCTS.map(healProduct));
+        console.error("Init failed:", err);
       } finally {
         clearTimeout(failsafe);
         setIsReady(true);
@@ -176,16 +159,6 @@ const App: React.FC = () => {
     };
     init();
   }, []);
-
-  useEffect(() => {
-    if (isReady) {
-      const loader = document.getElementById('initial-loader');
-      if (loader) {
-        loader.style.opacity = '0';
-        setTimeout(() => loader.remove(), 600);
-      }
-    }
-  }, [isReady]);
 
   const safeProducts = useMemo(() => Array.isArray(products) ? products : [], [products]);
 
@@ -195,9 +168,8 @@ const App: React.FC = () => {
         products={safeProducts} 
         setProducts={async (next) => {
           const nextP = typeof next === 'function' ? next(safeProducts) : next;
-          const healedNextP = Array.isArray(nextP) ? nextP.map(healProduct) : [];
-          setProducts(healedNextP);
-          try { await saveProductsDB(healedNextP); } catch (e) { console.error("Database persistence failed:", e); }
+          setProducts(nextP);
+          await saveProductsDB(nextP);
         }} 
         categories={categories}
         setCategories={setCategories}
@@ -209,11 +181,8 @@ const App: React.FC = () => {
         siteSettings={siteSettings}
         updateSiteSettings={setSiteSettings}
         onReset={() => {
-           if(confirm("Confirm hard reset? All inventory, settings and branding will be cleared.")) {
-             safeStorage.remove('lg_data_version');
-             safeStorage.remove('lg_site_settings');
-             safeStorage.remove('lg_branding_logo');
-             safeStorage.remove('lg_branding_hero');
+           if(confirm("Factory reset?")) {
+             localStorage.clear();
              location.reload();
            }
         }}
@@ -222,10 +191,9 @@ const App: React.FC = () => {
       <div className="flex flex-col items-center justify-center min-h-[70vh] text-center px-6">
         <h2 className="text-xl font-black uppercase tracking-widest mb-10 text-gray-950">System Access</h2>
         <button onClick={() => { 
-          const pin = prompt("Enter Admin PIN (Default: 8888):");
+          const pin = prompt("Admin PIN (8888):");
           if(pin === "8888") setIsAdminAuth(true); 
-          else if(pin !== null) alert("Incorrect PIN");
-        }} className="bg-lg-red text-white px-12 py-5 rounded-full font-black uppercase tracking-widest text-[11px] shadow-2xl hover:scale-105 transition-all">Verify Credentials</button>
+        }} className="bg-lg-red text-white px-12 py-5 rounded-full font-black uppercase tracking-widest text-[11px] shadow-2xl">Verify Credentials</button>
       </div>
     )
   ) : window.location.hash.includes('agent-tools') ? (
@@ -245,18 +213,11 @@ const App: React.FC = () => {
         brandingLogo={brandingLogo}
       />
       <main className="flex-grow">
-        {!isReady ? (
-          <div className="h-[60vh] flex flex-col items-center justify-center space-y-4">
-             <div className="w-10 h-10 border-4 border-gray-100 border-t-lg-red rounded-full animate-spin"></div>
-             <p className="text-[10px] font-black uppercase tracking-[0.4em] text-gray-300">Synchronizing Showcase...</p>
-          </div>
-        ) : (
-          <div className="animate-in fade-in duration-700">
-            {mainContent}
-          </div>
-        )}
+        <div className="animate-in fade-in duration-700">
+          {mainContent}
+        </div>
       </main>
-      {isReady && <Footer brandingLogo={brandingLogo} siteSettings={siteSettings} language={language} activeAgent={activeAgent} />}
+      <Footer brandingLogo={brandingLogo} siteSettings={siteSettings} language={language} activeAgent={activeAgent} />
     </div>
   );
 };
