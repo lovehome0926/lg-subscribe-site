@@ -1,0 +1,1469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LG Subscribe | DNC Home Appliances</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin:0; padding:0; background:#fafafa; color:#333; }
+    header { background:#000; color:#fff; text-align:center; padding:20px 0; font-size:20px; font-weight:bold; }
+    .promo-banner { background:#e60012; color:#fff; text-align:center; padding:10px; font-size:16px; font-weight:bold; }
+    .banner-slider img { width:100%; display:block; }
+    nav { display:flex; flex-wrap:wrap; justify-content:center; background:#fff; padding:10px; gap:10px; }
+    nav button { border:none; background:#f2f2f2; padding:10px 15px; border-radius:20px; cursor:pointer; font-weight:bold; transition:0.3s; }
+    nav button:hover { background:#000; color:#fff; }
+    .product-section { padding:20px; }
+    .category-title { font-size:22px; font-weight:bold; margin-bottom:10px; border-left:4px solid #e60012; padding-left:10px; }
+    .product-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:15px; }
+    .product-card { background:#fff; border-radius:10px; padding:10px; text-align:center; box-shadow:0 2px 5px rgba(0,0,0,0.1); }
+    .product-card img { width:100%; border-radius:8px; }
+    .product-card h3 { font-size:16px; margin:8px 0; }
+    .product-card p { margin:5px 0; }
+    .product-card button { background:#e60012; color:#fff; border:none; padding:8px 15px; border-radius:5px; cursor:pointer; }
+    .product-card button:hover { background:#b0000d; }
+    footer { background:#000; color:#fff; text-align:center; padding:20px 0; margin-top:30px; font-size:14px; }
+  </style>
+  <style>
+.trial-btn {
+  background-color: #009688; /* Green for trial */
+  color: white;
+  padding: 10px 16px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  margin-right: 6px;
+}
+
+.trial-btn:hover, .subscribe-btn:hover {
+  opacity: 0.9;
+}
+</style>
+  <style>
+.subscribe-btn {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 10px 18px;
+  background-color: #d32f2f;
+  color: white;
+  font-weight: bold;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: 0.3s;
+}
+.subscribe-btn:hover {
+  background-color: #b71c1c;
+}
+</style>
+<style>
+.price-box, .buyout-box {
+  background: #fafafa;
+  border-radius: 8px;
+  padding: 6px 10px;
+  margin: 5px 0;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+.subscribe-btn, .buy-btn {
+  display: inline-block;
+  margin: 8px 5px 0 0;
+  padding: 8px 14px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: 0.3s;
+}
+.subscribe-btn {
+  background: #d32f2f;
+  color: #fff;
+}
+.subscribe-btn:hover { background: #b71c1c; }
+.buy-btn {
+  background: #1976d2;
+  color: #fff;
+}
+.buy-btn:hover { background: #0d47a1; }
+</style>
+<style>
+  html {
+    scroll-behavior: smooth;
+  }
+</style>
+<style>
+.banner {
+  position: relative;
+  width: 100%;
+  height: auto;
+}
+
+.banner img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.banner-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  color: white;
+  background: rgba(0, 0, 0, 0.45); /* 半透明背景 */
+  padding: 20px 40px;
+  border-radius: 12px;
+}
+
+.banner-text h1 {
+  font-size: 2rem;
+  margin: 0;
+}
+
+.banner-text p {
+  margin: 10px 0;
+  font-size: 1.1rem;
+}
+
+.banner-btn {
+  display: inline-block;
+  background-color: #d32f2f;
+  color: white;
+  text-decoration: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: bold;
+}
+
+.banner-btn:hover {
+  background-color: #b71c1c;
+}
+</style>
+<style>
+<style>
+.scrolling-banner {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.scrolling-banner img {
+  width: 100%;
+  height: auto;
+  display: block;
+  animation: slideLeft 12s linear infinite;
+}
+
+/* 让图片滚动的动画 */
+@keyframes slideLeft {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+</style>
+<style>
+.subscribe-intro {
+  text-align: center;
+  padding: 50px 20px;
+  background-color: #f8f9fa;
+  font-family: 'Poppins', sans-serif;
+}
+
+.subscribe-intro h2 {
+  font-size: 36px;
+  color: #222;
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+
+.subscribe-intro p {
+  font-size: 16px;
+  color: #444;
+  max-width: 800px;
+  margin: 0 auto;
+  line-height: 1.7;
+}
+</style>
+<style>
+.benefits {
+  text-align: center;
+  padding: 60px 20px;
+  background-color: #ffffff;
+  font-family: 'Poppins', sans-serif;
+}
+
+.benefits h2 {
+  font-size: 28px;
+  color: #222;
+  font-weight: 600;
+  margin-bottom: 40px;
+}
+
+.benefit-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 30px;
+}
+
+.benefit-item {
+  background-color: #f8f9fa;
+  border-radius: 15px;
+  padding: 25px;
+  width: 300px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease;
+}
+
+.benefit-item:hover {
+  transform: translateY(-5px);
+}
+
+.benefit-item img {
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+.benefit-item h3 {
+  font-size: 18px;
+  color: #222;
+  margin-bottom: 10px;
+}
+
+.benefit-item p {
+  font-size: 15px;
+  color: #555;
+  line-height: 1.6;
+}
+
+/* ✅ 手机端自动变直排 */
+@media (max-width: 768px) {
+  .benefit-list {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+</style>
+</head>
+<!-- Floating WhatsApp Button -->
+<a href="https://wa.me/60177473787" class="whatsapp-float" target="_blank">
+  <img src="images/icons/whatsapp.png" alt="WhatsApp" />
+  <span>Chat with us</span>
+</a>
+
+<style>
+.whatsapp-float {
+  position: fixed;
+  width: 180px;
+  height: 50px;
+  bottom: 20px;
+  right: 20px;
+  background-color: #25D366;
+  color: white;
+  border-radius: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  text-decoration: none;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  z-index: 9999;
+  transition: all 0.3s ease;
+}
+
+.whatsapp-float img {
+  width: 28px;
+  height: 28px;
+  margin-right: 10px;
+}
+
+.whatsapp-float:hover {
+  background-color: #20b358;
+  transform: scale(1.05);
+}
+</style>
+<body>
+
+
+
+<style>
+/* 🔹 Banner 主容器 */
+.hero {
+  position: relative;
+  width: 100%;
+  height: 90vh; /* 桌機版較高 */
+  overflow: hidden;
+}
+
+/* 🔹 圖片設定 */
+.hero img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;        /* 保持比例填滿 */
+  object-position: center;  /* 圖片置中顯示 */
+}
+
+/* 🔹 內容（文字） */
+.hero-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  text-align: center;
+  z-index: 2;
+  padding: 0 20px; /* 手機時避免文字太貼邊 */
+}
+
+.hero-content h1 {
+  font-size: 3rem;
+  margin-bottom: 10px;
+}
+
+.hero-content p {
+  font-size: 1.3rem;
+  margin-bottom: 20px;
+}
+
+/* 🔹 遮罩 */
+.hero::after {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.35);
+  z-index: 1;
+}
+
+/* 🔹 手機響應式調整 */
+@media (max-width: 768px) {
+  .hero {
+    height: 65vh; /* 手機版比較矮，避免空白太多 */
+  }
+
+  .hero-content h1 {
+    font-size: 2rem;
+  }
+
+  .hero-content p {
+    font-size: 1rem;
+  }
+
+  .hero-content a {
+    padding: 10px 18px;
+    font-size: 0.9rem;
+  }
+}
+</style>
+
+<!-- 🔹 Banner HTML -->
+<div class="hero">
+  <img src="images/banners/banner1.png" alt="LG Subscribe Banner">
+  <div class="hero-content">
+    <h1>LG Subscribe</h1>
+    <p>A Complete Home, Today.</p>
+    <a href="#shop" class="btn btn-danger mt-3">Shop Now</a>
+  </div>
+</div>
+
+<div class="scrolling-banner">
+  <img src="images/banners/ei_bridge_logo.png" alt="LG Subscribe Promotion">
+</div>
+
+<!-- LG Subscribe 介绍区块 -->
+<section class="subscribe-intro">
+  <h2>What is LG Subscribe?</h2>
+  <p>
+    <strong>LG Subscribe</strong> is a household appliance subscription service that allows you to complete your home in a cost-effective way.
+    A wide range of appliances — from refrigerators to TVs — are available to subscribe, making your place truly feel like a home.
+  </p>
+</section>
+
+<!-- 三大好处 -->
+<section class="benefits">
+  <h2>3 Benefits of LG Subscribe</h2>
+
+  <div class="benefit-list">
+    <div class="benefit-item">
+      <img src="images/banners/card_img01.jpg" alt="First in the Market">
+      <h3>01 First in the Market</h3>
+      <p>Offering 10 product lines in Malaysia.</p>
+    </div>
+
+    <div class="benefit-item">
+      <img src="images/banners/card_img02.jpg" alt="Hassle-Free Maintenance">
+      <h3>02 Hassle-Free Maintenance</h3>
+      <p>Self-Service, Regular Visit, or Combined Maintenance — all covered for your convenience.</p>
+    </div>
+
+    <div class="benefit-item">
+      <img src="images/banners/card_img03.jpg" alt="LG ThinQ">
+      <h3>03 LG ThinQ</h3>
+      <p>Accessible smart products to upgrade your lifestyle anytime, anywhere.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CSS -->
+
+<nav>
+  <button onclick="location.href='#water-purifier'">Water Purifier</button>
+  <button onclick="location.href='#air-purifier'">Air Purifier</button>
+  <button onclick="location.href='#dehumidifier'">Dehumidifier</button>
+  <button onclick="location.href='#washer-&-dryer'">Washer & Dryer</button>
+  <button onclick="location.href='#styler'">Styler</button>
+  <button onclick="location.href='#refrigerator'">Refrigerator</button>
+  <button onclick="location.href='#vacuum'">Vacuum</button>
+  <button onclick="location.href='#tv-&-soundbar'">TV & Soundbar</button>
+  <button onclick="location.href='#xboom'">Xboom</button>
+  <button onclick="location.href='#monitors'">Monitors</button>
+  <button onclick="location.href='#dishwasher'">Dishwasher</button>
+</nav>
+
+<!-- SAMPLE CATEGORY START -->
+ <section id="water-purifier">
+<div class="product-section">
+  <div class="category-title">Water Purifier</div>
+  <div class="product-grid">
+  <div class="product-card">
+  <img src="images/ATOM-U-black.png" alt="ATOM-U" class="product-image" id="ATOM-U-img">
+  
+  <h3>ATOM-U</h3>
+    <p style="color:#666666;">Hot / Ambient / Cold</p>
+  <div class="price-box">
+    <p><strong>YEAR END PROMO: RM55/month</strong></p>
+        <p style="color:red;font-size:12px;">Normal Price: RM110/month </p>
+    <p style="color:red;font-size:12px;">Half Price for 1st 18 months </p>   
+    <p style="color:red;font-size:12px;">7-year warranty </p> 
+  </div>
+   <div class="buyout-box">
+    <p><strong>Outright: RM5,200</strong></p>
+    <p style="color:gray;font-size:12px;">Inclusive 1-year Filter & Warranty</p>
+  </div>
+
+  <label for="color-ATOM-U">Colour:</label>
+  <select id="color-ATOM-U" onchange="changeColor('ATOM-U', this.value)">
+    <option value="black" selected>Black</option>
+    <option value="silver">Silver</option>
+  </select>
+<br>
+  <a href="https://wasap.my/60177473787/atomu" class="subscribe-btn" target="_blank">Subscribe Now</a>
+  <a href="https://wasap.my/60177473787/interested%20to%20buy%20this%20unit%20outright%20atomu" class="buy-btn" target="_blank">Buy Now</a>
+</div>
+   <div class="product-card">
+  <img src="images/WD516AN-blue.png" alt="WD516AN" class="product-image" id="WD516AN-img">
+  <h3>WD516AN</h3>
+    <p style="color:#666666;">Hot / Ambient / Cold</p>
+  <div class="price-box">
+    <p><strong>YEAR END PROMO: RM35/month</strong></p>
+        <p style="color:red;font-size:12px;">Normal Price: RM70/month </p>
+    <p style="color:red;font-size:12px;">Half Price for 1st 18 months </p>   
+    <p style="color:red;font-size:12px;">7-year warranty </p> 
+  </div>
+   <div class="buyout-box">
+    <p><strong>Outright: RM3,200</strong></p>
+    <p style="color:gray;font-size:12px;">Inclusive 1-year Filter & Warranty</p>
+  </div>
+
+  <label for="color-WD516AN">Colour:</label>
+  <select id="color-WD516AN" onchange="changeColor('WD516AN', this.value)">
+    <option value="blue" selected>Navy Blue</option>
+    <option value="white">White</option>
+    <option value="silver">Silver</option>
+  </select>
+<br>
+  <a href="https://wasap.my/60177473787/wd516" class="subscribe-btn" target="_blank">Subscribe Now</a>
+  <a href="https://wasap.my/60177473787/interested%20to%20buy%20this%20unit%20outright%20wd516" class="buy-btn" target="_blank">Buy Now</a>
+</div>
+    <div class="product-card">
+  <img src="images/WD518AN-white.png" alt="WD518AN" class="product-image" id="WD518AN-img">
+  <h3>WD518AN</h3>
+    <p style="color:#666666;">Hot / Ambient / Cold</p>
+  <div class="price-box">
+    <p><strong>OHSEM PROMO: RM35/month</strong></p>
+        <p style="color:red;font-size:12px;">Normal Price: RM70/month </p>
+    <p style="color:red;font-size:12px;">Half Price for 1st 9 months </p>   
+    <p style="color:red;font-size:12px;">7-year warranty </p> 
+  </div>
+   <div class="buyout-box">
+    <p><strong>Outright: RM3,200</strong></p>
+    <p style="color:gray;font-size:12px;">Inclusive 1-year Filter & Warranty</p>
+  </div>
+      <label for="color-WD518AN">Colour:</label>
+  <select id="color-WD518AN" onchange="changeColor('WD518AN', this.value)">
+    <option value="white" selected>Calming Cream White</option>
+    <option value="pink">Calming Pink</option>
+    <option value="blue">Calming Cream Sky</option>
+    <option value="grey">Calming Grey</option>
+    <option value="beige">Calming Beige</option>
+    <option value="mint">Clay Mint</option>
+  </select>
+<br>
+  <a href="https://wasap.my/60177473787/wd518" class="subscribe-btn" target="_blank">Subscribe Now</a>
+    <a href="https://wasap.my/60177473787/interested%20to%20buy%20this%20unit%20outright%20wd518" class="buy-btn" target="_blank">Buy Now</a>
+</div>
+<div class="product-card">
+  <img src="images/WD210MN.jpg" alt="Water Purifier" class="product-image" id="WD210MN-img">
+  <h3>WD210MN</h3>
+    <p style="color:#666666;">Hot / Ambient</p>
+  <div class="price-box">
+    <p><strong>YEAR END PROMO: RM30/month</strong></p>
+        <p style="color:red;font-size:12px;">Normal Price: RM60/month </p>
+    <p style="color:red;font-size:12px;">Half Price for 1st 18 months </p>   
+    <p style="color:red;font-size:12px;">7-year warranty </p> 
+  </div>
+
+  <div class="buyout-box">
+    <p><strong>Outright: RM2,800</strong></p>
+    <p style="color:gray;font-size:12px;">Inclusive 1-year Filter & Warranty</p>
+  </div>
+<br>
+  <a href="https://wasap.my/60177473787/wd210" class="subscribe-btn" target="_blank">Subscribe Now</a>
+  <a href="https://wasap.my/60177473787/interested%20to%20buy%20this%20unit%20outright%20wd210" class="buy-btn" target="_blank">Buy Now</a>
+</div>
+
+<div class="product-card">
+  <img src="images/WS410GN.png" alt="Water Purifier" class="product-image" id=WS410GN-img">
+  <h3>WS410GN</h3>
+    <p style="color:#666666;">Hot / Cold</p>
+  <div class="price-box">
+    <p><strong>YEAR END PROMO: RM55/month</strong></p>
+        <p style="color:red;font-size:12px;">Normal Price: RM110/month </p>
+    <p style="color:red;font-size:12px;">Half Price for 1st 18 months </p>   
+    <p style="color:red;font-size:12px;">5-year warranty </p> 
+  </div>
+
+  <div class="buyout-box">
+    <p><strong>Outright: RM4,000</strong></p>
+    <p style="color:gray;font-size:12px;">Inclusive 1-year Regular Visit & Warranty</p>
+  </div>
+<br>
+  <a href="https://wasap.my/60177473787/ws410" class="subscribe-btn" target="_blank">Subscribe Now</a>
+  <a href="https://wasap.my/60177473787/interested%20to%20buy%20this%20unit%20outright%20ws410" class="buy-btn" target="_blank">Buy Now</a>
+</div>
+
+<div class="product-card">
+  <img src="images/WS510SN.png" alt="Water Purifier" class="product-image" id=WS510SN-img">
+  <h3>WS510SN</h3>
+    <p style="color:#666666;">Hot / Ambient / Cold</p>
+  <div class="price-box">
+    <p><strong>YEAR END PROMO: RM65/month</strong></p>
+    <p style="color:red;font-size:12px;">Normal Price: RM130/month </p>
+    <p style="color:red;font-size:12px;">Half Price for 1st 18 months </p>   
+    <p style="color:red;font-size:12px;">5-year warranty </p> 
+  </div>
+
+  <div class="buyout-box">
+    <p><strong>Outright: RM5,000</strong></p>
+    <p style="color:gray;font-size:12px;">Inclusive 1-year Regular Visit & Warranty</p>
+  </div>
+<br>
+  <a href="https://wasap.my/60177473787/ws510" class="subscribe-btn" target="_blank">Subscribe Now</a>
+  <a href="https://wasap.my/60177473787/interested%20to%20buy%20this%20unit%20outright%20ws510" class="buy-btn" target="_blank">Buy Now</a>
+</div>
+  </div>
+</div>
+</section>
+
+ <section id="air-purifier">
+<div class="product-section">
+  <div class="category-title">Air Purifier</div>
+  <div class="product-grid">
+  <div class="product-card">
+  <img src="images/as35.png" alt="AS35" class="product-image" id="as35-img">
+  
+  <h3>AS35GGW10<br>Aerohit</h3>
+    <p style="color:#666666;">Coverage: 32m²</p>
+  <div class="price-box">
+    <p><strong>OHSEM PROMO: RM23/month</strong></p>
+        <p style="color:red;font-size:12px;">Normal Price: RM45/month </p>
+    <p style="color:red;font-size:12px;">Half Price for 1st 9 months </p>   
+    <p style="color:red;font-size:12px;">7-year warranty </p> 
+  </div>
+   <div class="buyout-box">
+    <p><strong>Outright: RM1,000</strong></p>
+    <p style="color:gray;font-size:12px;">Inclusive 1-year Warranty</p>
+  </div>
+
+<br>
+  <a href="https://wasap.my/60177473787/aerohit" class="subscribe-btn" target="_blank">Subscribe Now</a>
+  <a href="https://wasap.my/60177473787/interested%20to%20buy%20this%20unit%20outright%20aerohit" class="buy-btn" target="_blank">Buy Now</a>
+</div>
+
+  <div class="product-card">
+  <img src="images/as60-white.png" alt="AS35" class="product-image" id="as60-img">
+  
+  <h3>AS60GHWG0<br>360° Hit</h3>
+    <p style="color:#666666;">Coverage: 62m²</p>
+  <div class="price-box">
+    <p><strong>OHSEM PROMO: RM25/month</strong></p>
+        <p style="color:red;font-size:12px;">Normal Price: RM50/month </p>
+    <p style="color:red;font-size:12px;">Half Price for 1st 9 months </p>   
+    <p style="color:red;font-size:12px;">7-year warranty </p> 
+  </div>
+   <div class="buyout-box">
+    <p><strong>Outright: RM1,900</strong></p>
+    <p style="color:gray;font-size:12px;">Inclusive 1-year Warranty</p>
+  </div>
+ <label for="color-AS60">Colour:</label>
+  <select id="color-AS60" onchange="changeColor('as60', this.value)">
+    <option value="white" selected>White</option>
+    <option value="brown">Clay Brown</option>
+  </select>
+<br>
+  <a href="https://wasap.my/60177473787/hit" class="subscribe-btn" target="_blank">Subscribe Now</a>
+  <a href="https://wasap.my/60177473787/interested%20to%20buy%20this%20unit%20outright%20hit" class="buy-btn" target="_blank">Buy Now</a>
+</div>
+
+  <div class="product-card">
+  <img src="images/as65-white.png" alt="AS65-white" class="product-image" id="as65-white-img">
+  
+  <h3>AS65GDWB0<br>Single Booster</h3>
+    <p style="color:#666666;">Coverage: 61.2m²</p>
+  <div class="price-box">
+    <p><strong>OHSEM PROMO: RM35/month</strong></p>
+        <p style="color:red;font-size:12px;">Normal Price: RM70/month </p>
+    <p style="color:red;font-size:12px;">Half Price for 1st 9 months </p>   
+    <p style="color:red;font-size:12px;">7-year warranty </p> 
+  </div>
+   <div class="buyout-box">
+    <p><strong>Outright: RM3,250</strong></p>
+    <p style="color:gray;font-size:12px;">Inclusive 1-year Warranty</p>
+  </div>
+
+<br>
+  <a href="https://wasap.my/60177473787/as65white" class="subscribe-btn" target="_blank">Subscribe Now</a>
+  <a href="https://wasap.my/60177473787/interested%20to%20buy%20this%20unit%20outright%20as65white" class="buy-btn" target="_blank">Buy Now</a>
+</div>
+
+<div class="product-card">
+  <img src="images/AS65-beige.png" alt="AS65-pet" class="product-image" id="as65-pet-img">
+  
+  <h3>AS65GDBY0<br>Alpha Pet Single Booster</h3>
+    <p style="color:#666666;">Coverage: 61.2m²</p>
+  <div class="price-box">
+    <p><strong>OHSEM PROMO: RM38/month</strong></p>
+        <p style="color:red;font-size:12px;">Normal Price: RM75/month </p>
+    <p style="color:red;font-size:12px;">Half Price for 1st 9 months </p>   
+    <p style="color:red;font-size:12px;">7-year warranty </p> 
+  </div>
+   <div class="buyout-box">
+    <p><strong>Outright: RM3,550</strong></p>
+    <p style="color:gray;font-size:12px;">Inclusive 1-year Warranty</p>
+  </div>
+<br>
+  <a href="https://wasap.my/60177473787/as65pet" class="subscribe-btn" target="_blank">Subscribe Now</a>
+  <a href="https://wasap.my/60177473787/interested%20to%20buy%20this%20unit%20outright%20as65pet" class="buy-btn" target="_blank">Buy Now</a>
+</div>
+
+<div class="product-card">
+  <img src="images/AS10-beige.png" alt="AS10-pet" class="product-image" id="as10-pet-img">
+  
+  <h3>AS10GDBY0<br>Alpha Pet Double Booster</h3>
+    <p style="color:#666666;">Coverage: 104.2m²</p>
+  <div class="price-box">
+    <p><strong>OHSEM PROMO: RM53/month</strong></p>
+        <p style="color:red;font-size:12px;">Normal Price: RM105/month </p>
+    <p style="color:red;font-size:12px;">Half Price for 1st 9 months </p>   
+    <p style="color:red;font-size:12px;">7-year warranty </p> 
+  </div>
+   <div class="buyout-box">
+    <p><strong>Outright: RM4,600</strong></p>
+    <p style="color:gray;font-size:12px;">Inclusive 1-year Warranty</p>
+  </div>
+<br>
+  <a href="https://wasap.my/60177473787/as10pet" class="subscribe-btn" target="_blank">Subscribe Now</a>
+  <a href="https://wasap.my/60177473787/interested%20to%20buy%20this%20unit%20outright%20as10pet" class="buy-btn" target="_blank">Buy Now</a>
+</div>
+
+<div class="product-card">
+  <img src="images/AS10-white.png" alt="AS10-white" class="product-image" id="as10-white-img">
+  
+  <h3>AS10GDWB0<br>Double Booster</h3>
+    <p style="color:#666666;">Coverage: 100m²</p>
+  <div class="price-box">
+    <p><strong>OHSEM PROMO: RM50/month</strong></p>
+        <p style="color:red;font-size:12px;">Normal Price: RM100/month </p>
+    <p style="color:red;font-size:12px;">Half Price for 1st 9 months </p>   
+    <p style="color:red;font-size:12px;">7-year warranty </p> 
+  </div>
+   <div class="buyout-box">
+    <p><strong>Outright: RM4,300</strong></p>
+    <p style="color:gray;font-size:12px;">Inclusive 1-year Warranty</p>
+  </div>
+<br>
+  <a href="https://wasap.my/60177473787/as10" class="subscribe-btn" target="_blank">Subscribe Now</a>
+  <a href="https://wasap.my/60177473787/interested%20to%20buy%20this%20unit%20outright%20as10" class="buy-btn" target="_blank">Buy Now</a>
+</div>
+
+<div class="product-card">
+  <img src="images/AS55.png" alt="AS55" class="product-image" id="as55-img">
+  
+  <h3>AS55GGWX0<br>Aero Booster</h3>
+    <p style="color:#666666;">Coverage: 52.8m²</p>
+  <div class="price-box">
+    <p><strong>OHSEM PROMO: RM33/month</strong></p>
+        <p style="color:red;font-size:12px;">Normal Price: RM65/month </p>
+    <p style="color:red;font-size:12px;">Half Price for 1st 9 months </p>   
+    <p style="color:red;font-size:12px;">7-year warranty </p> 
+  </div>
+   <div class="buyout-box">
+    <p><strong>Outright: RM3,000</strong></p>
+    <p style="color:gray;font-size:12px;">Inclusive 1-year Warranty</p>
+  </div>
+<br>
+  <a href="https://wasap.my/60177473787/aerobooster" class="subscribe-btn" target="_blank">Subscribe Now</a>
+  <a href="https://wasap.my/60177473787/interested%20to%20buy%20this%20unit%20outright%20aerobooster" class="buy-btn" target="_blank">Buy Now</a>
+</div>
+
+  <div class="product-card">
+  <img src="images/AS20-white.png" alt="AS20" class="product-image" id="AS20-img">
+  
+  <h3>AS20<br>Aero Furniture</h3>
+    <p style="color:#666666;">Coverage: 19.8m²</p>
+  <div class="price-box">
+    <p><strong>OHSEM PROMO: RM30/month</strong></p>
+        <p style="color:red;font-size:12px;">Normal Price: RM60/month </p>
+    <p style="color:red;font-size:12px;">Half Price for 1st 9 months </p>   
+    <p style="color:red;font-size:12px;">7-year warranty </p> 
+  </div>
+   <div class="buyout-box">
+    <p><strong>Outright: RM2,500</strong></p>
+    <p style="color:gray;font-size:12px;">Inclusive 1-year Warranty</p>
+  </div>
+ <label for="color-AS20">Colour:</label>
+  <select id="color-AS20" onchange="changeColor('AS20', this.value)">
+    <option value="white" selected>White</option>
+    <option value="brown">Clay Brown</option>
+    <option value="black">Black</option>
+  </select>
+<br>
+  <a href="https://wasap.my/60177473787/as20" class="subscribe-btn" target="_blank">Subscribe Now</a>
+  <a href="https://wasap.my/60177473787/interested%20to%20buy%20this%20unit%20outright%20as20" class="buy-btn" target="_blank">Buy Now</a>
+</div>
+
+</div>
+</div>
+</section>
+
+ <section id="dehumidifier">
+<div class="product-section">
+  <div class="category-title">Dehumidifier</div>
+  <div class="product-grid">
+  <div class="product-card">
+  <img src="images/DD16-white.png" alt="DD16" class="product-image" id="DD16-img">
+  
+  <h3>16L DUAL Inverter Dehumidifier</h3>
+    <p style="color:#666666;">Humidity Control, Your Way</p>
+  <div class="price-box">
+    <p><strong>OHSEM PROMO: RM35/month</strong></p>
+        <p style="color:red;font-size:12px;">Normal Price: RM70/month </p>
+    <p style="color:red;font-size:12px;">Half Price for 1st 9 months </p>   
+    <p style="color:red;font-size:12px;">7-year warranty </p> 
+  </div>
+   <div class="buyout-box">
+    <p><strong>Outright: RM3,000</strong></p>
+    <p style="color:gray;font-size:12px;">Inclusive 1-year Warranty</p>
+  </div>
+
+  <label for="color-DD16">Colour:</label>
+  <select id="color-DD16" onchange="changeColor('DD16', this.value)">
+    <option value="white" selected>Essence White</option>
+    <option value="beige">Calming Beige</option>
+  </select>
+<br>
+<p style="color:#009688;font-size:13px;">🎁 21-Day Free Trial Available!</p>
+
+  <div style="margin-top:10px;">
+    <a href="https://wasap.my/60177473787/?text=I'm%20interested%20in%20the%2021-day%20free%20trial%20for%20LG%20Dehumidifier" 
+       class="trial-btn" target="_blank">
+       Try for Free
+    </a>
+  <a href="https://wasap.my/60177473787/Dehumidifier" class="subscribe-btn" target="_blank">Subscribe Now</a>
+  <a href="https://wasap.my/60177473787/interested%20to%20buy%20this%20unit%20outright%20Dehumidifier" class="buy-btn" target="_blank">Buy Now</a>
+</div>
+</div>
+</div>
+</section>
+
+ <section id="washer-&-dryer">
+<div class="product-section">
+  <div class="category-title">Washer & Dryer</div>
+  <div class="product-grid">
+
+<div class="product-card">
+  <img src="images/FV1409.png" alt="FV1409" class="product-image" id="FV1409-img">
+  
+  <h3>FV1209D4W<br>9/5KG 2in1 Washer Dryer</h3>
+    <p style="color:#666666;">White</p>
+  <div class="price-box">
+    <p><strong>YEAR END PROMO: RM75/month</strong></p>
+        <p style="color:red;font-size:12px;">Normal Price: RM120/month </p>
+    <p style="color:red;font-size:12px;"><b>SPECIAL DISCOUNT FOR WHOLE CONTRACT</b><br> Total Save RM2700 </p>   
+    <p style="color:red;font-size:12px;">5-year warranty </p> 
+  </div>
+
+ <p style="color:#363636; font-size:12px; line-height:1.4;">
+  <b>Every 6 Months (Delivery)</b><br>
+  Tub Cleaning Detergent<br>
+  <b>Every 12 Months (By Technician)</b><br>
+  Drain Pump / Wide Lint Filter
+</p>
+<br>
+  <a href="https://wasap.my/60177473787/FV1409" class="subscribe-btn" target="_blank">Subscribe Now</a>
+</div>
+
+  <div class="product-card">
+  <img src="images/f2520.png" alt="F2520" class="product-image" id="F2520-img">
+  
+  <h3>F2520SNEKR<br>20KG Front Load Washer</h3>
+    <p style="color:#666666;">Matt Black</p>
+  <div class="price-box">
+    <p><strong>OHSEM PROMO: RM60/month</strong></p>
+        <p style="color:red;font-size:12px;">Normal Price: RM120/month </p>
+    <p style="color:red;font-size:12px;">Half Price for 1st 9 months </p>   
+    <p style="color:red;font-size:12px;">5-year warranty </p> 
+  </div>
+
+  <p style="color:#363636; font-size:12px; line-height:1.4;">
+  <b>Every 6 Months (Delivery)</b><br>
+  Tub Cleaning Detergent<br>
+  <b>Every 12 Months (By Technician)</b><br>
+  Drain Pump / Wide Lint Filter
+</p><br>
+  <a href="https://wasap.my/60177473787/f2520" class="subscribe-btn" target="_blank">Subscribe Now</a>
+</div>
+
+  <div class="product-card">
+  <img src="images/FV1450.png" alt="FV1450" class="product-image" id="FV1450-img">
+  
+  <h3>FV1450S2W<br>10.5KG Front Load Washer</h3>
+    <p style="color:#666666;">White</p>
+  <div class="price-box">
+    <p><strong>OHSEM PROMO: RM45/month</strong></p>
+        <p style="color:red;font-size:12px;">Normal Price: RM90/month </p>
+    <p style="color:red;font-size:12px;">Half Price for 1st 9 months </p>   
+    <p style="color:red;font-size:12px;">5-year warranty </p> 
+  </div>
+
+  <p style="color:#363636; font-size:12px; line-height:1.4;">
+  <b>Every 6 Months (Delivery)</b><br>
+  Tub Cleaning Detergent<br>
+  <b>Every 12 Months (By Technician)</b><br>
+  Drain Pump / Wide Lint Filter
+</p>
+<br>
+  <a href="https://wasap.my/60177473787/fv1450" class="subscribe-btn" target="_blank">Subscribe Now</a>
+</div>
+
+  <div class="product-card">
+  <img src="images/TV2517.png" alt="TV2517" class="product-image" id="TV2517-img">
+  
+  <h3>TV2517DV3B<br>17KG Top Load Washer</h3>
+    <p style="color:#666666;">Platinum Black</p>
+  <div class="price-box">
+    <p><strong>OHSEM PROMO: RM43/month</strong></p>
+        <p style="color:red;font-size:12px;">Normal Price: RM85/month </p>
+    <p style="color:red;font-size:12px;">Half Price for 1st 9 months </p>   
+    <p style="color:red;font-size:12px;">5-year warranty </p> 
+  </div>
+
+ <p style="color:#363636; font-size:12px; line-height:1.4;">
+  <b>Every 6 Months (Delivery)</b><br>
+  Tub Cleaning Detergent<br>
+  <b>Every 12 Months (By Technician)</b><br>
+  Drain Pump / Wide Lint Filter
+</p>
+<br>
+  <a href="https://wasap.my/60177473787/TV2517" class="subscribe-btn" target="_blank">Subscribe Now</a>
+</div>
+
+<div class="product-card">
+  <img src="images/TV2520.png" alt="TV2520" class="product-image" id="TV2520-img">
+  
+  <h3>TV2520SV9KR<br>20KG Top Load Washer</h3>
+    <p style="color:#666666;">Black</p>
+  <div class="price-box">
+    <p><strong>OHSEM PROMO: RM50/month</strong></p>
+        <p style="color:red;font-size:12px;">Normal Price: RM100/month </p>
+    <p style="color:red;font-size:12px;">Half Price for 1st 9 months </p>   
+    <p style="color:red;font-size:12px;">5-year warranty </p> 
+  </div>
+
+  <p style="color:#363636; font-size:12px; line-height:1.4;">
+  <b>Every 6 Months (Delivery)</b><br>
+  Tub Cleaning Detergent<br>
+  <b>Every 12 Months (By Technician)</b><br>
+  Drain Pump / Wide Lint Filter
+</p>
+<br>
+  <a href="https://wasap.my/60177473787/TV2520" class="subscribe-btn" target="_blank">Subscribe Now</a>
+</div>
+
+<div class="product-card">
+  <img src="images/f2515.jpg" alt="F2515" class="product-image" id="F2515-img">
+  
+  <h3>F2515RNTKAR<br>15/8KG 2in1 Washer Dryer</h3>
+    <p style="color:#666666;">Matt Black</p>
+  <div class="price-box">
+    <p><strong>OHSEM PROMO: RM70/month</strong></p>
+        <p style="color:red;font-size:12px;">Normal Price: RM140/month </p>
+    <p style="color:red;font-size:12px;">Half Price for 1st 9 months </p>   
+    <p style="color:red;font-size:12px;">5-year warranty </p> 
+  </div>
+
+ <p style="color:#363636; font-size:12px; line-height:1.4;">
+  <b>Every 6 Months (Delivery)</b><br>
+  Tub Cleaning Detergent<br>
+  <b>Every 12 Months (By Technician)</b><br>
+  Drain Pump / Wide Lint Filter
+</p>
+<br>
+  <a href="https://wasap.my/60177473787/F2515" class="subscribe-btn" target="_blank">Subscribe Now</a>
+</div>
+
+<div class="product-card">
+  <img src="images/VD-H9066WS.png" alt="VD-H9066WS" class="product-image" id="VD-H9066WS-img">
+  
+  <h3>VD-H9066WSR<br>9KG Dual Inverter Heat Pump Dryer</h3>
+    <p style="color:#666666;">White</p>
+  <div class="price-box">
+    <p><strong>OHSEM PROMO: RM50/month</strong></p>
+        <p style="color:red;font-size:12px;">Normal Price: RM100/month </p>
+    <p style="color:red;font-size:12px;">Half Price for 1st 9 months </p>   
+    <p style="color:red;font-size:12px;">5-year warranty </p> 
+  </div>
+
+ <p style="color:#363636; font-size:12px; line-height:1.4;">
+  <b>Every 6 Months (Delivery)</b><br>
+  Fabric Softener Sheet<br>
+  <b>Every 12 Months (By Technician)</b><br>
+  1st Visit Only - Additional Lint Filter & Door Clip 
+</p>
+<br>
+  <a href="https://wasap.my/60177473787/VD-H9066WS" class="subscribe-btn" target="_blank">Subscribe Now</a>
+</div>
+
+</div>
+</div>
+</section>
+
+ <section id="styler">
+<div class="product-section">
+  <div class="category-title">Styler</div>
+  <div class="product-grid">
+  <div class="product-card">
+  <img src="images/S3WF-White.png" alt="S3WF" class="product-image" id="S3WF-img">
+  
+  <h3>S3WF<br>The Smart Wardrobe - Styler</h3>
+    <p style="color:#666666;">Essence White</p>
+  <div class="price-box">
+    <p><strong>OHSEM PROMO: RM45/month</strong></p>
+        <p style="color:red;font-size:12px;">Normal Price: RM90/month </p>
+    <p style="color:red;font-size:12px;">Half Price for 1st 9 months </p>   
+    <p style="color:red;font-size:12px;">7-year warranty </p> 
+  </div>
+   <div class="buyout-box">
+    <p><strong>Outright: RM5,899</strong></p>
+    <p style="color:gray;font-size:12px;">Inclusive 1-year Warranty</p>
+  </div>
+
+<br>
+  <a href="https://wasap.my/60177473787/S3WF" class="subscribe-btn" target="_blank">Subscribe Now</a>
+  <a href="https://wasap.my/60177473787/interested%20to%20buy%20this%20unit%20outright%20S3WF" class="buy-btn" target="_blank">Buy Now</a>
+</div>
+</div></div>
+</section>
+
+ <section id="refrigerator">
+<div class="product-section">
+  <div class="category-title">Refrigerator</div>
+  <div class="product-grid">
+  <div class="product-card">
+  <img src="images/GV-K25FFGER.png" alt="GV-K25FFGER" class="product-image" id="GV-K25FFGER-img">
+  
+  <h3>GV-K25FFGER<br>612L Multi-Door Fridge</h3>
+    <p style="color:#666666;">White</p>
+  <div class="price-box">
+    <p><strong>OHSEM PROMO: RM90/month</strong></p>
+        <p style="color:red;font-size:12px;">Normal Price: RM180/month </p>
+    <p style="color:red;font-size:12px;">Half Price for 1st 9 months </p>   
+    <p style="color:red;font-size:12px;">5-year warranty </p> 
+  </div>
+ <p style="color:#363636; font-size:12px; line-height:1.4;">
+  <b>Regular Visit</b><br>
+  Every 24 months
+</p>
+<br>
+  <a href="https://wasap.my/60177473787/K25FFGER" class="subscribe-btn" target="_blank">Subscribe Now</a>
+</div>
+
+ <div class="product-card">
+  <img src="images/GC-G22FFQAB.png" alt="GC-G22FFQAB" class="product-image" id="GC-G22FFQAB-img">
+  
+  <h3>GC-G22FFQAB<br>508L Multi-Door Fridge</h3>
+    <p style="color:#666666;">Matt Black</p>
+  <div class="price-box">
+    <p><strong>OHSEM PROMO: RM80/month</strong></p>
+        <p style="color:red;font-size:12px;">Normal Price: RM160/month </p>
+    <p style="color:red;font-size:12px;">Half Price for 1st 9 months </p>   
+    <p style="color:red;font-size:12px;">5-year warranty </p> 
+  </div>
+ <p style="color:#363636; font-size:12px; line-height:1.4;">
+  <b>Regular Visit</b><br>
+  Every 24 months
+</p>
+<br>
+  <a href="https://wasap.my/60177473787/G22FFQAB" class="subscribe-btn" target="_blank">Subscribe Now</a>
+</div>
+
+ <div class="product-card">
+  <img src="images/GC-B24FFCPB.png" alt="GC-B24FFCPB" class="product-image" id="GC-B24FFCPB-img">
+  
+  <h3>GC-B24FFCPB<br>665L Multi-Door Fridge</h3>
+    <p style="color:#666666;">Matt Black</p>
+  <div class="price-box">
+    <p><strong>OHSEM PROMO: RM65/month</strong></p>
+        <p style="color:red;font-size:12px;">Normal Price: RM130/month </p>
+    <p style="color:red;font-size:12px;">Half Price for 1st 9 months </p>   
+    <p style="color:red;font-size:12px;">5-year warranty </p> 
+  </div>
+ <p style="color:#363636; font-size:12px; line-height:1.4;">
+  <b>Regular Visit</b><br>
+  Every 24 months
+</p>
+<br>
+  <a href="https://wasap.my/60177473787/B24FFCPB" class="subscribe-btn" target="_blank">Subscribe Now</a>
+</div>
+
+<div class="product-card">
+  <img src="images/GC-J257SQNW.png" alt="GC-J257SQNW" class="product-image" id="GC-J257SQNW-img">
+  
+  <h3>GC-J257SQNW<br>635L Side-by-side Fridge</h3>
+    <p style="color:#666666;">Matt Black</p>
+  <div class="price-box">
+    <p><strong>OHSEM PROMO: RM65/month</strong></p>
+        <p style="color:red;font-size:12px;">Normal Price: RM130/month </p>
+    <p style="color:red;font-size:12px;">Half Price for 1st 9 months </p>   
+    <p style="color:red;font-size:12px;">5-year warranty </p> 
+  </div>
+ <p style="color:#363636; font-size:12px; line-height:1.4;">
+  <b>Regular Visit</b><br>
+  Every 24 months
+</p>
+<br>
+  <a href="https://wasap.my/60177473787/J257SQNW" class="subscribe-btn" target="_blank">Subscribe Now</a>
+</div>
+
+<div class="product-card">
+  <img src="images/GC-L257KQKR.jpg" alt="GC-L257KQKR" class="product-image" id="GC-L257KQKR-img">
+  
+  <h3>GC-L257KQKR<br>641L Side-by-side Fridge</h3>
+    <p style="color:#666666;">Matt Black</p>
+  <div class="price-box">
+    <p><strong>OHSEM PROMO: RM60/month</strong></p>
+        <p style="color:red;font-size:12px;">Normal Price: RM120/month </p>
+    <p style="color:red;font-size:12px;">Half Price for 1st 9 months </p>   
+    <p style="color:red;font-size:12px;">5-year warranty </p> 
+  </div>
+ <p style="color:#363636; font-size:12px; line-height:1.4;">
+  <b>Regular Visit</b><br>
+  Every 24 months
+</p>
+<br>
+  <a href="https://wasap.my/60177473787/L257KQKR" class="subscribe-btn" target="_blank">Subscribe Now</a>
+</div>
+
+<div class="product-card">
+  <img src="images/GN-F452PQAK.png" alt="GN-F452PQAK" class="product-image" id="GN-F452PQAK-img">
+  
+  <h3>GN-F452PQAK<br>493L Top Freezer</h3>
+    <p style="color:#666666;">Matt Black</p>
+  <div class="price-box">
+    <p><strong>OHSEM PROMO: RM40/month</strong></p>
+        <p style="color:red;font-size:12px;">Normal Price: RM80/month </p>
+    <p style="color:red;font-size:12px;">Half Price for 1st 9 months </p>   
+    <p style="color:red;font-size:12px;">5-year warranty </p> 
+  </div>
+ <p style="color:#363636; font-size:12px; line-height:1.4;">
+  <b>Regular Visit</b><br>
+  Every 24 months
+</p>
+<br>
+  <a href="https://wasap.my/60177473787/F452PQAK" class="subscribe-btn" target="_blank">Subscribe Now</a>
+</div>
+
+</div></div>
+</section>
+
+ <section id="vacuum">
+<div class="product-section">
+  <div class="category-title">Vacuum</div>
+  <div class="product-grid">
+  <div class="product-card">
+  <img src="images/A9X-RSTEAM.png" alt="A9X-RSTEAM" class="product-image" id="A9X-RSTEAM-img">
+  
+  <h3>A9X-RSTEAM</h3>
+    <p style="color:#666666;">Calming Beige</p>
+  <div class="price-box">
+    <p><strong>OHSEM PROMO: RM65/month</strong></p>
+        <p style="color:red;font-size:12px;">Normal Price: RM130/month </p>
+    <p style="color:red;font-size:12px;">Half Price for 1st 9 months </p>   
+    <p style="color:red;font-size:12px;">5-year warranty </p> 
+  </div>
+<br>
+  <a href="https://wasap.my/60177473787/A9XRSTEAM" class="subscribe-btn" target="_blank">Subscribe Now</a>
+</div>
+</div></div>
+</section>
+
+ <section id="tv-&-soundbar">
+<div class="product-section">
+  <div class="category-title">TV & Soundbar</div>
+  <div class="product-grid">
+  <div class="product-card">
+  <img src="images/OLED77.png" alt="OLED77" class="product-image" id="OLED77-img">
+  
+  <h3>OLED77B4PSA | 77"</h3>
+    <p style="color:#666666;">LG OLED AI TV B5 120Hz Dolby Vision & HDR10 4K UHD (2025)</p>
+  <div class="price-box">
+    <p><strong>OHSEM PROMO: RM280/month</strong></p>
+        <p style="color:red;font-size:12px;">Normal Price: RM560/month </p>
+    <p style="color:red;font-size:12px;">Half Price for 1st 9 months </p>   
+    <p style="color:red;font-size:12px;">5-year warranty </p> 
+  </div>
+<br>
+  <a href="https://wasap.my/60177473787/OLED77B4PSA" class="subscribe-btn" target="_blank">Subscribe Now</a>
+</div>
+
+<div class="product-card">
+  <img src="images/65QNED.png" alt="65QNED" class="product-image" id="65QNED-img">
+  
+  <h3>65QNED87ASA | 65"</h3>
+    <p style="color:#666666;">LG QNED evo AI TV QNED87 Dolby Vision & HDR10 4K UHD (2025)</p>
+  <div class="price-box">
+    <p><strong>OHSEM PROMO: RM68/month</strong></p>
+        <p style="color:red;font-size:12px;">Normal Price: RM135/month </p>
+    <p style="color:red;font-size:12px;">Half Price for 1st 9 months </p>   
+    <p style="color:red;font-size:12px;">5-year warranty </p> 
+  </div>
+<br>
+  <a href="https://wasap.my/60177473787/65QNED" class="subscribe-btn" target="_blank">Subscribe Now</a>
+</div>
+
+<div class="product-card">
+  <img src="images/75QNED.png" alt="75QNED" class="product-image" id="75QNED-img">
+  
+  <h3>75QNED87ASA | 75"</h3>
+    <p style="color:#666666;">LG QNED evo AI TV QNED87 Dolby Vision & HDR10 4K UHD (2025)</p>
+  <div class="price-box">
+    <p><strong>OHSEM PROMO: RM100/month</strong></p>
+        <p style="color:red;font-size:12px;">Normal Price: RM200/month </p>
+    <p style="color:red;font-size:12px;">Half Price for 1st 9 months </p>   
+    <p style="color:red;font-size:12px;">5-year warranty </p> 
+  </div>
+<br>
+  <a href="https://wasap.my/60177473787/75QNED" class="subscribe-btn" target="_blank">Subscribe Now</a>
+</div>
+
+<div class="product-card">
+  <img src="images/65NANO.png" alt="65NANO" class="product-image" id="65NANO-img">
+  
+  <h3>65NANO83ASB | 65"</h3>
+    <p style="color:#666666;">LG Premium 4K UHD AI TV NANO83 with HDR10 (2025)</p>
+  <div class="price-box">
+    <p><strong>OHSEM PROMO: RM43/month</strong></p>
+        <p style="color:red;font-size:12px;">Normal Price: RM85/month </p>
+    <p style="color:red;font-size:12px;">Half Price for 1st 9 months </p>   
+    <p style="color:red;font-size:12px;">5-year warranty </p> 
+  </div>
+<br>
+  <a href="https://wasap.my/60177473787/65NANO" class="subscribe-btn" target="_blank">Subscribe Now</a>
+</div>
+
+<div class="product-card">
+  <img src="images/75NANO.png" alt="75NANO" class="product-image" id="75NANO-img">
+  
+  <h3>75NANO83ASB | 75"</h3>
+    <p style="color:#666666;">LG Premium 4K UHD AI TV NANO83 with HDR10 (2025)</p>
+  <div class="price-box">
+    <p><strong>OHSEM PROMO: RM55/month</strong></p>
+        <p style="color:red;font-size:12px;">Normal Price: RM110/month </p>
+    <p style="color:red;font-size:12px;">Half Price for 1st 9 months </p>   
+    <p style="color:red;font-size:12px;">5-year warranty </p> 
+  </div>
+<br>
+  <a href="https://wasap.my/60177473787/75NANO" class="subscribe-btn" target="_blank">Subscribe Now</a>
+</div>
+
+<div class="product-card">
+  <img src="images/S90TY.png" alt="S90TY" class="product-image" id="S90TY-img">
+  
+  <h3>S90TY</h3>
+    <p style="color:#666666;">570W 5.1.3ch High Res Audio soundbar with Dolby Atmos</p>
+  <div class="price-box">
+    <p><strong>OHSEM PROMO: RM30/month</strong></p>
+        <p style="color:red;font-size:12px;">Normal Price: RM60/month </p>
+    <p style="color:red;font-size:12px;">Half Price for 1st 9 months </p>   
+    <p style="color:red;font-size:12px;">5-year warranty </p> 
+  </div>
+<br>
+  <a href="https://wasap.my/60177473787/S90TY" class="subscribe-btn" target="_blank">Subscribe Now</a>
+</div>
+</div></div>
+</section>
+
+ <section id="xboom">
+<div class="product-section">
+  <div class="category-title">Xboom</div>
+  <div class="product-grid">
+  <div class="product-card">
+  <img src="images/LG-xboom-Grab.png" alt="LG-xboom-Grab" class="product-image" id="LG-xboom-Grab-img">
+  
+  <h3>GRAB</h3>
+    <p style="color:#666666;">LG xboom Grab by will.i.am | Bluetooth Speaker | xboom Signature Sound with Ultimate Portability</p>
+   <div class="buyout-box">
+    <p><strong>Outright: RM749</strong></p>
+    <p style="color:gray;font-size:12px;">Inclusive 1-year Warranty</p>
+  </div>
+
+<br>
+  <a href="https://wasap.my/60177473787/interested%20to%20buy%20this%20unit%20xboomGRAB" class="buy-btn" target="_blank">Buy Now</a>
+  </div>
+
+  <div class="product-card">
+  <img src="images/LG-xboom-Buds.png" alt="LG-xboom-Buds" class="product-image" id="LG-xboom-Buds-img">
+  
+  <h3>BUDS</h3>
+    <p style="color:#666666;">LG xboom Buds by will.i.am | Bluetooth Earbuds | xboom Signature Sound with Graphene Driver, Black</p>
+   <div class="buyout-box">
+    <p><strong>Outright: RM529</strong></p>
+    <p style="color:gray;font-size:12px;">Inclusive 1-year Warranty</p>
+  </div>
+
+<br>
+  <a href="https://wasap.my/60177473787/interested%20to%20buy%20this%20unit%20xboomBUDS" class="buy-btn" target="_blank">Buy Now</a>
+  </div>
+
+  <div class="product-card">
+  <img src="images/LG-xboom-Bounce.png" alt="LG-xboom-Bounce" class="product-image" id="LG-xboom-Bounce-img">
+  
+  <h3>BOUNCE</h3>
+    <p style="color:#666666;">LG xboom Bounce by will.i.am | Bluetooth Speaker | xboom Signature Sound with Upward Passive Radiators</p>
+   <div class="buyout-box">
+    <p><strong>Outright: RM899</strong></p>
+    <p style="color:gray;font-size:12px;">Inclusive 1-year Warranty</p>
+  </div>
+
+<br>
+  <a href="https://wasap.my/60177473787/interested%20to%20buy%20this%20unit%20xboomBOUNCE" class="buy-btn" target="_blank">Buy Now</a>
+  </div>
+
+</div></div>
+</section>
+
+ <section id="monitors">
+<div class="product-section">
+  <div class="category-title">Monitors</div>
+  <div class="product-grid">
+  <div class="product-card">
+  <img src="images/27G640A-B.png" alt="27G640A-B" class="product-image" id="27G640A-B-img">
+  
+  <h3>27G640A-B</h3>
+    <p style="color:#666666;">27” UltraGear™ QHD IPS gaming monitor | 300Hz, 1ms, DisplayHDR™ 400</p>
+   <div class="buyout-box">
+    <p><strong>Outright: RM1399</strong></p>
+    <p style="color:gray;font-size:12px;">Inclusive 1-year Warranty</p>
+  </div>
+
+<br>
+  <a href="https://wasap.my/60177473787/interested%20to%20buy%20this%20unit%2027G640A-B" class="buy-btn" target="_blank">Buy Now</a>
+  </div>
+
+  <div class="product-card">
+  <img src="images/27GX790A-B.png" alt="27GX790A-B" class="product-image" id="27GX790A-B-img">
+  
+  <h3>27GX790A-B</h3>
+    <p style="color:#666666;">27 Inch UltraGear OLED QHD 1440P 480Hz 0.03ms G-Sync® Compatible DisplayPort 2.1 Gaming Monitor</p>
+ <div class="price-box">
+    <p><strong>OHSEM PROMO: RM60/month</strong></p>
+        <p style="color:red;font-size:12px;">Normal Price: RM120/month </p>
+    <p style="color:red;font-size:12px;">Half Price for 1st 9 months </p>   
+    <p style="color:red;font-size:12px;">5-year warranty </p> 
+  </div>
+   <div class="buyout-box">
+    <p><strong>Outright: RM4,499</strong></p>
+    <p style="color:gray;font-size:12px;">Inclusive 1-year Warranty</p>
+  </div>
+
+<br>
+  <a href="https://wasap.my/60177473787/27GX790A-B" class="subscribe-btn" target="_blank">Subscribe Now</a>
+  <a href="https://wasap.my/60177473787/interested%20to%20buy%20this%20unit%20outright%27GX790A-B" class="buy-btn" target="_blank">Buy Now</a>
+</div>
+
+</div></div>
+</section>
+
+ <section id="dishwasher">
+<div class="product-section">
+  <div class="category-title">Dishwasher (Klang Valley Only)</div>
+  <div class="product-grid">
+  <div class="product-card">
+  <img src="images/DFC335HM.png" alt="DFC335HM" class="product-image" id="DFC335HM-img">
+  
+  <h3>DFC335HM<br>LG Dishwasher QuadWash™ Steam</h3>
+    <p style="color:#666666;">Matte Black<br>TrueSteam™ | QuadWash™ | EasyRack™ Plus | Inverter Direct Drive | ThinQ™</p>
+ <div class="price-box">
+    <p><strong>OHSEM PROMO: RM75/month</strong></p>
+        <p style="color:red;font-size:12px;">Normal Price: RM150/month </p>
+    <p style="color:red;font-size:12px;">Half Price for 1st 9 months </p>   
+    <p style="color:red;font-size:12px;">5-year warranty & Regular Visit (Every 12 months) </p> 
+  </div>
+<br>
+  <a href="https://wasap.my/60177473787/DFC335HM" class="subscribe-btn" target="_blank">Subscribe Now</a>
+</div>
+
+  <div class="product-card">
+ <img src="images/DFC533FV.png" alt="DFC533FV" class="product-image" id="DFC533FV-img">
+  
+  <h3>DFC533FV<br>LG QuadWash™ Freestanding Dishwasher</h3>
+    <p style="color:#666666;">Matte Black<br>TrueSteam™ | QuadWash™ | EasyRack™ Plus | ThinQ™</p>
+ <div class="price-box">
+    <p><strong>OHSEM PROMO: RM65/month</strong></p>
+        <p style="color:red;font-size:12px;">Normal Price: RM130/month </p>
+    <p style="color:red;font-size:12px;">Half Price for 1st 9 months </p>   
+    <p style="color:red;font-size:12px;">5-year warranty & Regular Visit (Every 12 months) </p> 
+  </div>
+<br>
+  <a href="https://wasap.my/60177473787/DFC533FV" class="subscribe-btn" target="_blank">Subscribe Now</a>
+</div>
+
+</div></div>
+</section>
+<!-- SAMPLE CATEGORY END -->
+
+<!-- 🏠 Our Locations Section -->
+<section class="locations">
+  <h2>Our Locations</h2>
+
+  <div class="location-list">
+
+    <!-- 📍 Location 1 -->
+    <div class="location-item">
+      <img src="images/locations/batupahat.jpg" alt="LG Brandshop Batu Pahat" class="location-img">
+      <h3>LG Brandshop Batu Pahat</h3>
+      <p>No. 30, Jalan Persiaran Flora Utama,<br> Taman Flora Utama,<br>Batu Pahat, Johor</p>
+      <a href="https://maps.app.goo.gl/hcMC28w5xBrLnuPR9" target="_blank" class="visit-btn">Get Directions</a>
+    </div>
+
+    <!-- 📍 Location 2 -->
+    <div class="location-item">
+      <img src="images/locations/paritraja.jpg" alt="LG Brandkiosk Parit Raja" class="location-img">
+      <h3>LG Brandkiosk @ Lotus Parit Raja</h3>
+      <p>P8, Lotus’s Parit Raja, 1,<br> Jalan Universiti,<br> Taman Universiti,<br> Parit Raja, Johor</p>
+      <a href="https://maps.app.goo.gl/FZzFS6bj66fRbx9MA" target="_blank" class="visit-btn">Get Directions</a>
+    </div>
+
+  </div>
+</section>
+
+<style>
+.locations {
+  background-color: #f9fafc;
+  padding: 60px 20px;
+  text-align: center;
+  font-family: 'Poppins', sans-serif;
+}
+
+.locations h2 {
+  font-size: 28px;
+  font-weight: 600;
+  color: #222;
+  margin-bottom: 40px;
+}
+
+/* 📷 图片与卡片布局 */
+.location-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 30px;
+}
+
+.location-item {
+  background-color: white;
+  border-radius: 15px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  padding: 25px;
+  width: 320px;
+  transition: transform 0.3s ease;
+}
+
+.location-item:hover {
+  transform: translateY(-5px);
+}
+
+.location-img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.location-item h3 {
+  color: #111;
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.location-item p {
+  color: #555;
+  font-size: 15px;
+  line-height: 1.6;
+  margin-bottom: 15px;
+}
+
+/* 🟩 按钮设计 */
+.visit-btn {
+  display: inline-block;
+  background-color: #008CFF;
+  color: white;
+  padding: 10px 18px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+}
+
+.visit-btn:hover {
+  background-color: #0072cc;
+}
+
+/* 📱 手机自适应 */
+@media (max-width: 768px) {
+  .location-list {
+    flex-direction: column;
+    align-items: center;
+  }
+  .location-item {
+    width: 90%;
+  }
+}
+</style>
+
+<footer>
+  © 2025 LG Subscribe | Powered by DNC Home Appliances
+</footer>
+<script>
+function changeColor(productId, color) {
+  const img = document.getElementById(`${productId}-img`);
+  img.src = `images/${productId}-${color}.png`;
+}
+</script>
+
+</body>
+</html>
+
