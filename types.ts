@@ -39,7 +39,7 @@ export interface Product {
   normalPrice: number;
   promoText: string;
   warranty: string;
-  outrightWarranty?: string; // 新增：买断保修文本
+  outrightWarranty?: string; 
   features: Multilingual[];
   painPoints: Multilingual[];
   outrightPrice?: number;
@@ -49,7 +49,7 @@ export interface Product {
   isPromoActive?: boolean;
   isNew?: boolean;
   isHotSale?: boolean;
-  isKlangValleyOnly?: boolean; // 新增：地区限定
+  isKlangValleyOnly?: boolean; 
   promoBadge?: Multilingual;
   promoDiscountType?: 'percentage' | 'fixed_price';
   promoDiscountValue?: number; 

@@ -1,6 +1,8 @@
 
 import { Product } from './types';
 
+// 这是你的“主数据库”。
+// 你在后台点击“导出”后的 JSON 可以直接粘贴到这里。
 export const INITIAL_PRODUCTS: Product[] = [
   {
     id: 'AC-V13ENS',
