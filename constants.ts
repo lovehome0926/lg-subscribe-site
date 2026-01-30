@@ -1,9 +1,16 @@
 
 import { Product } from './types';
 
-// 这是你的“主数据库”。
-// 你在后台点击“导出”后的 JSON 可以直接粘贴到这里。
+/**
+ * 【Master 数据配置说明】
+ * 如果你想让所有客户打开网站时都看到最新的产品资料：
+ * 1. 在管理后台 (Admin Dashboard) -> Backup 选项卡中点击 "Export Database JSON"。
+ * 2. 将导出的 JSON 文件内容复制。
+ * 3. 替换掉下方 INITIAL_PRODUCTS 数组中的内容。
+ * 4. 重新推送代码并部署。
+ */
 export const INITIAL_PRODUCTS: Product[] = [
+  // 您可以将后台导出的 JSON 粘贴在下面这个数组中
   {
     id: 'AC-V13ENS',
     category: 'Air Conditioner',
@@ -60,7 +67,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     image: 'https://www.lg.com/content/dam/channel/wcms/my/images/refrigerators/gr-b247sluv_asbp_e_my_c/gallery/dz-01.jpg',
     officialUrl: 'https://www.lg.com/my/refrigerators/gr-b247sluv/',
     variants: [
-      { name: 'Platinum Silver', image: 'https://www.lg.com/content/dam/channel/wcms/my/images/refrigerators/gr-b247sluv_asbp_e_my_c/gallery/dz-01.jpg', colorCode: '#c0c0c0', modelId: 'REF-GR-S' }
+      { name: 'Platinum Silver', image: 'https://www.lg.com/content/dam/channel/wcms/my/images/refrigerators/gr-gr-b247sluv_asbp_e_my_c/gallery/dz-01.jpg', colorCode: '#c0c0c0', modelId: 'REF-GR-S' }
     ],
     promoPrice: 150,
     normalPrice: 200,
