@@ -57,7 +57,7 @@
   </div>
 
   <script>
-    // 强制超时处理：防止由于 JS 加载失败导致的永久黑屏
+    // Remove loader once the app is mounted or after a timeout
     window.addEventListener('load', function() {
       setTimeout(function() {
         const loader = document.getElementById('initial-loader');
@@ -69,14 +69,13 @@
     });
 
     window.onerror = function(message) {
-      console.error("Critical System Error:", message);
+      console.error("System Error:", message);
       const errEl = document.getElementById('error-msg');
       if (errEl) errEl.style.display = 'block';
       return false;
     };
   </script>
 
-  <!-- Vite 入口 -->
   <script type="module" src="./index.tsx"></script>
 </body>
 </html>

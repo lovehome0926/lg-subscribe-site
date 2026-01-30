@@ -22,27 +22,14 @@ body {
   color: #05090f;
 }
 
-/* 玻璃拟态导航栏增强 */
 .glass-nav { 
-  background: rgba(255, 255, 255, 0.85); 
-  backdrop-filter: blur(24px); 
-  -webkit-backdrop-filter: blur(24px); 
+  background: rgba(255, 255, 255, 0.8); 
+  backdrop-filter: blur(20px); 
+  -webkit-backdrop-filter: blur(20px); 
 }
 
-/* 确保所有按钮具有基础样式，防止 Tailwind 丢失时出现全黑边框 */
-button {
-  border: none;
-  cursor: pointer;
-  background: none;
-}
-
-input, select, textarea {
-  font-family: inherit;
-}
-
-/* 渐变效果补丁 */
 .agent-gradient {
-  background: linear-gradient(135deg, #e60044 0%, #000000 100%);
+  background: linear-gradient(135deg, #e60044 0%, #05090f 100%);
 }
 
 .hero-beige {
@@ -53,10 +40,30 @@ input, select, textarea {
   box-shadow: 0 20px 40px rgba(230, 0, 68, 0.2);
 }
 
+.benefit-number {
+  font-size: 80px;
+  font-weight: 900;
+  opacity: 0.05;
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  line-height: 1;
+}
+
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-up {
+  animation: fadeIn 0.8s ease-out forwards;
 }
