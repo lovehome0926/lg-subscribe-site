@@ -53,17 +53,6 @@
       animation: spin 1s linear infinite;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
-    
-    #emergency-ui {
-      display: none;
-      color: white;
-      text-align: center;
-      margin-top: 30px;
-      font-size: 11px;
-      letter-spacing: 0.1em;
-      max-width: 250px;
-      line-height: 1.6;
-    }
   </style>
 <script type="importmap">
 {
@@ -85,34 +74,33 @@
   <div class="loading-screen" id="initial-loader">
     <div class="spinner"></div>
     <p style="color: white; margin-top: 30px; font-size: 10px; font-weight: 900; letter-spacing: 0.6em; text-transform: uppercase; opacity: 0.4;">LG Global Partner Showroom</p>
-    
-    <div id="emergency-ui">
-      <p style="color: #e60044; font-weight: 800; margin-bottom: 15px;">SYNCHRONIZATION ERROR</p>
-      <p>System detected a local script loading issue. This usually happens on first load.</p>
+    <div id="error-msg" style="display:none; color: #e60044; margin-top: 20px; font-size: 11px; font-weight: bold; text-align: center; max-width: 80%;">
+      LOAD ERROR: Please check your browser console for details.
     </div>
-
-    <!-- 强制进入按钮：即使脚本崩了，点击也能移除遮罩 -->
-    <button id="force-enter-btn" onclick="document.getElementById('initial-loader').style.display='none'" style="margin-top: 50px; color: white; font-size: 9px; font-weight: 900; letter-spacing: 0.4em; text-transform: uppercase; background: rgba(230,0,68,1); border: none; padding: 18px 40px; border-radius: 100px; cursor: pointer; transition: all 0.3s; box-shadow: 0 20px 40px rgba(230,0,68,0.3); visibility: hidden;">Enter Showroom</button>
   </div>
 
   <script>
-    // 3秒后还没加载完，就显示“强制进入”按钮
-    setTimeout(function() {
-      var btn = document.getElementById('force-enter-btn');
-      if (btn) btn.style.visibility = 'visible';
-    }, 3000);
+    // 监听运行时错误并尝试修复界面
+    window.onerror = function(message) {
+      console.error("Global Error Caught:", message);
+      const errEl = document.getElementById('error-msg');
+      if (errEl) errEl.style.display = 'block';
+      return false;
+    };
 
-    // 监控挂载：如果 root 5秒后还是空的，说明挂载失败了
-    setTimeout(function() {
-      var root = document.getElementById('root');
-      if (root && root.innerHTML === "") {
-        document.getElementById('emergency-ui').style.display = 'block';
-        console.error("React mount failed. Check if index.tsx is properly transpiled.");
-      }
-    }, 5000);
+    // 强制安全移除加载器
+    window.addEventListener('load', function() {
+      setTimeout(function() {
+        const loader = document.getElementById('initial-loader');
+        if (loader) {
+          loader.style.opacity = '0';
+          setTimeout(() => loader.remove(), 800);
+        }
+      }, 3000);
+    });
   </script>
 
-  <!-- Vite 模式下必须使用相对路径，且指向 .tsx，开发服务器会自动处理，打包工具会替换它 -->
+  <!-- Vite 环境下直接指向源文件，打包后会自动替换为处理过的 JS -->
   <script type="module" src="./index.tsx"></script>
 </body>
 </html>

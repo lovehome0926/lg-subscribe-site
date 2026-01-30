@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Product, AppRoute, Agent, Language, SiteSettings } from './types';
 import { INITIAL_PRODUCTS, CATEGORIES as DEFAULT_CATEGORIES, DATA_VERSION } from './constants';
@@ -28,7 +27,6 @@ const App: React.FC = () => {
   const [brandingLogo, setBrandingLogo] = useState<string | null>(() => safeStorage.get('lg_branding_logo'));
   const [brandingHero, setBrandingHero] = useState<string | null>(() => safeStorage.get('lg_branding_hero'));
   
-  // Fix for error on line 29: Ensured default site settings match the SiteSettings interface
   const [siteSettings, setSiteSettings] = useState<SiteSettings>(() => {
     const saved = safeStorage.get('lg_site_settings');
     const defaultSettings: SiteSettings = {
@@ -52,61 +50,51 @@ const App: React.FC = () => {
       if (saved) {
         const parsed = JSON.parse(saved);
         if (parsed && typeof parsed === 'object') {
-          return {
-            ...defaultSettings,
-            ...parsed
-          };
+          return { ...defaultSettings, ...parsed };
         }
       }
     } catch(e) {}
     return defaultSettings;
   });
 
-  // Initialization effect
   useEffect(() => {
-    const loadData = async () => {
-      const storedVersion = Number(safeStorage.get('lg_data_version') || 0);
-      
-      if (storedVersion < DATA_VERSION) {
-        await saveProductsDB(INITIAL_PRODUCTS);
-        safeStorage.set('lg_data_version', DATA_VERSION.toString());
-      }
+    const initApp = async () => {
+      try {
+        const storedVersion = Number(safeStorage.get('lg_data_version') || 0);
+        if (storedVersion < DATA_VERSION) {
+          await saveProductsDB(INITIAL_PRODUCTS);
+          safeStorage.set('lg_data_version', DATA_VERSION.toString());
+        }
 
-      const dbProducts = await getProductsDB();
-      if (dbProducts.length > 0) {
-        setProducts(dbProducts);
-      } else {
-        setProducts(INITIAL_PRODUCTS);
-        await saveProductsDB(INITIAL_PRODUCTS);
-      }
+        const dbProducts = await getProductsDB();
+        setProducts(dbProducts.length > 0 ? dbProducts : INITIAL_PRODUCTS);
 
-      // Check URL for agent info
-      const params = new URLSearchParams(window.location.search);
-      const wa = params.get('wa');
-      const name = params.get('name');
-      
-      if (wa && name) {
-        const agent = { id: wa, name: decodeURIComponent(name), whatsapp: wa };
-        setActiveAgent(agent);
-        safeStorage.set('active_agent', JSON.stringify(agent));
-      } else {
-        const savedAgent = safeStorage.get('active_agent');
-        if (savedAgent) setActiveAgent(JSON.parse(savedAgent));
-      }
+        const params = new URLSearchParams(window.location.search);
+        const wa = params.get('wa');
+        const name = params.get('name');
+        
+        if (wa && name) {
+          const agent = { id: wa, name: decodeURIComponent(name), whatsapp: wa };
+          setActiveAgent(agent);
+          safeStorage.set('active_agent', JSON.stringify(agent));
+        } else {
+          const savedAgent = safeStorage.get('active_agent');
+          if (savedAgent) setActiveAgent(JSON.parse(savedAgent));
+        }
 
-      // Check admin auth via hash
-      if (window.location.hash === '#admin-console') {
-        setIsAdminAuth(true);
-        setCurrentRoute(AppRoute.ADMIN);
-      }
+        if (window.location.hash === '#admin') {
+          setCurrentRoute(AppRoute.ADMIN);
+        }
 
-      setIsReady(true);
+        setIsReady(true);
+      } catch (err) {
+        console.error("App Init Error:", err);
+        setIsReady(true); // 即使出错也允许进入以避免永久锁定
+      }
     };
-
-    loadData();
+    initApp();
   }, []);
 
-  // Update effect for saving site settings
   useEffect(() => {
     if (isReady) {
       safeStorage.set('lg_site_settings', JSON.stringify(siteSettings));
@@ -120,20 +108,15 @@ const App: React.FC = () => {
   };
 
   const handleReset = async () => {
-    if (confirm("Reset all data to default? This cannot be undone.")) {
+    if (confirm("Reset data?")) {
       localStorage.clear();
       await saveProductsDB(INITIAL_PRODUCTS);
       location.reload();
     }
   };
 
-  if (!isReady) return (
-    <div className="h-screen w-screen flex items-center justify-center bg-white">
-      <div className="w-12 h-12 border-4 border-lg-red border-t-transparent rounded-full animate-spin"></div>
-    </div>
-  );
+  if (!isReady) return null;
 
-  // Added return statement to fix error on line 11 (Type '() => void' is not assignable to type 'FC<{}>')
   return (
     <div className="min-h-screen bg-white font-sans text-gray-950 antialiased selection:bg-lg-red selection:text-white">
       <Navbar 
@@ -179,14 +162,27 @@ const App: React.FC = () => {
             onReset={handleReset}
           />
         ) : (
-          <div className="py-40 text-center space-y-8">
-            <h2 className="text-4xl font-black">UNAUTHORIZED ACCESS</h2>
-            <button onClick={() => setCurrentRoute(AppRoute.HOME)} className="bg-lg-red text-white px-10 py-4 rounded-full font-black uppercase tracking-widest">Return Home</button>
+          <div className="py-40 text-center space-y-8 px-6">
+            <h2 className="text-4xl font-black uppercase tracking-tighter">System Access Required</h2>
+            <div className="flex flex-col items-center gap-4">
+              <button 
+                onClick={() => {
+                  const pin = prompt("Admin PIN (8888):");
+                  if (pin === "8888") {
+                    setIsAdminAuth(true);
+                    setCurrentRoute(AppRoute.ADMIN);
+                  }
+                }} 
+                className="bg-lg-red text-white px-12 py-5 rounded-full font-black uppercase tracking-widest shadow-2xl"
+              >
+                Authenticate
+              </button>
+              <button onClick={() => setCurrentRoute(AppRoute.HOME)} className="text-[10px] font-black uppercase tracking-widest text-gray-400">Return Home</button>
+            </div>
           </div>
         )}
       </main>
 
-      {/* Persistent Shortcut for Agent Tools */}
       <div className="fixed bottom-10 right-10 z-[50] group">
         <button 
           onClick={() => {
@@ -197,12 +193,8 @@ const App: React.FC = () => {
         >
           <Briefcase size={24} />
         </button>
-        <div className="absolute bottom-full right-0 mb-4 bg-black text-white text-[10px] font-black uppercase tracking-widest px-4 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
-          Agent Tools
-        </div>
       </div>
 
-      {/* Agent Tools Modal / Overlay */}
       <div id="agent-tools-modal" className="fixed inset-0 z-[2000] bg-white hidden overflow-y-auto">
          <div className="absolute top-10 right-10 z-[10]">
             <button 
@@ -218,5 +210,4 @@ const App: React.FC = () => {
   );
 };
 
-// Fixed error on index.tsx line 4 by adding default export
 export default App;
