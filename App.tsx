@@ -54,8 +54,11 @@ const App: React.FC = () => {
 
   useEffect(() => {
     const init = async () => {
-      // 强制在 2.5 秒后解锁，防止任何异步逻辑卡死导致页面进不去
-      const forceReady = setTimeout(() => setIsReady(true), 2500);
+      // Emergency "Force Render" timer for GitHub Pages reliability
+      const forceReady = setTimeout(() => {
+        console.warn("App: Initialization taking too long, forcing ready state.");
+        setIsReady(true);
+      }, 3500);
 
       try {
         const savedSettings = localStorage.getItem('lg_site_settings');
@@ -67,16 +70,23 @@ const App: React.FC = () => {
         const savedCats = localStorage.getItem('lg_categories');
         if (savedCats) setCategories(JSON.parse(savedCats));
 
-        const dbProducts = await getProductsDB();
-        if (dbProducts && dbProducts.length > 0) {
-          setProducts(dbProducts);
-        } else {
+        // Attempt DB load, fallback to constants if indexedDB fails or is empty
+        try {
+          const dbProducts = await getProductsDB();
+          if (dbProducts && dbProducts.length > 0) {
+            setProducts(dbProducts);
+          } else {
+            setProducts(INITIAL_PRODUCTS);
+            await saveProductsDB(INITIAL_PRODUCTS);
+          }
+        } catch (dbError) {
+          console.error("DB Initialization failed, falling back to static data:", dbError);
           setProducts(INITIAL_PRODUCTS);
-          await saveProductsDB(INITIAL_PRODUCTS);
         }
 
         const params = new URLSearchParams(window.location.search);
-        const agentWa = params.get('wa') || params.get('agent_wa');
+        // Supports various param names for flexibility
+        const agentWa = params.get('wa') || params.get('agent_wa') || params.get('whatsapp');
         const agentName = params.get('name') || params.get('agent_name');
 
         if (agentWa) {
@@ -89,7 +99,7 @@ const App: React.FC = () => {
         }
 
         const handleHash = () => {
-          const h = window.location.hash.replace('#', '');
+          const h = window.location.hash.replace('#', '').split('?')[0];
           if (h === 'admin') setCurrentRoute(AppRoute.ADMIN);
           else setCurrentRoute(AppRoute.HOME);
         };
@@ -97,7 +107,7 @@ const App: React.FC = () => {
         handleHash();
 
       } catch (e) { 
-        console.error("Initialization error:", e); 
+        console.error("App: Fatal initialization error:", e); 
       } finally { 
         clearTimeout(forceReady);
         setIsReady(true); 
@@ -111,13 +121,13 @@ const App: React.FC = () => {
       const loader = document.getElementById('initial-loader');
       if (loader) {
         loader.style.opacity = '0';
-        setTimeout(() => loader.remove(), 600);
+        setTimeout(() => { if(loader.parentNode) loader.remove(); }, 600);
       }
     }
   }, [isReady]);
 
   const resetToMaster = async () => {
-    if(confirm("确定要重置为 master 预设数据吗？")) {
+    if(confirm("Confirm reset to Master Data from GitHub? This will overwrite local changes.")) {
       setProducts(INITIAL_PRODUCTS);
       await saveProductsDB(INITIAL_PRODUCTS);
       location.reload();
@@ -135,7 +145,11 @@ const App: React.FC = () => {
         brandingLogo={brandingLogo}
       />
       <main className="flex-grow pt-20">
-        {!isReady ? null : currentRoute === AppRoute.ADMIN ? (
+        {!isReady ? (
+          <div className="flex items-center justify-center h-screen bg-gray-50">
+             <div className="w-10 h-10 border-4 border-lg-red/20 border-t-lg-red rounded-full animate-spin"></div>
+          </div>
+        ) : currentRoute === AppRoute.ADMIN ? (
           isAdminAuth ? (
             <AdminDashboard 
               products={products} 
