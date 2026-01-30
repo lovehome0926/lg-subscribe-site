@@ -50,12 +50,12 @@
     <div class="spinner"></div>
     <p style="color: white; margin-top: 30px; font-size: 10px; font-weight: 900; letter-spacing: 0.6em; text-transform: uppercase; opacity: 0.4;">LG Global Partner Showroom</p>
     <div id="error-msg" style="display:none; color: #e60044; margin-top: 20px; font-size: 11px; font-weight: bold; text-align: center; max-width: 80%;">
-      SYSTEM INITIALIZATION ERROR: Check browser console for details.
+      SYSTEM INITIALIZATION ERROR: Please check browser console.
     </div>
   </div>
 
   <script>
-    // Failsafe: Remove loader after 4 seconds to prevent getting stuck
+    // Failsafe: Remove loader after 3.5 seconds to ensure visibility even if some scripts defer
     window.addEventListener('load', function() {
       setTimeout(function() {
         const loader = document.getElementById('initial-loader');
