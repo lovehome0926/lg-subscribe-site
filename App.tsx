@@ -59,10 +59,10 @@ const App: React.FC = () => {
 
   useEffect(() => {
     const initApp = async () => {
-      // Failsafe timeout: Force ready state after 5 seconds even if IndexedDB is slow
+      // 启动 failsafe 计时器，5秒不成功强制认为 ready
       const failsafe = setTimeout(() => {
         if (!isReady) {
-          console.warn("Initialization taking too long, forcing ready state.");
+          console.warn("App: Initialization taking too long, firing failsafe...");
           setIsReady(true);
         }
       }, 5000);
@@ -77,7 +77,7 @@ const App: React.FC = () => {
         const dbProducts = await getProductsDB();
         setProducts(dbProducts.length > 0 ? dbProducts : INITIAL_PRODUCTS);
 
-        // Affiliate logic
+        // 处理代理/联盟逻辑
         const params = new URLSearchParams(window.location.search);
         const wa = params.get('wa');
         const name = params.get('name');
@@ -86,13 +86,14 @@ const App: React.FC = () => {
           const agent = { id: wa, name: decodeURIComponent(name), whatsapp: wa };
           setActiveAgent(agent);
           safeStorage.set('active_agent', JSON.stringify(agent));
-          // Clean URL
+          // 静默清理 URL 保持美观
           window.history.replaceState({}, '', window.location.pathname + window.location.hash);
         } else {
           const savedAgent = safeStorage.get('active_agent');
           if (savedAgent) setActiveAgent(JSON.parse(savedAgent));
         }
 
+        // 路由逻辑
         const handleHashChange = () => {
           if (window.location.hash.includes('#admin')) {
             setCurrentRoute(AppRoute.ADMIN);
@@ -106,7 +107,7 @@ const App: React.FC = () => {
 
         setIsReady(true);
       } catch (err) {
-        console.error("App Init Error:", err);
+        console.error("App: Boot error:", err);
         setIsReady(true); 
       } finally {
         clearTimeout(failsafe);
@@ -128,19 +129,18 @@ const App: React.FC = () => {
   };
 
   const handleReset = async () => {
-    if (confirm("Factory reset all data?")) {
+    if (confirm("FACTORY RESET: Delete all customized products and settings?")) {
       localStorage.clear();
       await saveProductsDB(INITIAL_PRODUCTS);
       location.reload();
     }
   };
 
-  // If we are not ready, we still return a base structure to avoid "white screen" 
-  // if the initial-loader fails to clear.
+  // 即使在加载中，也返回基本的容器结构，以防 loader 消失后出现短暂白屏
   if (!isReady) return (
     <div className="h-screen w-screen flex flex-col items-center justify-center bg-[#05090f] text-white">
       <div className="w-10 h-10 border-2 border-lg-red border-t-transparent rounded-full animate-spin mb-4"></div>
-      <p className="text-[10px] font-black uppercase tracking-[0.5em] opacity-30">Starting System...</p>
+      <p className="text-[10px] font-black uppercase tracking-[0.5em] opacity-30">Authenticating Hardware...</p>
     </div>
   );
 
@@ -189,9 +189,12 @@ const App: React.FC = () => {
             onReset={handleReset}
           />
         ) : (
-          <div className="py-40 text-center space-y-8 px-6">
-            <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter">System Console</h2>
-            <p className="text-gray-400 font-bold uppercase tracking-widest text-[10px]">Administrative credentials required to access this terminal.</p>
+          <div className="py-40 text-center space-y-12 px-6 animate-in fade-in slide-in-from-bottom-10 duration-1000">
+            <div className="space-y-4">
+              <h2 className="text-4xl md:text-7xl font-black uppercase tracking-tighter">System Terminal</h2>
+              <p className="text-gray-400 font-bold uppercase tracking-widest text-[10px]">Administrative access required to manage assets.</p>
+            </div>
+            
             <div className="flex flex-col items-center gap-6">
               <button 
                 onClick={() => {
@@ -200,20 +203,20 @@ const App: React.FC = () => {
                     setIsAdminAuth(true);
                     setCurrentRoute(AppRoute.ADMIN);
                   } else if (pin !== null) {
-                    alert("Access Denied.");
+                    alert("ACCESS DENIED.");
                   }
                 }} 
-                className="bg-lg-red text-white px-16 py-6 rounded-full font-black uppercase text-[11px] tracking-[0.3em] shadow-2xl hover:bg-black transition-all"
+                className="bg-lg-red text-white px-16 py-6 rounded-full font-black uppercase text-[11px] tracking-[0.3em] shadow-[0_30px_60px_rgba(230,0,68,0.2)] hover:bg-black transition-all"
               >
-                Enter Passcode
+                Authenticate Terminal
               </button>
-              <button onClick={() => setCurrentRoute(AppRoute.HOME)} className="text-[9px] font-black uppercase tracking-widest text-gray-300 hover:text-lg-red transition-colors">Return to Showroom</button>
+              <button onClick={() => setCurrentRoute(AppRoute.HOME)} className="text-[9px] font-black uppercase tracking-widest text-gray-300 hover:text-lg-red transition-colors">Return to Home View</button>
             </div>
           </div>
         )}
       </main>
 
-      {/* Agent Quick Access Overlay Trigger */}
+      {/* 代理快捷入口：保持原有逻辑 */}
       <div className="fixed bottom-10 right-10 z-[50] group">
         <button 
           onClick={() => {
@@ -226,7 +229,7 @@ const App: React.FC = () => {
         </button>
       </div>
 
-      {/* Agent Tools Overlay Modal */}
+      {/* 代理工具模态层：保持原有全量内容 */}
       <div id="agent-tools-modal" className="fixed inset-0 z-[2000] bg-white hidden overflow-y-auto">
          <div className="absolute top-10 right-10 z-[10]">
             <button 
