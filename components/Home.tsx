@@ -2,7 +2,7 @@
 import React, { useRef, useMemo, useState, useEffect } from 'react';
 import { Product, Agent, Language, PromotionTemplate, SiteSettings } from '../types.js';
 import ProductCard from './ProductCard.js';
-import { ArrowDown, Zap, Sparkles, ChevronRight, ChevronLeft, ArrowUpRight } from 'lucide-react';
+import { ArrowDown, Zap, Sparkles, ChevronRight, ChevronLeft, ArrowUpRight, CheckCircle2, ShieldCheck, Smartphone, LayoutGrid, Settings2, Laptop } from 'lucide-react';
 
 interface HomeProps {
   products: Product[];
@@ -12,187 +12,226 @@ interface HomeProps {
   brandingHero?: string | null;
 }
 
-const Home: React.FC<HomeProps> = ({ products, categories: customCategories, activeAgent, language, brandingHero }) => {
-  const [activeCategory, setActiveCategory] = useState<string>('');
-  const [activePromoFilter, setActivePromoFilter] = useState<string>('');
-  const promoContainerRef = useRef<HTMLDivElement>(null);
-
-  const siteSettings: SiteSettings | null = useMemo(() => {
-    try {
-      const saved = localStorage.getItem('lg_site_settings');
-      return saved ? JSON.parse(saved) : null;
-    } catch { return null; }
-  }, []);
-
-  const activePromoTemplates = useMemo(() => {
-    return (siteSettings?.promoTemplates || []).filter((t: PromotionTemplate) => t.isActive);
-  }, [siteSettings]);
-
-  const displayCategories = useMemo(() => {
-    const uniqueCatsInProducts = new Set(products.map(p => p.category));
-    return customCategories.filter(cat => uniqueCatsInProducts.has(cat));
-  }, [products, customCategories]);
-
-  const categoryRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
+const Home: React.FC<HomeProps> = ({ products, categories, activeAgent, language, brandingHero }) => {
+  const [activeCategory, setActiveCategory] = useState('All');
   
-  const sortedProductsList = useMemo(() => {
-    let list = [...products].sort((a, b) => (a.isNew && !b.isNew) ? -1 : 0);
-    if (activePromoFilter) {
-      list = list.filter(p => {
-        const promo = activePromoTemplates.find(t => t.name === activePromoFilter);
-        return promo ? (promo.applyToAll || (promo.targetProductIds && promo.targetProductIds.includes(p.id))) : false;
-      });
-    }
-    return list;
-  }, [products, activePromoFilter, activePromoTemplates]);
+  const filteredProducts = useMemo(() => {
+    if (activeCategory === 'All') return products;
+    return products.filter(p => p.category === activeCategory);
+  }, [products, activeCategory]);
 
-  const promoProducts = useMemo(() => {
-    const featuredIds = siteSettings?.featuredProductIds || [];
-    if (featuredIds.length > 0) {
-      return featuredIds.map(id => products.find(p => p.id === id)).filter((p): p is Product => !!p);
-    }
-    return products.filter(p => p.isHotSale || p.isPromoActive || p.isNew).sort((a, b) => a.isHotSale ? -1 : 1);
-  }, [products, siteSettings]);
-
-  const scrollToCatalog = () => {
-    const section = document.getElementById('catalog-section');
-    if (section) window.scrollTo({ top: section.offsetTop - 150, behavior: 'smooth' });
-  };
-
-  const scrollToCategory = (cat: string) => {
-    setActiveCategory(cat);
-    setActivePromoFilter('');
-    const el = categoryRefs.current[cat];
-    if (el) window.scrollTo({ top: el.offsetTop - 240, behavior: "smooth" });
-  };
-
-  const scrollPromos = (direction: 'left' | 'right') => {
-    if (promoContainerRef.current) {
-      promoContainerRef.current.scrollBy({ left: direction === 'left' ? -450 : 450, behavior: 'smooth' });
-    }
-  };
+  const hotDeals = useMemo(() => products.filter(p => p.isHotSale), [products]);
 
   const t = {
-    en: { partner: "Official Partner:", hero_title: "A Complete Home. Today.", shop_now: "SUBSCRIBE NOW", catalog: "View Catalog", promo_title: "Limited Time Offers", promo_tag: "Flash Selection", explore: "Explore Collections", all_promos: "All Deals", filter_promo: "Promo Events", models: "Models" },
-    cn: { partner: "认证代理人:", hero_title: "全屋智享。即刻拥有。", shop_now: "立即订阅", catalog: "查看目录", promo_title: "限时促销惊喜", promo_tag: "市场精选热卖", explore: "探索全线系列", all_promos: "全部优惠", filter_promo: "促销活动", models: "款产品" },
-    ms: { partner: "Ejen Rasmi:", hero_title: "Kediaman Lengkap. Hari Ini.", shop_now: "LANGGAN SEKARANG", catalog: "Lihat Katalog", promo_title: "Tawaran Terhad", promo_tag: "Pilihan Kilat", explore: "Terokai Koleksi", all_promos: "Semua Tawaran", filter_promo: "Acara Promosi", models: "Model" }
+    en: { 
+      heroTitle: "Premium Living, Monthly Subscription", 
+      heroSub: "Upgrade your lifestyle with LG's latest home appliances. Flexible plans, professional maintenance, and zero hidden costs.",
+      shopBtn: "View Catalog",
+      featured: "Hot Deals",
+      all: "Our Collection",
+      aboutTitle: "What is LG Subscribe?",
+      aboutDesc: "LG Subscribe is a household appliance subscription service that allows you to complete your home in a cost-effective way. A wide range of appliances from refrigerators to TVs are available to subscribe, making your place truly feel like a home.",
+      benefitsTitle: "3 Benefits of LG Subscribe",
+      benefit1Title: "First in the market, Offering 10 product lines in Malaysia.",
+      benefit2Title: "Varying Hassle Free Maintenance Care Service.",
+      benefit2Desc: "From Self-Service, Regular Visit or Combine Maintenance.",
+      benefit3Title: "LG ThinQ Accessible products.",
+      benefit3Desc: "Upgrade your lifestyle with smart integrated home control."
+    },
+    cn: { 
+      heroTitle: "高端生活，按月租赁", 
+      heroSub: "轻松升级您的家居生活。LG 最新家电租约计划：方案灵活、专业保养、无隐藏费用。",
+      shopBtn: "查看目录",
+      featured: "热门推荐",
+      all: "产品系列",
+      aboutTitle: "什么是 LG 订阅服务？",
+      aboutDesc: "LG 订阅是一项家电租赁服务，让您以更经济高效的方式完善家居配置。从冰箱到电视，多种家电均可订阅，让您的家更具温馨感与科技感。",
+      benefitsTitle: "LG 订阅三大核心优势",
+      benefit1Title: "市场首创，在大马提供 10 条产品线。",
+      benefit2Title: "多样化无忧维护保养服务。",
+      benefit2Desc: "提供自助服务、定期上门维护或组合保养方案。",
+      benefit3Title: "支持 LG ThinQ 智能产品。",
+      benefit3Desc: "通过智能集成家居控制，全面升级您的生活品质。"
+    },
+    ms: { 
+      heroTitle: "Kehidupan Premium, Langganan Bulanan", 
+      heroSub: "Tingkatkan gaya hidup anda dengan perkakas rumah LG terbaru. Pelan fleksibel, penyelenggaraan profesional, dan tiada kos tersembunyi.",
+      shopBtn: "Lihat Katalog",
+      featured: "Tawaran Hebat",
+      all: "Koleksi Kami",
+      aboutTitle: "Apakah itu LG Subscribe?",
+      aboutDesc: "LG Subscribe ialah perkhidmatan langganan perkakas rumah yang membolehkan anda melengkapkan kediaman anda dengan cara yang kos efektif. Pelbagai peralatan daripada peti sejuk hingga TV tersedia untuk dilanggan.",
+      benefitsTitle: "3 Kelebihan LG Subscribe",
+      benefit1Title: "Pertama di pasaran, Menawarkan 10 barisan produk di Malaysia.",
+      benefit2Title: "Pelbagai Perkhidmatan Penyelenggaraan Tanpa Kerumitan.",
+      benefit2Desc: "Daripada Layan Diri, Lawatan Tetap atau Penyelenggaraan Gabungan.",
+      benefit3Title: "Produk Boleh Diakses LG ThinQ.",
+      benefit3Desc: "Tingkatkan gaya hidup anda dengan kawalan rumah pintar bersepadu."
+    }
   }[language];
 
   return (
-    <div className="fade-in bg-white min-h-screen">
-      {activeAgent && (
-        <div className="bg-[#05090f] text-white py-3 px-6 sticky top-16 z-50 border-b border-white/5 shadow-2xl backdrop-blur-lg bg-opacity-95">
-          <div className="container mx-auto flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <span className="text-[9px] font-black uppercase tracking-[0.4em] opacity-40">{t.partner}</span>
-              <span className="text-[12px] font-black uppercase tracking-widest text-lg-red">{activeAgent.name}</span>
-            </div>
-            <div className="flex items-center gap-2 bg-green-500/10 px-3 py-1 rounded-full border border-green-500/20">
-               <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
-               <span className="text-[8px] font-black uppercase text-green-500 tracking-widest">Commission Enabled</span>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* REFINED HERO SECTION */}
-      <section className="relative h-[90vh] min-h-[700px] flex items-center bg-[#f2e6d9]">
-        <div className="absolute inset-0">
+    <div className="flex flex-col gap-0 pb-32 bg-white">
+      {/* Hero Section */}
+      <section className="relative h-[85vh] min-h-[600px] flex items-center justify-center overflow-hidden">
+        <div className="absolute inset-0 z-0">
           <img 
             src={brandingHero || "https://i.ibb.co/3ykG2jN/lg-ambassador-hero.jpg"} 
-            className="w-full h-full object-cover object-[center_30%]"
+            className="w-full h-full object-cover object-[center_30%] scale-105"
             alt="LG Home" 
           />
+          <div className="absolute inset-0 bg-gradient-to-r from-white/40 to-transparent"></div>
         </div>
-        
-        <div className="container mx-auto px-10 md:px-24 relative z-10">
-          <div className="max-w-4xl">
-            <img src="https://i.ibb.co/Rk6m7Yw/lg-sub-logo-red.png" className="h-10 sm:h-14 mb-10 drop-shadow-sm" alt="LG Subscribe" />
-            
-            <h1 className="text-5xl md:text-[75px] font-black text-gray-950 uppercase tracking-tighter leading-[0.85] mb-12 animate-in slide-in-from-left duration-1000">
-              {t.hero_title}
+
+        <div className="relative z-10 max-w-7xl mx-auto px-8 w-full">
+          <div className="max-w-2xl space-y-10 animate-in slide-in-from-left duration-1000">
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-black uppercase tracking-tighter leading-[1.1] text-gray-950">
+              {t.heroTitle}
             </h1>
-            
-            <div className="flex flex-wrap items-center gap-6 mt-16 animate-in slide-in-from-left duration-1000 delay-300">
+            <p className="text-gray-700 text-lg font-bold max-w-md leading-relaxed uppercase tracking-tight">
+              {t.heroSub}
+            </p>
+            <div className="flex flex-wrap gap-6">
               <button 
-                onClick={scrollToCatalog} 
-                className="group bg-lg-red text-white px-12 sm:px-16 py-6 sm:py-8 rounded-2xl font-black uppercase tracking-widest text-[12px] sm:text-[14px] shadow-2xl hover:bg-black transition-all duration-500 flex items-center gap-4"
+                onClick={() => document.getElementById('catalog-section')?.scrollIntoView({ behavior: 'smooth' })}
+                className="bg-lg-red text-white px-12 py-6 rounded-2xl font-black uppercase tracking-[0.3em] text-[11px] shadow-2xl hover:bg-gray-900 transition-all duration-500"
               >
-                {t.shop_now} <ArrowUpRight size={20} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-              </button>
-              
-              <button 
-                onClick={scrollToCatalog} 
-                className="bg-white text-gray-950 border-2 border-transparent hover:border-gray-950 px-12 sm:px-16 py-6 sm:py-8 rounded-2xl font-black uppercase tracking-widest text-[12px] sm:text-[14px] shadow-xl hover:shadow-2xl transition-all duration-500"
-              >
-                {t.catalog}
+                {t.shopBtn}
               </button>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Promotional Strip */}
-      {promoProducts.length > 0 && (
-        <section id="promotion-section" className="py-24 bg-[#05090f] text-white relative overflow-hidden">
-          <div className="container mx-auto px-10 max-w-7xl relative z-10">
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-10 mb-20">
-              <div className="space-y-4">
-                <div className="flex items-center gap-3">
-                  <Zap className="text-lg-red" size={20} fill="currentColor" />
-                  <span className="text-lg-red text-[11px] font-black uppercase tracking-[0.6em]">{t.promo_tag}</span>
+      {/* NEW: About Section */}
+      <section className="py-24 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-8 grid lg:grid-cols-2 gap-20 items-center">
+          <div className="space-y-8">
+            <div className="flex items-center gap-4">
+               <div className="w-12 h-0.5 bg-lg-red"></div>
+               <span className="text-lg-red text-[11px] font-black uppercase tracking-[0.5em]">{t.aboutTitle}</span>
+            </div>
+            <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter text-gray-950 leading-tight">
+              {language === 'cn' ? '以更经济的方式，\n完整您的家。' : 'COMPLETE YOUR HOME.\nCOST EFFECTIVE.'}
+            </h2>
+            <p className="text-gray-500 text-lg font-medium leading-relaxed uppercase tracking-tight max-w-xl">
+              {t.aboutDesc}
+            </p>
+          </div>
+          <div className="relative">
+             <div className="aspect-video rounded-[40px] overflow-hidden shadow-3xl">
+                <img src="https://www.lg.com/content/dam/channel/wcms/my/images/refrigerators/brand-shop-banner-pc.jpg" className="w-full h-full object-cover" alt="LG Lifestyle" />
+             </div>
+             <div className="absolute -bottom-10 -right-10 bg-white p-10 rounded-[40px] shadow-2xl border border-gray-100 hidden md:block">
+                <Sparkles className="text-lg-red mb-4" size={32} />
+                <p className="text-[10px] font-black uppercase tracking-widest text-gray-900">Life's Good</p>
+             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* NEW: 3 Benefits Section (Official Look) */}
+      <section className="py-32">
+        <div className="max-w-7xl mx-auto px-8">
+          <div className="text-center mb-24 space-y-4">
+             <span className="text-lg-red text-[12px] font-black uppercase tracking-[0.6em]">{t.benefitsTitle}</span>
+             <h2 className="text-5xl md:text-7xl font-black uppercase tracking-tighter text-gray-950">Why Choose LG Subscribe?</h2>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-10">
+            {/* Benefit 01 */}
+            <div className="group bg-white p-12 rounded-[50px] border border-gray-100 shadow-sm hover:shadow-2xl transition-all duration-700 relative overflow-hidden">
+              <div className="text-[100px] font-black text-gray-50 absolute -top-10 -right-5 group-hover:text-red-50 transition-colors">01</div>
+              <div className="relative z-10 space-y-8">
+                <div className="w-20 h-20 bg-gray-50 rounded-2xl flex items-center justify-center text-lg-red group-hover:bg-lg-red group-hover:text-white transition-all">
+                   <LayoutGrid size={32} />
                 </div>
-                <h2 className="text-5xl md:text-8xl font-black uppercase tracking-tighter">{t.promo_title}</h2>
-              </div>
-              <div className="flex gap-4">
-                 <button onClick={() => scrollPromos('left')} className="w-16 h-16 bg-white/5 border border-white/10 rounded-full flex items-center justify-center hover:bg-lg-red transition-all group"><ChevronLeft size={28}/></button>
-                 <button onClick={() => scrollPromos('right')} className="w-16 h-16 bg-white/5 border border-white/10 rounded-full flex items-center justify-center hover:bg-lg-red transition-all group"><ChevronRight size={28}/></button>
+                <h3 className="text-2xl font-black uppercase tracking-tighter text-gray-950 leading-tight">
+                  {t.benefit1Title}
+                </h3>
               </div>
             </div>
-            
-            <div className="overflow-x-auto no-scrollbar pb-10" ref={promoContainerRef}>
-              <div className="flex gap-10 min-w-max px-4">
-                {promoProducts.map(product => (
-                  <div key={product.id} className="w-[340px] md:w-[420px]">
-                    <ProductCard product={product} activeAgent={activeAgent} language={language} />
-                  </div>
+
+            {/* Benefit 02 */}
+            <div className="group bg-white p-12 rounded-[50px] border border-gray-100 shadow-sm hover:shadow-2xl transition-all duration-700 relative overflow-hidden">
+              <div className="text-[100px] font-black text-gray-50 absolute -top-10 -right-5 group-hover:text-red-50 transition-colors">02</div>
+              <div className="relative z-10 space-y-8">
+                <div className="w-20 h-20 bg-gray-50 rounded-2xl flex items-center justify-center text-lg-red group-hover:bg-lg-red group-hover:text-white transition-all">
+                   <Settings2 size={32} />
+                </div>
+                <div>
+                   <h3 className="text-2xl font-black uppercase tracking-tighter text-gray-950 leading-tight mb-4">
+                    {t.benefit2Title}
+                  </h3>
+                  <p className="text-[11px] font-black text-gray-400 uppercase tracking-widest">{t.benefit2Desc}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Benefit 03 */}
+            <div className="group bg-white p-12 rounded-[50px] border border-gray-100 shadow-sm hover:shadow-2xl transition-all duration-700 relative overflow-hidden">
+              <div className="text-[100px] font-black text-gray-50 absolute -top-10 -right-5 group-hover:text-red-50 transition-colors">03</div>
+              <div className="relative z-10 space-y-8">
+                <div className="w-20 h-20 bg-gray-50 rounded-2xl flex items-center justify-center text-lg-red group-hover:bg-lg-red group-hover:text-white transition-all">
+                   <Smartphone size={32} />
+                </div>
+                <div>
+                  <h3 className="text-2xl font-black uppercase tracking-tighter text-gray-950 leading-tight mb-4">
+                    {t.benefit3Title}
+                  </h3>
+                  <p className="text-[11px] font-black text-gray-400 uppercase tracking-widest">{t.benefit3Desc}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Catalog & Promotions Section (Restored & Improved) */}
+      <section id="promotion-section" className="max-w-7xl mx-auto px-8 w-full mb-32">
+         <div className="flex flex-col md:flex-row justify-between items-end gap-10 mb-20">
+            <div className="space-y-4">
+               <div className="flex items-center gap-3">
+                  <Zap className="text-lg-red" size={24} fill="currentColor" />
+                  <span className="text-lg-red text-[11px] font-black uppercase tracking-[0.6em]">{t.featured}</span>
+               </div>
+               <h2 className="text-5xl lg:text-7xl font-black uppercase tracking-tighter text-gray-950">Limited Time Offers</h2>
+            </div>
+         </div>
+         <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+            {hotDeals.length > 0 ? (
+              hotDeals.map(p => <ProductCard key={p.id} product={p} activeAgent={activeAgent} language={language} />)
+            ) : (
+              products.slice(0, 2).map(p => <ProductCard key={p.id} product={p} activeAgent={activeAgent} language={language} />)
+            )}
+         </div>
+      </section>
+
+      <section id="catalog-section" className="max-w-7xl mx-auto px-8 w-full">
+        <div className="bg-gray-50 rounded-[80px] p-12 lg:p-24 border border-gray-100 shadow-sm">
+          <div className="flex flex-col gap-16 mb-24">
+            <div className="flex flex-col lg:flex-row justify-between items-center gap-12">
+              <h2 className="text-5xl lg:text-7xl font-black uppercase tracking-tighter text-gray-950">{t.all}</h2>
+              <div className="flex flex-wrap justify-center gap-3 bg-white p-2 rounded-full shadow-inner border border-gray-100">
+                {['All', ...categories].map(cat => (
+                  <button 
+                    key={cat} 
+                    onClick={() => setActiveCategory(cat)}
+                    className={`px-10 py-4 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${activeCategory === cat ? 'bg-[#05090f] text-white shadow-xl' : 'text-gray-400 hover:text-gray-950'}`}
+                  >
+                    {cat}
+                  </button>
                 ))}
               </div>
             </div>
           </div>
-        </section>
-      )}
-
-      {/* Catalog Filters */}
-      <div id="catalog-section" className="sticky top-[110px] md:top-[128px] z-[40] py-8 bg-white/90 backdrop-blur-2xl border-b border-gray-100">
-        <div className="container mx-auto px-10 max-w-7xl flex flex-col gap-6">
-          <div className="flex items-center gap-4 overflow-x-auto no-scrollbar">
-            {displayCategories.map(cat => (
-              <button 
-                key={cat} 
-                onClick={() => scrollToCategory(cat)} 
-                className={`px-10 py-4 rounded-full text-[10px] font-black uppercase tracking-widest transition-all border ${activeCategory === cat ? 'bg-black text-white border-transparent' : 'bg-white text-gray-400 border-gray-100 hover:text-lg-red'}`}
-              >
-                {cat}
-              </button>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+            {filteredProducts.map(p => (
+              <ProductCard key={p.id} product={p} activeAgent={activeAgent} language={language} />
             ))}
           </div>
         </div>
-      </div>
-
-      {/* Catalog Display */}
-      <section className="py-24 pb-64 container mx-auto px-10 max-w-7xl">
-        {displayCategories.map((cat, idx) => (
-          <div key={cat} ref={el => { categoryRefs.current[cat] = el; }} className="mb-40 scroll-mt-[250px]">
-            <div className="flex items-end gap-10 mb-16 border-b border-gray-100 pb-10">
-              <h2 className="text-6xl md:text-9xl font-black text-gray-950 uppercase tracking-tighter leading-none">{cat}</h2>
-              <span className="text-[12px] font-black text-gray-300 uppercase tracking-widest mb-4">{products.filter(p => p.category === cat).length} {t.models}</span>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
-              {sortedProductsList.filter(p => p.category === cat).map(product => <ProductCard key={product.id} product={product} activeAgent={activeAgent} language={language} />)}
-            </div>
-          </div>
-        ))}
       </section>
     </div>
   );
