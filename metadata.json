@@ -1,0 +1,9 @@
+{
+  "name": "LG Subscribe Malaysia - AI Affiliate Platform",
+  "description": "Professional LG affiliate platform with AI-powered bulk product importing and persistent agent referral tracking.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone",
+    "geolocation"
+  ]
+}
