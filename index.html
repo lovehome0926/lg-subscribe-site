@@ -35,9 +35,9 @@
 <script type="importmap">
 {
   "imports": {
-    "react": "https://esm.sh/react@^19.2.4",
     "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
     "react/": "https://esm.sh/react@^19.2.4/",
+    "react": "https://esm.sh/react@^19.2.4",
     "lucide-react": "https://esm.sh/lucide-react@^0.563.0",
     "@google/genai": "https://esm.sh/@google/genai@^1.38.0",
     "vite": "https://esm.sh/vite@^7.3.1",
@@ -45,10 +45,10 @@
   }
 }
 </script>
-  <script type="module" crossorigin src="./assets/index-krMY5an7.js"></script>
+  <script type="module" crossorigin src="./assets/index-DULfO5rM.js"></script>
   <link rel="modulepreload" crossorigin href="./assets/icons-B2Z7qCJB.js">
   <link rel="modulepreload" crossorigin href="./assets/vendor-DHrz1ooj.js">
-  <link rel="stylesheet" crossorigin href="./assets/index-Bvw3p2y1.css">
+  <link rel="stylesheet" crossorigin href="./assets/index-DTFwBER2.css">
 </head>
 <body>
   <div id="root"></div>
@@ -62,7 +62,6 @@
   </div>
 
   <script>
-    // Remove loader once the app is mounted or after a timeout
     window.addEventListener('load', function() {
       setTimeout(function() {
         const loader = document.getElementById('initial-loader');
@@ -70,16 +69,8 @@
           loader.style.opacity = '0';
           setTimeout(() => loader.remove(), 800);
         }
-      }, 3000);
+      }, 1500);
     });
-
-    window.onerror = function(message) {
-      console.error("System Error:", message);
-      const errEl = document.getElementById('error-msg');
-      if (errEl) errEl.style.display = 'block';
-      return false;
-    };
   </script>
-
 </body>
 </html>
