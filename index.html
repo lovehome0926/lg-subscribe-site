@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>LG Subscribe Malaysia | Digital Showroom</title>
+  <title>LG Subscribe Malaysia | Digital Partner Showroom</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -31,6 +31,7 @@
       background-color: #ffffff; 
       margin: 0;
       overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
     }
     .loading-screen { 
       position: fixed; 
@@ -41,17 +42,28 @@
       justify-content: center; 
       background: #05090f; 
       z-index: 9999; 
-      transition: opacity 0.5s ease;
+      transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1);
     }
     .spinner {
-      width: 50px;
-      height: 50px;
-      border: 3px solid rgba(255,255,255,0.1);
-      border-top-color: #e60044;
+      width: 60px;
+      height: 60px;
+      border: 2px solid rgba(255,255,255,0.03);
+      border-top: 2px solid #e60044;
       border-radius: 50%;
       animation: spin 1s linear infinite;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
+    
+    #emergency-ui {
+      display: none;
+      color: white;
+      text-align: center;
+      margin-top: 30px;
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      max-width: 250px;
+      line-height: 1.6;
+    }
   </style>
 
 <script type="importmap">
@@ -67,33 +79,43 @@
   }
 }
 </script>
-  <script type="module" crossorigin src="./assets/index-Dmb-0z4q.js"></script>
-  <link rel="modulepreload" crossorigin href="./assets/icons-DZbaVmGw.js">
-  <link rel="modulepreload" crossorigin href="./assets/vendor-BAObxHWh.js">
+  <script type="module" crossorigin src="./assets/index-CRK-RasC.js"></script>
+  <link rel="modulepreload" crossorigin href="./assets/icons-BLVSPIFS.js">
+  <link rel="modulepreload" crossorigin href="./assets/vendor-BKFNKBIW.js">
 </head>
 <body>
   <div id="root"></div>
   
   <div class="loading-screen" id="initial-loader">
     <div class="spinner"></div>
-    <p style="color: white; margin-top: 20px; font-size: 10px; font-weight: 900; letter-spacing: 0.5em; text-transform: uppercase; opacity: 0.5;">Synchronizing Assets...</p>
-    <!-- Emergency button if it takes too long -->
-    <button onclick="document.getElementById('initial-loader').remove()" style="margin-top: 40px; color: #e60044; font-size: 8px; font-weight: 900; letter-spacing: 0.2em; text-transform: uppercase; background: none; border: 1px solid rgba(230,0,68,0.2); padding: 8px 16px; border-radius: 20px; cursor: pointer;">Force Enter Showroom</button>
+    <p style="color: white; margin-top: 30px; font-size: 10px; font-weight: 900; letter-spacing: 0.6em; text-transform: uppercase; opacity: 0.4;">LG Global Partner Showroom</p>
+    
+    <div id="emergency-ui">
+      <p style="color: #e60044; font-weight: 800; margin-bottom: 15px;">SYNCHRONIZATION ERROR</p>
+      <p>System detected a local script loading issue. This usually happens on first load.</p>
+    </div>
+
+    <!-- 强制进入按钮：即使脚本崩了，点击也能移除遮罩 -->
+    <button id="force-enter-btn" onclick="document.getElementById('initial-loader').style.display='none'" style="margin-top: 50px; color: white; font-size: 9px; font-weight: 900; letter-spacing: 0.4em; text-transform: uppercase; background: rgba(230,0,68,1); border: none; padding: 18px 40px; border-radius: 100px; cursor: pointer; transition: all 0.3s; box-shadow: 0 20px 40px rgba(230,0,68,0.3); visibility: hidden;">Enter Showroom</button>
   </div>
 
   <script>
-    // Emergency failsafe: Remove loader after 8 seconds no matter what
-    setTimeout(() => {
-      const loader = document.getElementById('initial-loader');
-      if (loader) {
-        console.warn("Failsafe: Removing stuck loader.");
-        loader.style.opacity = '0';
-        setTimeout(() => loader.remove(), 500);
+    // 3秒后还没加载完，就显示“强制进入”按钮
+    setTimeout(function() {
+      var btn = document.getElementById('force-enter-btn');
+      if (btn) btn.style.visibility = 'visible';
+    }, 3000);
+
+    // 监控挂载：如果 root 5秒后还是空的，说明挂载失败了
+    setTimeout(function() {
+      var root = document.getElementById('root');
+      if (root && root.innerHTML === "") {
+        document.getElementById('emergency-ui').style.display = 'block';
+        console.error("React mount failed. Check if index.tsx is properly transpiled.");
       }
-    }, 8000);
+    }, 5000);
   </script>
 
-  <noscript>You need to enable JavaScript to run this app.</noscript>
-  <!-- FIXED: Changed /index.tsx to ./index.tsx for GitHub Pages compatibility -->
+  <!-- Vite 模式下必须使用相对路径，且指向 .tsx，开发服务器会自动处理，打包工具会替换它 -->
 </body>
 </html>
