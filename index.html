@@ -75,12 +75,18 @@
     <div class="spinner"></div>
     <p style="color: white; margin-top: 30px; font-size: 10px; font-weight: 900; letter-spacing: 0.6em; text-transform: uppercase; opacity: 0.4;">LG Global Partner Showroom</p>
     <div id="error-msg" style="display:none; color: #e60044; margin-top: 20px; font-size: 11px; font-weight: bold; text-align: center; max-width: 80%;">
-      LOAD ERROR: Please check your browser console for details.
+      SYSTEM INITIALIZATION ERROR: Check console for logs.
     </div>
+    <button id="force-enter-btn" onclick="document.getElementById('initial-loader').style.opacity='0'; setTimeout(()=>document.getElementById('initial-loader').remove(), 800)" style="margin-top: 40px; color: #e60044; font-size: 8px; font-weight: 900; letter-spacing: 0.2em; text-transform: uppercase; background: none; border: 1px solid rgba(230,0,68,0.2); padding: 12px 24px; border-radius: 100px; cursor: pointer; visibility: hidden;">Force Enter</button>
   </div>
 
   <script>
-    // 监听运行时错误并尝试修复界面
+    // Show force enter after 5 seconds if still loading
+    setTimeout(() => {
+      const btn = document.getElementById('force-enter-btn');
+      if(btn) btn.style.visibility = 'visible';
+    }, 5000);
+
     window.onerror = function(message) {
       console.error("Global Error Caught:", message);
       const errEl = document.getElementById('error-msg');
@@ -88,7 +94,7 @@
       return false;
     };
 
-    // 强制安全移除加载器
+    // Remove loader once everything is definitely finished or after 8s failsafe
     window.addEventListener('load', function() {
       setTimeout(function() {
         const loader = document.getElementById('initial-loader');
@@ -96,11 +102,11 @@
           loader.style.opacity = '0';
           setTimeout(() => loader.remove(), 800);
         }
-      }, 3000);
+      }, 3500);
     });
   </script>
 
-  <!-- Vite 环境下直接指向源文件，打包后会自动替换为处理过的 JS -->
+  <!-- Vite entry point -->
   <script type="module" src="./index.tsx"></script>
 </body>
 </html>

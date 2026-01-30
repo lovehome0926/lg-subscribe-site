@@ -59,6 +59,14 @@ const App: React.FC = () => {
 
   useEffect(() => {
     const initApp = async () => {
+      // Failsafe timeout: Force ready state after 5 seconds even if IndexedDB is slow
+      const failsafe = setTimeout(() => {
+        if (!isReady) {
+          console.warn("Initialization taking too long, forcing ready state.");
+          setIsReady(true);
+        }
+      }, 5000);
+
       try {
         const storedVersion = Number(safeStorage.get('lg_data_version') || 0);
         if (storedVersion < DATA_VERSION) {
@@ -69,6 +77,7 @@ const App: React.FC = () => {
         const dbProducts = await getProductsDB();
         setProducts(dbProducts.length > 0 ? dbProducts : INITIAL_PRODUCTS);
 
+        // Affiliate logic
         const params = new URLSearchParams(window.location.search);
         const wa = params.get('wa');
         const name = params.get('name');
@@ -77,19 +86,30 @@ const App: React.FC = () => {
           const agent = { id: wa, name: decodeURIComponent(name), whatsapp: wa };
           setActiveAgent(agent);
           safeStorage.set('active_agent', JSON.stringify(agent));
+          // Clean URL
+          window.history.replaceState({}, '', window.location.pathname + window.location.hash);
         } else {
           const savedAgent = safeStorage.get('active_agent');
           if (savedAgent) setActiveAgent(JSON.parse(savedAgent));
         }
 
-        if (window.location.hash === '#admin') {
-          setCurrentRoute(AppRoute.ADMIN);
-        }
+        const handleHashChange = () => {
+          if (window.location.hash.includes('#admin')) {
+            setCurrentRoute(AppRoute.ADMIN);
+          } else {
+            setCurrentRoute(AppRoute.HOME);
+          }
+        };
+
+        window.addEventListener('hashchange', handleHashChange);
+        handleHashChange();
 
         setIsReady(true);
       } catch (err) {
         console.error("App Init Error:", err);
-        setIsReady(true); // 即使出错也允许进入以避免永久锁定
+        setIsReady(true); 
+      } finally {
+        clearTimeout(failsafe);
       }
     };
     initApp();
@@ -108,14 +128,21 @@ const App: React.FC = () => {
   };
 
   const handleReset = async () => {
-    if (confirm("Reset data?")) {
+    if (confirm("Factory reset all data?")) {
       localStorage.clear();
       await saveProductsDB(INITIAL_PRODUCTS);
       location.reload();
     }
   };
 
-  if (!isReady) return null;
+  // If we are not ready, we still return a base structure to avoid "white screen" 
+  // if the initial-loader fails to clear.
+  if (!isReady) return (
+    <div className="h-screen w-screen flex flex-col items-center justify-center bg-[#05090f] text-white">
+      <div className="w-10 h-10 border-2 border-lg-red border-t-transparent rounded-full animate-spin mb-4"></div>
+      <p className="text-[10px] font-black uppercase tracking-[0.5em] opacity-30">Starting System...</p>
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-white font-sans text-gray-950 antialiased selection:bg-lg-red selection:text-white">
@@ -163,26 +190,30 @@ const App: React.FC = () => {
           />
         ) : (
           <div className="py-40 text-center space-y-8 px-6">
-            <h2 className="text-4xl font-black uppercase tracking-tighter">System Access Required</h2>
-            <div className="flex flex-col items-center gap-4">
+            <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter">System Console</h2>
+            <p className="text-gray-400 font-bold uppercase tracking-widest text-[10px]">Administrative credentials required to access this terminal.</p>
+            <div className="flex flex-col items-center gap-6">
               <button 
                 onClick={() => {
                   const pin = prompt("Admin PIN (8888):");
                   if (pin === "8888") {
                     setIsAdminAuth(true);
                     setCurrentRoute(AppRoute.ADMIN);
+                  } else if (pin !== null) {
+                    alert("Access Denied.");
                   }
                 }} 
-                className="bg-lg-red text-white px-12 py-5 rounded-full font-black uppercase tracking-widest shadow-2xl"
+                className="bg-lg-red text-white px-16 py-6 rounded-full font-black uppercase text-[11px] tracking-[0.3em] shadow-2xl hover:bg-black transition-all"
               >
-                Authenticate
+                Enter Passcode
               </button>
-              <button onClick={() => setCurrentRoute(AppRoute.HOME)} className="text-[10px] font-black uppercase tracking-widest text-gray-400">Return Home</button>
+              <button onClick={() => setCurrentRoute(AppRoute.HOME)} className="text-[9px] font-black uppercase tracking-widest text-gray-300 hover:text-lg-red transition-colors">Return to Showroom</button>
             </div>
           </div>
         )}
       </main>
 
+      {/* Agent Quick Access Overlay Trigger */}
       <div className="fixed bottom-10 right-10 z-[50] group">
         <button 
           onClick={() => {
@@ -195,6 +226,7 @@ const App: React.FC = () => {
         </button>
       </div>
 
+      {/* Agent Tools Overlay Modal */}
       <div id="agent-tools-modal" className="fixed inset-0 z-[2000] bg-white hidden overflow-y-auto">
          <div className="absolute top-10 right-10 z-[10]">
             <button 
