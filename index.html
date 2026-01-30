@@ -45,10 +45,10 @@
   }
 }
 </script>
-  <script type="module" crossorigin src="./assets/index-DAyf3rP6.js"></script>
-  <link rel="modulepreload" crossorigin href="./assets/icons-6lzYyqt3.js">
-  <link rel="modulepreload" crossorigin href="./assets/vendor-DBKqQ33f.js">
-  <link rel="stylesheet" crossorigin href="./assets/index-BV_YcclT.css">
+  <script type="module" crossorigin src="./assets/index-D6m2JK8l.js"></script>
+  <link rel="modulepreload" crossorigin href="./assets/icons-B2Z7qCJB.js">
+  <link rel="modulepreload" crossorigin href="./assets/vendor-DHrz1ooj.js">
+  <link rel="stylesheet" crossorigin href="./assets/index-CIZ-3veA.css">
 </head>
 <body>
   <div id="root"></div>
@@ -62,7 +62,7 @@
   </div>
 
   <script>
-    // 强制超时处理：防止由于 JS 加载失败导致的永久黑屏
+    // Remove loader once the app is mounted or after a timeout
     window.addEventListener('load', function() {
       setTimeout(function() {
         const loader = document.getElementById('initial-loader');
@@ -74,13 +74,12 @@
     });
 
     window.onerror = function(message) {
-      console.error("Critical System Error:", message);
+      console.error("System Error:", message);
       const errEl = document.getElementById('error-msg');
       if (errEl) errEl.style.display = 'block';
       return false;
     };
   </script>
 
-  <!-- Vite 入口 -->
 </body>
 </html>
