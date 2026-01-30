@@ -4,35 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>LG Subscribe Malaysia | Digital Partner Showroom</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            'lg-red': '#e60044',
-            'lg-dark': '#05090f',
-            'lg-beige': '#e7ded0',
-          },
-          fontFamily: {
-            sans: ['Outfit', 'sans-serif'],
-          }
-        }
-      }
-    }
-  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
-    :root { --lg-red: #e60044; --lg-dark: #05090f; --lg-beige: #e7ded0; }
-    body { 
-      font-family: 'Outfit', sans-serif; 
-      background-color: #ffffff; 
-      margin: 0;
-      overflow-x: hidden;
-      -webkit-font-smoothing: antialiased;
-    }
     .loading-screen { 
       position: fixed; 
       inset: 0; 
@@ -75,12 +50,12 @@
     <div class="spinner"></div>
     <p style="color: white; margin-top: 30px; font-size: 10px; font-weight: 900; letter-spacing: 0.6em; text-transform: uppercase; opacity: 0.4;">LG Global Partner Showroom</p>
     <div id="error-msg" style="display:none; color: #e60044; margin-top: 20px; font-size: 11px; font-weight: bold; text-align: center; max-width: 80%;">
-      SYSTEM ERROR: Please check console log.
+      SYSTEM INITIALIZATION ERROR: Check browser console for details.
     </div>
   </div>
 
   <script>
-    // Failsafe: Remove loader after 4 seconds regardless of React status to show current state
+    // Failsafe: Remove loader after 4 seconds to prevent getting stuck
     window.addEventListener('load', function() {
       setTimeout(function() {
         const loader = document.getElementById('initial-loader');
@@ -88,7 +63,7 @@
           loader.style.opacity = '0';
           setTimeout(() => loader.remove(), 800);
         }
-      }, 4000);
+      }, 3500);
     });
 
     window.onerror = function(message) {

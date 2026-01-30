@@ -1,0 +1,23 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { 
+  --lg-red: #e60044; 
+  --lg-dark: #05090f; 
+  --lg-beige: #e7ded0; 
+}
+
+body { 
+  font-family: 'Outfit', sans-serif; 
+  background-color: #ffffff; 
+  margin: 0;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+.glass-nav { 
+  background: rgba(255, 255, 255, 0.8); 
+  backdrop-filter: blur(20px); 
+  -webkit-backdrop-filter: blur(20px); 
+}

@@ -7,7 +7,7 @@ import Home from './components/Home';
 import AdminDashboard from './components/AdminDashboard';
 import AgentTools from './components/AgentTools';
 import Footer from './components/Footer';
-import { X, Briefcase } from 'lucide-react';
+import { X, Briefcase, Lock, ShieldCheck } from 'lucide-react';
 
 const App: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -33,7 +33,7 @@ const App: React.FC = () => {
       joinUsTagline: { en: 'Unlock your side hustle with LG.', cn: '加入 LG 开启副业。', ms: 'Jana pendapatan dengan LG.' },
       joinUsBenefits: [
         { en: 'High Commission', cn: '高额佣金', ms: 'Komisyen Tinggi' },
-        { en: 'Flexible Hours', cn: '时间自由', ms: 'Masa Fleksibel' }
+        { en: 'Flexible Hours', cn: '时间自由', ms: 'Masa Flexibel' }
       ],
       joinUsPainPoints: [
         { en: 'Low Income', cn: '收入偏低', ms: 'Pendapatan Rendah' }
@@ -59,13 +59,13 @@ const App: React.FC = () => {
 
   useEffect(() => {
     const initApp = async () => {
-      // 启动 failsafe 计时器，5秒不成功强制认为 ready
+      // Failsafe timer: Force display after 3 seconds even if IndexedDB hangs
       const failsafe = setTimeout(() => {
         if (!isReady) {
-          console.warn("App: Initialization taking too long, firing failsafe...");
+          console.warn("App: Initialization failsafe triggered.");
           setIsReady(true);
         }
-      }, 5000);
+      }, 3000);
 
       try {
         const storedVersion = Number(safeStorage.get('lg_data_version') || 0);
@@ -77,7 +77,7 @@ const App: React.FC = () => {
         const dbProducts = await getProductsDB();
         setProducts(dbProducts.length > 0 ? dbProducts : INITIAL_PRODUCTS);
 
-        // 处理代理/联盟逻辑
+        // 处理代理(Downline)逻辑：优先级最高
         const params = new URLSearchParams(window.location.search);
         const wa = params.get('wa');
         const name = params.get('name');
@@ -86,14 +86,19 @@ const App: React.FC = () => {
           const agent = { id: wa, name: decodeURIComponent(name), whatsapp: wa };
           setActiveAgent(agent);
           safeStorage.set('active_agent', JSON.stringify(agent));
-          // 静默清理 URL 保持美观
+          // 静默清理 URL，防止刷新后参数丢失，同时保持美观
           window.history.replaceState({}, '', window.location.pathname + window.location.hash);
         } else {
           const savedAgent = safeStorage.get('active_agent');
-          if (savedAgent) setActiveAgent(JSON.parse(savedAgent));
+          if (savedAgent) {
+            try {
+              setActiveAgent(JSON.parse(savedAgent));
+            } catch(e) {
+              safeStorage.remove('active_agent');
+            }
+          }
         }
 
-        // 路由逻辑
         const handleHashChange = () => {
           if (window.location.hash.includes('#admin')) {
             setCurrentRoute(AppRoute.ADMIN);
@@ -129,18 +134,17 @@ const App: React.FC = () => {
   };
 
   const handleReset = async () => {
-    if (confirm("FACTORY RESET: Delete all customized products and settings?")) {
+    if (confirm("FACTORY RESET: Are you sure? All custom settings will be lost.")) {
       localStorage.clear();
       await saveProductsDB(INITIAL_PRODUCTS);
       location.reload();
     }
   };
 
-  // 即使在加载中，也返回基本的容器结构，以防 loader 消失后出现短暂白屏
   if (!isReady) return (
     <div className="h-screen w-screen flex flex-col items-center justify-center bg-[#05090f] text-white">
       <div className="w-10 h-10 border-2 border-lg-red border-t-transparent rounded-full animate-spin mb-4"></div>
-      <p className="text-[10px] font-black uppercase tracking-[0.5em] opacity-30">Authenticating Hardware...</p>
+      <p className="text-[10px] font-black uppercase tracking-[0.5em] opacity-30">Authenticating Showroom...</p>
     </div>
   );
 
@@ -190,9 +194,12 @@ const App: React.FC = () => {
           />
         ) : (
           <div className="py-40 text-center space-y-12 px-6 animate-in fade-in slide-in-from-bottom-10 duration-1000">
-            <div className="space-y-4">
+            <div className="flex flex-col items-center gap-6">
+              <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center text-lg-red mb-4 shadow-xl border border-gray-100">
+                <Lock size={32} />
+              </div>
               <h2 className="text-4xl md:text-7xl font-black uppercase tracking-tighter">System Terminal</h2>
-              <p className="text-gray-400 font-bold uppercase tracking-widest text-[10px]">Administrative access required to manage assets.</p>
+              <p className="text-gray-400 font-bold uppercase tracking-widest text-[10px] max-w-xs mx-auto">Administrative clearance required to modify showroom assets.</p>
             </div>
             
             <div className="flex flex-col items-center gap-6">
@@ -203,43 +210,49 @@ const App: React.FC = () => {
                     setIsAdminAuth(true);
                     setCurrentRoute(AppRoute.ADMIN);
                   } else if (pin !== null) {
-                    alert("ACCESS DENIED.");
+                    alert("ACCESS DENIED: Credentials mismatch.");
                   }
                 }} 
-                className="bg-lg-red text-white px-16 py-6 rounded-full font-black uppercase text-[11px] tracking-[0.3em] shadow-[0_30px_60px_rgba(230,0,68,0.2)] hover:bg-black transition-all"
+                className="bg-lg-red text-white px-16 py-6 rounded-full font-black uppercase text-[11px] tracking-[0.3em] shadow-[0_30px_60px_rgba(230,0,68,0.3)] hover:bg-black transition-all active:scale-95"
               >
-                Authenticate Terminal
+                Enter Access Key
               </button>
-              <button onClick={() => setCurrentRoute(AppRoute.HOME)} className="text-[9px] font-black uppercase tracking-widest text-gray-300 hover:text-lg-red transition-colors">Return to Home View</button>
+              <button onClick={() => setCurrentRoute(AppRoute.HOME)} className="text-[9px] font-black uppercase tracking-widest text-gray-300 hover:text-lg-red transition-colors">Return to Front View</button>
             </div>
           </div>
         )}
       </main>
 
-      {/* 代理快捷入口：保持原有逻辑 */}
+      {/* 代理商快捷工具入口：为下线专门准备的赚钱按钮 */}
       <div className="fixed bottom-10 right-10 z-[50] group">
+        <div className="absolute bottom-full right-0 mb-6 w-48 bg-black text-white p-4 rounded-2xl text-[10px] font-bold uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-all pointer-events-none shadow-2xl">
+          <ShieldCheck className="text-lg-red mb-2" size={18} />
+          Jana Pendapatan Bersama LG
+        </div>
         <button 
           onClick={() => {
             const agentPanel = document.getElementById('agent-tools-modal');
             if (agentPanel) agentPanel.classList.toggle('hidden');
           }}
-          className="w-16 h-16 bg-black text-white rounded-full flex items-center justify-center shadow-2xl hover:bg-lg-red transition-all duration-500 hover:scale-110 active:scale-90"
+          className="w-16 h-16 bg-black text-white rounded-full flex items-center justify-center shadow-[0_20px_40px_rgba(0,0,0,0.3)] hover:bg-lg-red transition-all duration-500 hover:scale-110 active:scale-90"
         >
           <Briefcase size={24} />
         </button>
       </div>
 
-      {/* 代理工具模态层：保持原有全量内容 */}
+      {/* 代理商控制面板模态框 */}
       <div id="agent-tools-modal" className="fixed inset-0 z-[2000] bg-white hidden overflow-y-auto">
-         <div className="absolute top-10 right-10 z-[10]">
+         <div className="sticky top-0 right-0 p-8 flex justify-end z-[2010] pointer-events-none">
             <button 
               onClick={() => document.getElementById('agent-tools-modal')?.classList.add('hidden')}
-              className="p-4 bg-gray-50 rounded-full hover:bg-gray-100 transition-colors"
+              className="p-4 bg-gray-50 rounded-full hover:bg-gray-100 transition-colors pointer-events-auto border border-gray-100 shadow-sm"
             >
               <X size={24} />
             </button>
          </div>
-         <AgentTools />
+         <div className="mt-[-80px]">
+           <AgentTools />
+         </div>
       </div>
     </div>
   );

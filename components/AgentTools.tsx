@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Copy, Check, Share2, Rocket, ShieldCheck, Zap, ArrowRight, UserCheck, DollarSign, Target } from 'lucide-react';
+import { Copy, Check, Rocket, ShieldCheck, Zap, ArrowRight, UserCheck, DollarSign, Target, Briefcase, Heart } from 'lucide-react';
 
 const AgentTools: React.FC = () => {
   const [waNumber, setWaNumber] = useState('');
@@ -7,9 +7,8 @@ const AgentTools: React.FC = () => {
   const [generatedLink, setGeneratedLink] = useState('');
   const [copied, setCopied] = useState(false);
   
-  // 模拟计算器
   const [estSales, setEstSales] = useState(5);
-  const avgCommission = 350; // 假设平均每台佣金 RM350
+  const avgCommission = 350; 
 
   useEffect(() => {
     setWaNumber(localStorage.getItem('my_agent_wa') || '');
@@ -19,11 +18,12 @@ const AgentTools: React.FC = () => {
 
   const generateLink = () => {
     if (!waNumber || !name) {
-      alert("Please fill in both fields.");
+      alert("Please fill in both fields to create your personalized showroom.");
       return;
     }
     const cleanWa = waNumber.replace(/\D/g, '');
     const baseUrl = window.location.origin + window.location.pathname;
+    // 构造带参数的推广链接：所有点击此链接进来的客户，咨询都会指向该代理的 WA
     const link = `${baseUrl}?wa=${cleanWa}&name=${encodeURIComponent(name)}#home`;
     setGeneratedLink(link);
     
@@ -38,89 +38,95 @@ const AgentTools: React.FC = () => {
   };
 
   return (
-    <div className="container mx-auto px-6 py-24 md:py-32 max-w-7xl animate-in fade-in duration-1000">
+    <div className="container mx-auto px-6 py-24 md:py-36 max-w-7xl animate-in fade-in duration-1000">
       
-      {/* Header Banner - More Dynamic */}
-      <div className="bg-[#05090f] text-white rounded-[40px] md:rounded-[80px] p-10 md:p-24 shadow-3xl mb-16 relative overflow-hidden border border-white/5">
-        <div className="absolute top-0 right-0 w-2/3 h-full bg-gradient-to-l from-lg-red/30 to-transparent skew-x-12 translate-x-32"></div>
-        <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-16">
-          <div className="max-w-2xl space-y-8 text-center md:text-left">
-            <div className="flex items-center gap-4 justify-center md:justify-start">
-              <ShieldCheck className="text-lg-red" size={24} />
-              <span className="text-lg-red text-[10px] font-black uppercase tracking-[0.6em]">Partner Engine 2.0</span>
+      {/* 激励横幅：吸引下线加入 */}
+      <div className="bg-[#05090f] text-white rounded-[60px] md:rounded-[100px] p-12 md:p-32 shadow-3xl mb-20 relative overflow-hidden border border-white/5">
+        <div className="absolute top-0 right-0 w-2/3 h-full bg-gradient-to-l from-lg-red/20 to-transparent skew-x-12 translate-x-32"></div>
+        <div className="absolute bottom-[-20%] left-[-10%] w-64 h-64 bg-blue-600/10 rounded-full blur-[100px]"></div>
+        
+        <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-16">
+          <div className="max-w-2xl space-y-10 text-center lg:text-left">
+            <div className="flex items-center gap-4 justify-center lg:justify-start">
+              <Briefcase className="text-lg-red" size={24} />
+              <span className="text-lg-red text-[11px] font-black uppercase tracking-[0.8em]">Start Earning Today</span>
             </div>
-            <h1 className="text-5xl md:text-9xl font-black tracking-tighter uppercase leading-[0.8] mb-4">
-              Your Business,<br/><span className="text-lg-red">Your Empire.</span>
+            <h1 className="text-6xl md:text-9xl font-black tracking-tighter uppercase leading-[0.8] mb-4">
+              OWN YOUR<br/><span className="text-lg-red">LG BUSINESS.</span>
             </h1>
-            <p className="text-gray-400 font-bold uppercase tracking-[0.2em] text-[11px] md:text-sm leading-loose max-w-md mx-auto md:mx-0">
-              Generate your personalized showroom. All inquiries go directly to your WhatsApp. Commission is automatically attributed to you.
+            <p className="text-gray-400 font-bold uppercase tracking-[0.2em] text-xs md:text-sm leading-loose max-w-md mx-auto lg:mx-0">
+              只需一分钟。填写资料，生成你的专属推广链接。所有客户咨询直接联系到你的 WhatsApp。无需囤货，无须发货，佣金全归你。
             </p>
           </div>
-          <div className="hidden md:flex w-40 h-40 bg-white/5 rounded-full items-center justify-center text-lg-red border border-white/10 animate-pulse">
-            <Rocket size={64} />
+          <div className="hidden lg:flex w-64 h-64 bg-white/5 rounded-[60px] rotate-12 items-center justify-center text-lg-red border border-white/10 shadow-2xl backdrop-blur-sm group hover:rotate-0 transition-all duration-700">
+            <div className="text-center space-y-2">
+               <Rocket size={80} className="group-hover:scale-110 transition-transform mx-auto" />
+               <p className="text-[10px] font-black tracking-widest mt-4">ZERO COST</p>
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-12 lg:gap-20">
-        {/* Left: Configuration & Link */}
-        <div className="space-y-12">
-          <div className="bg-white p-10 md:p-16 rounded-[60px] border border-gray-100 shadow-xl space-y-12">
-             <div className="flex items-center justify-between">
-                <h3 className="text-2xl md:text-3xl font-black uppercase tracking-tighter">1. Activate Showroom</h3>
-                <UserCheck className="text-lg-red" size={32} />
+      <div className="grid lg:grid-cols-2 gap-16 lg:gap-24">
+        {/* 左侧：链接配置区 */}
+        <div className="space-y-16">
+          <div className="bg-white p-12 md:p-20 rounded-[70px] border border-gray-100 shadow-2xl space-y-14">
+             <div className="flex items-center justify-between border-b pb-8">
+                <h3 className="text-3xl font-black uppercase tracking-tighter">1. 配置个人身份</h3>
+                <UserCheck className="text-lg-red" size={36} />
              </div>
-             <div className="space-y-8">
+             <div className="space-y-10">
                 <div className="space-y-4">
-                  <label className="text-[10px] font-black text-gray-300 uppercase tracking-[0.4em] ml-2 block">Agent Full Name</label>
+                  <label className="text-[10px] font-black text-gray-300 uppercase tracking-[0.5em] ml-4 block">推广姓名 (客户会看到的名称)</label>
                   <input 
                     value={name} 
                     onChange={e => setName(e.target.value)} 
-                    className="w-full p-6 md:p-8 bg-gray-50 rounded-[30px] outline-none font-black text-lg border border-transparent focus:border-lg-red focus:bg-white transition-all shadow-inner" 
-                    placeholder="e.g. Michael Tan" 
+                    className="w-full p-8 bg-gray-50 rounded-[35px] outline-none font-black text-xl border-2 border-transparent focus:border-lg-red focus:bg-white transition-all shadow-inner text-gray-900" 
+                    placeholder="例如: 认证顾问 小陈" 
                   />
                 </div>
                 <div className="space-y-4">
-                  <label className="text-[10px] font-black text-gray-300 uppercase tracking-[0.4em] ml-2 block">WhatsApp (e.g. 60123456789)</label>
+                  <label className="text-[10px] font-black text-gray-300 uppercase tracking-[0.5em] ml-4 block">WhatsApp 接收号码 (重要)</label>
                   <input 
                     value={waNumber} 
                     onChange={e => setWaNumber(e.target.value)} 
-                    className="w-full p-6 md:p-8 bg-gray-50 rounded-[30px] outline-none font-black text-lg border border-transparent focus:border-lg-red focus:bg-white transition-all shadow-inner" 
+                    className="w-full p-8 bg-gray-50 rounded-[35px] outline-none font-black text-xl border-2 border-transparent focus:border-lg-red focus:bg-white transition-all shadow-inner text-gray-900" 
                     placeholder="601XXXXXXXX" 
                   />
                 </div>
                 <button 
                   onClick={generateLink} 
-                  className="w-full group bg-lg-red text-white py-8 rounded-full font-black uppercase text-[12px] tracking-[0.4em] shadow-xl hover:bg-black transition-all flex items-center justify-center gap-4"
+                  className="w-full group bg-lg-red text-white py-10 rounded-full font-black uppercase text-[13px] tracking-[0.5em] shadow-[0_25px_50px_rgba(230,0,68,0.3)] hover:bg-gray-950 hover:scale-[1.02] transition-all flex items-center justify-center gap-5"
                 >
-                  Generate My Showroom <ArrowRight size={18} className="group-hover:translate-x-2 transition-transform" />
+                  激活我的专属商城 <ArrowRight size={20} className="group-hover:translate-x-2 transition-transform" />
                 </button>
              </div>
           </div>
 
           {generatedLink && (
-            <div className="bg-lg-dark p-10 md:p-16 rounded-[60px] text-white shadow-3xl space-y-10 animate-in zoom-in-95 duration-700">
-               <div className="flex items-center justify-between">
-                  <h3 className="text-2xl md:text-3xl font-black uppercase tracking-tighter">2. Your Unique Link</h3>
-                  <Zap className="text-amber-400" size={32} fill="currentColor" />
+            <div className="bg-gray-950 p-12 md:p-20 rounded-[70px] text-white shadow-3xl space-y-12 animate-in zoom-in-95 duration-700">
+               <div className="flex items-center justify-between border-b border-white/5 pb-8">
+                  <h3 className="text-3xl font-black uppercase tracking-tighter">你的印钞机链接</h3>
+                  <Zap className="text-amber-400" size={36} fill="currentColor" />
                </div>
-               <div className="p-8 bg-white/5 rounded-[35px] font-mono text-[10px] md:text-[11px] break-all leading-relaxed border border-white/10 text-white/50 select-all shadow-inner">
+               <div className="p-10 bg-white/5 rounded-[40px] font-mono text-[11px] break-all leading-relaxed border border-white/10 text-white/40 select-all shadow-inner">
                  {generatedLink}
                </div>
+               <p className="text-[11px] text-gray-500 font-medium text-center italic">分享以上链接，客户下单时会自动联系到你的号码。</p>
                <button 
                 onClick={copyToClipboard}
-                className={`w-full py-8 rounded-full font-black uppercase text-[12px] tracking-[0.4em] flex items-center justify-center gap-4 transition-all ${copied ? 'bg-green-500 text-white' : 'bg-white text-black hover:bg-lg-red hover:text-white'}`}
+                className={`w-full py-10 rounded-full font-black uppercase text-[13px] tracking-[0.5em] flex items-center justify-center gap-5 transition-all shadow-2xl ${copied ? 'bg-green-500 text-white' : 'bg-white text-black hover:bg-lg-red hover:text-white'}`}
                >
-                 {copied ? <><Check size={18}/> Link Copied!</> : <><Copy size={18}/> Copy & Start Promoting</>}
+                 {copied ? <><Check size={20}/> 复制成功!</> : <><Copy size={20}/> 复制推广链接</>}
                </button>
-               <div className="pt-8 border-t border-white/5 flex gap-6 items-start">
-                  <div className="w-12 h-12 bg-lg-red/20 rounded-2xl flex items-center justify-center text-lg-red shrink-0">
-                    <ShieldCheck size={24} />
+               <div className="pt-10 border-t border-white/5 flex gap-8 items-start">
+                  <div className="w-16 h-16 bg-lg-red/10 rounded-3xl flex items-center justify-center text-lg-red shrink-0 border border-lg-red/20">
+                    <ShieldCheck size={32} />
                   </div>
                   <div>
-                    <p className="text-[11px] font-black uppercase tracking-widest text-white/90">30-Day Attribution</p>
-                    <p className="text-[10px] text-white/30 font-bold mt-2 uppercase leading-relaxed">
-                      Once a customer clicks your link, they are tagged to you for 30 days. No matter what they browse, you get the credit.
+                    <p className="text-[12px] font-black uppercase tracking-widest text-white/90">Smart Tracking 系统</p>
+                    <p className="text-[11px] text-white/30 font-bold mt-3 uppercase leading-relaxed">
+                      该链接具备持久追踪功能。即使客户关闭页面后再次回来，系统依然会记得你是他们的推荐人。
                     </p>
                   </div>
                </div>
@@ -128,72 +134,67 @@ const AgentTools: React.FC = () => {
           )}
         </div>
 
-        {/* Right: Commission Simulator */}
-        <div className="space-y-12">
-          <div className="bg-white p-10 md:p-16 rounded-[60px] border border-gray-100 shadow-xl space-y-10">
-            <div className="flex items-center gap-4">
-              <DollarSign className="text-lg-red" size={32} />
-              <h3 className="text-2xl md:text-3xl font-black uppercase tracking-tighter">Earnings Simulator</h3>
+        {/* 右侧：收入模拟与指南 */}
+        <div className="space-y-16">
+          <div className="bg-white p-12 md:p-20 rounded-[70px] border border-gray-100 shadow-2xl space-y-12">
+            <div className="flex items-center gap-5 border-b pb-8">
+              <DollarSign className="text-lg-red" size={36} />
+              <h3 className="text-3xl font-black uppercase tracking-tighter">收入计算器</h3>
             </div>
             
-            <div className="space-y-12">
-              <div className="space-y-6">
-                <div className="flex justify-between items-end">
-                   <label className="text-[10px] font-black text-gray-300 uppercase tracking-widest">Target Monthly Sales</label>
-                   <span className="text-4xl font-black text-gray-950">{estSales} <span className="text-sm text-gray-300">UNITS</span></span>
+            <div className="space-y-16">
+              <div className="space-y-8">
+                <div className="flex justify-between items-end px-4">
+                   <label className="text-[11px] font-black text-gray-300 uppercase tracking-widest">月度目标销量</label>
+                   <span className="text-5xl font-black text-gray-950">{estSales} <span className="text-sm text-gray-300 uppercase tracking-widest">台</span></span>
                 </div>
-                <input 
-                  type="range" min="1" max="50" step="1" 
-                  value={estSales} 
-                  onChange={e => setEstSales(Number(e.target.value))}
-                  className="w-full h-3 bg-gray-100 rounded-lg appearance-none cursor-pointer accent-lg-red"
-                />
+                <div className="px-4">
+                  <input 
+                    type="range" min="1" max="100" step="1" 
+                    value={estSales} 
+                    onChange={e => setEstSales(Number(e.target.value))}
+                    className="w-full h-4 bg-gray-100 rounded-full appearance-none cursor-pointer accent-lg-red"
+                  />
+                </div>
               </div>
 
-              <div className="grid grid-cols-1 gap-6">
-                <div className="bg-gray-50 p-8 rounded-[40px] flex justify-between items-center shadow-inner">
-                   <div className="space-y-1">
-                      <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest leading-none">Monthly Commission</p>
-                      <p className="text-3xl font-black text-gray-950">RM { (estSales * avgCommission).toLocaleString() }</p>
+              <div className="grid grid-cols-1 gap-8">
+                <div className="bg-gray-50 p-10 rounded-[45px] flex justify-between items-center shadow-inner border border-gray-100">
+                   <div className="space-y-2">
+                      <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">预估月度佣金</p>
+                      <p className="text-4xl font-black text-gray-950">RM { (estSales * avgCommission).toLocaleString() }</p>
                    </div>
-                   <Target className="text-gray-200" size={32} />
+                   <Target className="text-gray-200" size={48} />
                 </div>
                 
-                <div className="bg-lg-red text-white p-10 rounded-[45px] relative overflow-hidden shadow-2xl">
-                   <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 blur-2xl -translate-y-10 translate-x-10"></div>
-                   <div className="relative z-10 space-y-2">
-                      <p className="text-[10px] font-black uppercase tracking-[0.4em] opacity-60">Estimated Annual Income</p>
-                      <p className="text-5xl md:text-6xl font-black tracking-tighter">RM { (estSales * avgCommission * 12).toLocaleString() }</p>
+                <div className="bg-lg-red text-white p-12 rounded-[55px] relative overflow-hidden shadow-[0_30px_70px_rgba(230,0,68,0.3)]">
+                   <div className="absolute top-0 right-0 w-48 h-48 bg-white/10 blur-3xl -translate-y-10 translate-x-10"></div>
+                   <div className="relative z-10 space-y-4 text-center">
+                      <p className="text-[11px] font-black uppercase tracking-[0.5em] opacity-60">预估年度额外收入</p>
+                      <p className="text-6xl md:text-7xl font-black tracking-tighter leading-none">RM { (estSales * avgCommission * 12).toLocaleString() }</p>
                    </div>
-                </div>
-              </div>
-
-              <div className="p-8 border border-dashed border-gray-100 rounded-[35px] space-y-4">
-                <p className="text-[11px] font-black uppercase text-gray-400 text-center tracking-widest">Included Incentives</p>
-                <div className="flex flex-wrap justify-center gap-3">
-                  {['13% Basic', '3M Rental', 'Volume Bonus'].map(v => (
-                    <span key={v} className="bg-gray-50 px-5 py-2 rounded-full text-[9px] font-black uppercase tracking-widest border border-gray-100 text-gray-500">{v}</span>
-                  ))}
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="bg-[#05090f] p-10 md:p-16 rounded-[60px] text-white space-y-8">
-             <h4 className="text-xl font-black uppercase tracking-tighter">Quick Strategy</h4>
-             <ul className="space-y-6">
-               <li className="flex gap-5">
-                 <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center shrink-0 text-[10px] font-black">1</div>
-                 <p className="text-[11px] font-bold text-white/50 uppercase tracking-tight">Share your link in WhatsApp groups and Facebook Community.</p>
-               </li>
-               <li className="flex gap-5">
-                 <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center shrink-0 text-[10px] font-black">2</div>
-                 <p className="text-[11px] font-bold text-white/50 uppercase tracking-tight">Explain the RM1 / Day promotion to attract high volume.</p>
-               </li>
-               <li className="flex gap-5">
-                 <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center shrink-0 text-[10px] font-black">3</div>
-                 <p className="text-[11px] font-bold text-white/50 uppercase tracking-tight">Direct customers to specific products using your link hash.</p>
-               </li>
+          <div className="bg-gray-50 p-12 md:p-16 rounded-[70px] border border-gray-100 space-y-10">
+             <div className="flex items-center gap-4">
+                <Heart size={24} className="text-lg-red" fill="currentColor" />
+                <h4 className="text-2xl font-black uppercase tracking-tighter text-gray-950">赚钱小贴士</h4>
+             </div>
+             <ul className="space-y-8">
+               {[
+                 "将你的推广链接分享到 WhatsApp 状态 (Status)，咨询率最高。",
+                 "利用管理后台的 AI 导入功能，随时增加最火爆的新品。",
+                 "在 Facebook 装修、家居小组发布产品，附带你的专属链接。",
+                 "告诉客户：所有产品均由官方提供专业维护，完全无忧。"
+               ].map((tip, idx) => (
+                 <li key={idx} className="flex gap-6 items-start group">
+                   <div className="w-10 h-10 rounded-2xl bg-white border border-gray-200 flex items-center justify-center shrink-0 text-[12px] font-black text-lg-red shadow-sm group-hover:bg-lg-red group-hover:text-white transition-all">{idx + 1}</div>
+                   <p className="text-[12px] font-bold text-gray-500 uppercase tracking-tight leading-relaxed pt-2">{tip}</p>
+                 </li>
+               ))}
              </ul>
           </div>
         </div>
