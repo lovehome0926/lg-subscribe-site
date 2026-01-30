@@ -54,11 +54,11 @@ const App: React.FC = () => {
 
   useEffect(() => {
     const init = async () => {
-      // Emergency "Force Render" timer for GitHub Pages reliability
+      // 强制启动计时器：无论发生什么错误，3秒后必须显示 UI
       const forceReady = setTimeout(() => {
-        console.warn("App: Initialization taking too long, forcing ready state.");
+        console.warn("App: Initialization timeout, forcing UI display.");
         setIsReady(true);
-      }, 3500);
+      }, 3000);
 
       try {
         const savedSettings = localStorage.getItem('lg_site_settings');
@@ -70,7 +70,6 @@ const App: React.FC = () => {
         const savedCats = localStorage.getItem('lg_categories');
         if (savedCats) setCategories(JSON.parse(savedCats));
 
-        // Attempt DB load, fallback to constants if indexedDB fails or is empty
         try {
           const dbProducts = await getProductsDB();
           if (dbProducts && dbProducts.length > 0) {
@@ -80,14 +79,13 @@ const App: React.FC = () => {
             await saveProductsDB(INITIAL_PRODUCTS);
           }
         } catch (dbError) {
-          console.error("DB Initialization failed, falling back to static data:", dbError);
+          console.error("DB Initialization failed:", dbError);
           setProducts(INITIAL_PRODUCTS);
         }
 
         const params = new URLSearchParams(window.location.search);
-        // Supports various param names for flexibility
-        const agentWa = params.get('wa') || params.get('agent_wa') || params.get('whatsapp');
-        const agentName = params.get('name') || params.get('agent_name');
+        const agentWa = params.get('wa') || params.get('agent_wa');
+        const agentName = params.get('name');
 
         if (agentWa) {
           const newAgent: Agent = { id: Date.now().toString(), name: agentName || 'Official Partner', whatsapp: agentWa };
@@ -114,6 +112,11 @@ const App: React.FC = () => {
       }
     };
     init();
+
+    // 监听全局未捕获错误，防止白屏
+    const errorHandler = () => setIsReady(true);
+    window.addEventListener('error', errorHandler);
+    return () => window.removeEventListener('error', errorHandler);
   }, []);
 
   useEffect(() => {
@@ -127,7 +130,7 @@ const App: React.FC = () => {
   }, [isReady]);
 
   const resetToMaster = async () => {
-    if(confirm("Confirm reset to Master Data from GitHub? This will overwrite local changes.")) {
+    if(confirm("Confirm reset to Master Data?")) {
       setProducts(INITIAL_PRODUCTS);
       await saveProductsDB(INITIAL_PRODUCTS);
       location.reload();
@@ -146,7 +149,7 @@ const App: React.FC = () => {
       />
       <main className="flex-grow pt-20">
         {!isReady ? (
-          <div className="flex items-center justify-center h-screen bg-gray-50">
+          <div className="flex items-center justify-center h-[80vh]">
              <div className="w-10 h-10 border-4 border-lg-red/20 border-t-lg-red rounded-full animate-spin"></div>
           </div>
         ) : currentRoute === AppRoute.ADMIN ? (
