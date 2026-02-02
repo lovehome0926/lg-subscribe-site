@@ -3,34 +3,28 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>LG Subscribe Malaysia | Premium Digital Showroom</title>
+  <title>LG Subscribe Malaysia | Premium Digital Hub</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;900&display=swap" rel="stylesheet">
   <script>
     tailwind.config = {
       theme: {
         extend: {
           colors: { 
             'lg-red': '#e60044', 
-            'lg-dark': '#05090f', 
-            'lg-pearl': '#f8f9fa',
-            'lg-brand-bg': '#f6f3ef'
+            'lg-dark': '#05090f',
+            'lg-pearl': '#f8f9fa'
           },
           fontFamily: { sans: ['Outfit', 'sans-serif'] },
           animation: {
-            'scroll': 'scroll 40s linear infinite',
             'fade-up': 'fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards'
           },
           keyframes: {
-            scroll: {
-              '0%': { transform: 'translateX(0)' },
-              '100%': { transform: 'translateX(-50%)' },
-            },
             fadeUp: {
-              'from': { opacity: '0', transform: 'translateY(20px)' },
-              'to': { opacity: '1', transform: 'translateY(0)' }
+              '0%': { opacity: '0', transform: 'translateY(20px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' }
             }
           }
         }
@@ -3399,8 +3393,9 @@ video {
   vite: react-babel;
 }
     .premium-blur {
-  border-width: 1px;
-  border-color: rgb(255 255 255 / 0.2);
+  border-bottom-width: 1px;
+  --tw-border-opacity: 1;
+  border-color: rgb(243 244 246 / var(--tw-border-opacity, 1));
   background-color: rgb(255 255 255 / 0.8);
   --tw-backdrop-blur: blur(40px);
   backdrop-filter: var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);
@@ -3430,46 +3425,8 @@ video {
   --tw-border-opacity: 1;
   border-color: rgb(230 0 68 / var(--tw-border-opacity, 1));
 }
-    .no-scrollbar::-webkit-scrollbar { display: none; }
-    .admin-card {
-  border-radius: 35px;
-  border-width: 1px;
-  --tw-border-opacity: 1;
-  border-color: rgb(243 244 246 / var(--tw-border-opacity, 1));
-  --tw-bg-opacity: 1;
-  background-color: rgb(255 255 255 / var(--tw-bg-opacity, 1));
-  padding: 1.5rem;
-  --tw-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --tw-shadow-colored: 0 1px 2px 0 var(--tw-shadow-color);
-  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
-  transition-property: all;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 150ms;
-}
-    .admin-card:hover {
-  --tw-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  --tw-shadow-colored: 0 4px 6px -1px var(--tw-shadow-color), 0 2px 4px -2px var(--tw-shadow-color);
-  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
-}
-    .lg-benefit-img {
-  height: 100%;
-  width: 100%;
-  border-radius: 40px;
-  -o-object-fit: cover;
-     object-fit: cover;
-  --tw-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
-  --tw-shadow-colored: 0 25px 50px -12px var(--tw-shadow-color);
-  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
-  transition-property: transform;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 700ms;
-}
-    .lg-benefit-img:hover {
-  --tw-scale-x: 1.02;
-  --tw-scale-y: 1.02;
-  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
-}
     .hero-gradient { background: radial-gradient(circle at 50% 50%, rgba(230,0,68,0.05) 0%, transparent 70%); }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
     @media (min-width: 640px) {
 
   .sm\:container {
@@ -3586,11 +3543,6 @@ video {
   --tw-scale-y: 1.05;
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
-    .hover\:scale-\[1\.02\]:hover {
-  --tw-scale-x: 1.02;
-  --tw-scale-y: 1.02;
-  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
-}
     .hover\:border-gray-100:hover {
   --tw-border-opacity: 1;
   border-color: rgb(243 244 246 / var(--tw-border-opacity, 1));
@@ -3679,11 +3631,6 @@ video {
     .hover\:shadow-\[0_40px_100px_rgba\(0\2c 0\2c 0\2c 0\.08\)\]:hover {
   --tw-shadow: 0 40px 100px rgba(0,0,0,0.08);
   --tw-shadow-colored: 0 40px 100px var(--tw-shadow-color);
-  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
-}
-    .hover\:shadow-md:hover {
-  --tw-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  --tw-shadow-colored: 0 4px 6px -1px var(--tw-shadow-color), 0 2px 4px -2px var(--tw-shadow-color);
   box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
     .hover\:shadow-xl:hover {
@@ -4048,7 +3995,7 @@ video {
   }
 }
 </script>
-  <script type="module" crossorigin src="./assets/index-C_sVuUFQ.js"></script>
+  <script type="module" crossorigin src="./assets/index-CZQxRKOw.js"></script>
   <link rel="modulepreload" crossorigin href="./assets/icons-CE3uG74_.js">
   <link rel="modulepreload" crossorigin href="./assets/vendor-fjvx86jD.js">
 </head>
