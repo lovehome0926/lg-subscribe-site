@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>LG Subscribe Malaysia | Advanced Digital Hub</title>
+  <title>LG Subscribe Malaysia | Digital Hub Pro</title>
   
   <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -38,6 +38,7 @@
     input, select, textarea { @apply bg-white border border-gray-100 rounded-2xl p-4 outline-none focus:border-lg-red transition-all font-medium text-sm; }
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .admin-card { @apply bg-white p-6 rounded-[35px] border border-gray-100 shadow-sm hover:shadow-md transition-all; }
+    .file-upload-btn { @apply flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-xl text-[10px] font-black uppercase transition-all cursor-pointer; }
   </style>
 <script type="importmap">
 {
@@ -61,79 +62,93 @@
   </script>
 
   <script type="text/babel">
-    const { useState, useEffect, useMemo } = React;
+    const { useState, useEffect, useMemo, useRef } = React;
 
     const Icon = ({ name, size = 20, className = "" }) => {
-      useEffect(() => { if (window.lucide) window.lucide.createIcons(); }, [name]);
+      useEffect(() => { if (window.lucide) window.lucide.createIcons(); }, [name, size, className]);
       return <i data-lucide={name} className={className} style={{ width: size, height: size }}></i>;
     };
 
     const DICT = {
-      cn: { heroSub: "LG Subscribe 认证合作伙伴。以极简方案解锁全球顶尖家电。", explore: "浏览展厅", contactNow: "立即咨询", monthly: "月供低至", showroom: "数字化展厅", adminTitle: "管理终端", inventory: "库存", siteConfig: "配置", affiliates: "代理", promo: "促销", backup: "备份", outright: "买断" },
-      en: { heroSub: "Certified LG Partner. Unlock premium living with flexible subscription plans.", explore: "Explore Hub", contactNow: "Contact Now", monthly: "From RM", showroom: "Digital Showroom", adminTitle: "Admin Panel", inventory: "Inventory", siteConfig: "Settings", affiliates: "Affiliates", promo: "Promo", backup: "Backup", outright: "Outright" },
-      ms: { heroSub: "Rakan Kongsi Sah LG. Alami kehidupan premium dengan pelan fleksibel.", explore: "Teroka", contactNow: "Hubungi", monthly: "Dari RM", showroom: "Bilik Pameran", adminTitle: "Panel Admin", inventory: "Inventori", siteConfig: "Tetapan", affiliates: "Ejen", promo: "Promosi", backup: "Sandaran", outright: "Tunai" }
+      cn: { heroSub: "LG Subscribe 认证合作伙伴。以极简方案解锁顶尖家电。", explore: "浏览展厅", contactNow: "立即咨询", monthly: "月供低至", adminTitle: "管理终端", inventory: "库存", siteConfig: "配置", affiliates: "代理", promo: "促销", backup: "备份", outright: "买断", duration: "期限", endDate: "截止日" },
+      en: { heroSub: "Certified LG Partner. Unlock premium living with flexible plans.", explore: "Explore Hub", contactNow: "Contact Now", monthly: "From RM", adminTitle: "Admin Panel", inventory: "Inventory", siteConfig: "Settings", affiliates: "Affiliates", promo: "Promo", backup: "Backup", outright: "Outright", duration: "Months", endDate: "Expiry" },
+      ms: { heroSub: "Rakan Kongsi Sah LG. Alami kehidupan premium dengan pelan fleksibel.", explore: "Teroka", contactNow: "Hubungi", monthly: "Dari RM", adminTitle: "Panel Admin", inventory: "Inventori", siteConfig: "Tetapan", affiliates: "Ejen", promo: "Promosi", backup: "Sandaran", outright: "Tunai", duration: "Tempoh", endDate: "Tamat" }
     };
 
-    const INITIAL_PRODUCTS = [
-      {
-        id: 'WP-PURI-V',
-        category: 'Water Purifier',
-        name: 'PuriCare™ Tankless',
-        subName: { cn: '无水箱净水机', en: 'Self-Service Tankless', ms: 'Penapis Air Tanpa Tangki' },
-        image: 'https://www.lg.com/content/dam/channel/wcms/my/images/water-purifiers/wd516an_answ_e_my_c/gallery/dz-01.jpg',
-        price: 60,
-        isHot: true,
-        features: [{ cn: '极速制冷', en: 'Instant Cold', ms: 'Sejuk Segera' }],
-        painPoints: [{ cn: '储水箱细菌滋生', en: 'Tank bacteria growth', ms: 'Bakteria dalam tangki' }],
-        variants: [{ name: 'Silver', colorCode: '#C0C0C0', image: 'https://www.lg.com/content/dam/channel/wcms/my/images/water-purifiers/wd516an_answ_e_my_c/gallery/dz-01.jpg' }],
-        plans: [
-          { term: '7', type: 'Self Service', interval: '6mth', price: 60 },
-          { term: '5', type: 'Regular Visit', interval: '12mth', price: 90 },
-          { term: 'Outright', type: 'No Service', interval: 'None', price: 3200 }
-        ]
-      }
-    ];
-
-    const INITIAL_SETTINGS = {
-      logo: 'https://i.ibb.co/Rk6m7Yw/lg-sub-logo-red.png',
-      heroImage: 'https://www.lg.com/content/dam/channel/wcms/my/images/air-conditioners/v10api_answ_e_my_c/gallery/dz-01.jpg',
-      heroTitle: { cn: '科技定义 优雅生活', en: 'ELEGANCE IN TECH', ms: 'KEANGGUNAN TEKNOLOGI' },
-      contactPhone: '60177473787',
-      adminPin: '8888'
-    };
+    // Helper: Image to Base64
+    const fileToBase64 = (file) => new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = error => reject(error);
+    });
 
     const App = () => {
       const [view, setView] = useState('home');
       const [lang, setLang] = useState('cn');
-      const [isAdmin, setIsAdmin] = useState(false);
       const [activeTab, setActiveTab] = useState('inventory');
       
-      const [products, setProducts] = useState(() => JSON.parse(localStorage.getItem('lg_pro_v9') || JSON.stringify(INITIAL_PRODUCTS)));
-      const [settings, setSettings] = useState(() => JSON.parse(localStorage.getItem('lg_set_v9') || JSON.stringify(INITIAL_SETTINGS)));
-      const [agents, setAgents] = useState(() => JSON.parse(localStorage.getItem('lg_age_v9') || '[]'));
-      const [templates, setTemplates] = useState(() => JSON.parse(localStorage.getItem('lg_tpl_v9') || '[]'));
+      const [products, setProducts] = useState(() => JSON.parse(localStorage.getItem('lg_v10_pro') || '[]'));
+      const [settings, setSettings] = useState(() => JSON.parse(localStorage.getItem('lg_v10_set') || JSON.stringify({
+        logo: 'https://i.ibb.co/Rk6m7Yw/lg-sub-logo-red.png',
+        heroImage: 'https://www.lg.com/content/dam/channel/wcms/my/images/air-conditioners/v10api_answ_e_my_c/gallery/dz-01.jpg',
+        heroTitle: { cn: '科技定义 优雅生活', en: 'ELEGANCE IN TECH', ms: 'KEANGGUNAN TEKNOLOGI' },
+        contactPhone: '60177473787',
+        adminPin: '8888'
+      })));
+      const [agents, setAgents] = useState(() => JSON.parse(localStorage.getItem('lg_v10_age') || '[]'));
+      const [templates, setTemplates] = useState(() => JSON.parse(localStorage.getItem('lg_v10_tpl') || '[]'));
       
       const [activeAgent, setActiveAgent] = useState(null);
       const [editingProduct, setEditingProduct] = useState(null);
       const [isAiLoading, setIsAiLoading] = useState(false);
 
       useEffect(() => {
-        localStorage.setItem('lg_pro_v9', JSON.stringify(products));
-        localStorage.setItem('lg_set_v9', JSON.stringify(settings));
-        localStorage.setItem('lg_age_v9', JSON.stringify(agents));
-        localStorage.setItem('lg_tpl_v9', JSON.stringify(templates));
+        localStorage.setItem('lg_v10_pro', JSON.stringify(products));
+        localStorage.setItem('lg_v10_set', JSON.stringify(settings));
+        localStorage.setItem('lg_v10_age', JSON.stringify(agents));
+        localStorage.setItem('lg_v10_tpl', JSON.stringify(templates));
       }, [products, settings, agents, templates]);
 
       useEffect(() => {
         const params = new URLSearchParams(window.location.search);
         const wa = params.get('wa');
-        if (wa) {
-          const a = { name: params.get('name') || 'Authorized Partner', wa: wa.replace(/\D/g, '') };
-          setActiveAgent(a);
-        }
+        if (wa) setActiveAgent({ name: params.get('name') || 'Partner', wa: wa.replace(/\D/g, '') });
       }, []);
 
       const t = DICT[lang];
+
+      // 计算最终显示的价格 (处理进位逻辑)
+      const calculatePrice = (basePrice, productId) => {
+        let final = basePrice;
+        const now = new Date();
+        const activePromo = templates.find(tpl => {
+          if (!tpl.isActive) return false;
+          const isTarget = tpl.applyToAll || (tpl.targetProductIds && tpl.targetProductIds.includes(productId));
+          const notExpired = !tpl.endDate || new Date(tpl.endDate) > now;
+          return isTarget && notExpired;
+        });
+
+        if (activePromo) {
+          if (activePromo.type === 'percent') {
+            final = basePrice * (1 - activePromo.value / 100);
+          } else if (activePromo.type === 'fixed') {
+            final = basePrice - activePromo.value;
+          } else if (activePromo.type === 'direct') {
+            final = activePromo.value;
+          }
+        }
+        // 关键需求：小数点不过多少都需要进位
+        return Math.ceil(final);
+      };
+
+      const handleImageUpload = async (e, callback) => {
+        const file = e.target.files[0];
+        if (file) {
+          const base64 = await fileToBase64(file);
+          callback(base64);
+        }
+      };
 
       const handleRestore = (e) => {
         const file = e.target.files[0];
@@ -142,29 +157,14 @@
         reader.onload = (event) => {
           try {
             const data = JSON.parse(event.target.result);
-            if (data.products) {
-              setProducts(data.products.map(p => ({
-                ...p,
-                subName: typeof p.subName === 'string' ? {cn:p.subName, en:p.subName, ms:p.subName} : (p.subName || {cn:'',en:'',ms:''}),
-                features: p.features || [],
-                painPoints: p.painPoints || [],
-                variants: p.variants || [{name:'Default', colorCode:'#eee', image: p.image}],
-                plans: (p.plans || []).map(pl => ({
-                  term: pl.term || pl.termYears || '7',
-                  type: pl.type || pl.maintenanceType || 'Self Service',
-                  interval: pl.interval || pl.serviceInterval || '6mth',
-                  price: pl.price || 0
-                }))
-              })));
-            }
+            if (data.products) setProducts(data.products);
             if (data.settings) setSettings(data.settings);
             if (data.agents) setAgents(data.agents);
             if (data.templates) setTemplates(data.templates);
-            alert("数据还原成功！");
-          } catch (err) { alert("还原失败，请检查文件格式。"); }
+            alert("数据还原成功！所有功能已保存。");
+          } catch (err) { alert("还原失败：文件格式错误"); }
         };
         reader.readAsText(file);
-        e.target.value = '';
       };
 
       const handleAiExtract = async (url) => {
@@ -174,95 +174,81 @@
           const ai = new window.GoogleGenAI({ apiKey: process.env.API_KEY });
           const response = await ai.models.generateContent({
             model: 'gemini-3-pro-preview',
-            contents: `Analyze LG product URL: ${url}. Extract into JSON format.
-            Rules:
-            1. subName: {cn, en, ms}
-            2. features/painPoints: array of {cn, en, ms}
-            3. variants: array of {name, colorCode, image}
-            4. plans: MUST be an array of {term, type, interval, price}. 
-               Valid terms: 3, 5, 7, Outright.
-               Valid types: Self Service, Regular Visit, Combine Maintenance, No Service.
-               Valid intervals: None, 6mth, 12mth, 24m.
-            Ensure pricing reflects LG Malaysia market.`,
+            contents: `Analyze LG product URL: ${url}. Return JSON: { name, category, subName:{cn,en,ms}, features:[{cn,en,ms}], painPoints:[{cn,en,ms}], variants:[{name,colorCode,image}], plans:[{term,type,interval,price}] }. Term must be 3, 5, 7, or Outright.`,
             config: { responseMimeType: "application/json" }
           });
           const result = JSON.parse(response.text);
           setEditingProduct({ ...editingProduct, ...result });
-        } catch (e) { alert("AI extraction failed."); }
+        } catch (e) { alert("AI 提取失败，请手动填写。"); }
         setIsAiLoading(false);
       };
 
       return (
-        <div className="min-h-screen">
+        <div className="min-h-screen font-sans">
+          {/* Nav */}
           <nav className="fixed top-0 w-full z-50 h-20 premium-blur flex items-center px-6 justify-between border-b border-gray-100">
             <button onClick={() => setView('home')}><img src={settings.logo} className="h-6" /></button>
             <div className="flex gap-2">
               {['cn','en','ms'].map(l => (
-                <button key={l} onClick={() => setLang(l)} className={`px-3 py-1.5 rounded-full text-[9px] font-black uppercase ${lang === l ? 'bg-lg-red text-white shadow-lg' : 'bg-gray-100 text-gray-400'}`}>{l}</button>
+                <button key={l} onClick={() => setLang(l)} className={`px-3 py-1.5 rounded-full text-[9px] font-black uppercase ${lang === l ? 'bg-lg-red text-white' : 'bg-gray-100 text-gray-400'}`}>{l}</button>
               ))}
             </div>
           </nav>
 
           {view === 'home' ? (
             <div className="pt-20">
-              <section className="bg-lg-pearl py-20 px-6 flex flex-col items-center text-center">
-                <div className="max-w-4xl space-y-6 animate-fade-up">
-                  <h1 className="text-5xl md:text-8xl font-black uppercase tracking-tighter leading-none">{settings.heroTitle[lang]}</h1>
-                  <p className="text-gray-400 font-medium text-lg max-w-2xl mx-auto">{t.heroSub}</p>
-                </div>
-                <img src={settings.heroImage} className="max-w-4xl w-full h-auto mt-12 drop-shadow-2xl animate-fade-up" />
+              <section className="bg-lg-pearl py-24 px-6 text-center animate-fade-up">
+                 <h1 className="text-6xl md:text-8xl font-black uppercase tracking-tighter mb-4">{settings.heroTitle[lang]}</h1>
+                 <p className="text-gray-400 max-w-2xl mx-auto mb-10">{t.heroSub}</p>
+                 <img src={settings.heroImage} className="max-w-4xl w-full mx-auto drop-shadow-2xl rounded-3xl" />
               </section>
 
               {activeAgent && (
-                <div className="sticky top-24 z-40 flex justify-center px-6 -mt-10 pointer-events-none">
-                  <div className="premium-blur shadow-premium rounded-full px-8 py-4 flex items-center gap-8 pointer-events-auto animate-fade-up">
-                    <div className="flex items-center gap-4 border-r pr-8 border-gray-100 text-left">
-                      <div className="w-10 h-10 bg-lg-red rounded-full flex items-center justify-center text-white shadow-lg"><Icon name="star" /></div>
-                      <div><span className="text-[9px] font-black text-gray-400 uppercase block leading-none">Partner</span><span className="text-sm font-black uppercase text-gray-950">{activeAgent.name}</span></div>
+                <div className="sticky top-24 z-40 flex justify-center -mt-10 px-6">
+                  <div className="premium-blur rounded-full px-8 py-4 flex items-center gap-8 shadow-premium border border-gray-100">
+                    <div className="text-left border-r pr-8 border-gray-200">
+                       <span className="text-[9px] font-black text-gray-400 uppercase block">Certified Partner</span>
+                       <span className="text-sm font-black uppercase">{activeAgent.name}</span>
                     </div>
-                    <a href={`https://wa.me/${activeAgent.wa}?text=Hi, I'm interested in LG Subscribe.`} className="text-[10px] font-black text-lg-red uppercase tracking-widest flex items-center gap-2">{t.contactNow} <Icon name="arrow-right" size={14} /></a>
+                    <a href={`https://wa.me/${activeAgent.wa}?text=Hi, I want to inquire LG Subscribe.`} className="text-[10px] font-black text-lg-red flex items-center gap-2 uppercase tracking-widest">{t.contactNow} <Icon name="arrow-right" size={14} /></a>
                   </div>
                 </div>
               )}
 
               <section className="py-24 max-w-7xl mx-auto px-6 grid md:grid-cols-3 gap-12">
-                {products.map(p => (
-                  <div key={p.id} className="bg-white rounded-[45px] p-10 border border-gray-100 flex flex-col group hover:shadow-premium transition-all duration-700 animate-fade-up">
-                    <div className="flex justify-between mb-8">
-                      <span className="text-[10px] font-black text-gray-300 uppercase tracking-widest">{p.category}</span>
-                      {p.isHot && <span className="bg-lg-red text-white text-[9px] font-black px-3 py-1.5 rounded-full uppercase shadow-lg shadow-lg-red/20">Hot</span>}
-                    </div>
-                    <div className="aspect-square mb-8 flex items-center justify-center relative">
-                       <div className="absolute inset-0 bg-lg-pearl rounded-full scale-90 group-hover:scale-100 transition-transform"></div>
-                       <img src={p.image} className="max-h-[85%] object-contain relative z-10 group-hover:scale-110 transition-transform duration-700" />
-                    </div>
-                    <h3 className="text-2xl font-black uppercase mb-1">{p.name}</h3>
-                    <p className="text-[10px] font-bold text-gray-400 uppercase mb-8 tracking-widest">{p.subName[lang]}</p>
-                    <div className="mt-auto pt-8 border-t border-gray-50 flex items-end justify-between">
-                       <div>
-                         <span className="text-lg-red text-[10px] font-black uppercase tracking-widest block mb-1">{t.monthly}</span>
-                         <span className="text-4xl font-black text-gray-950 tracking-tighter">RM{p.price}</span>
+                {products.map(p => {
+                  const displayPrice = calculatePrice(p.price, p.id);
+                  return (
+                    <div key={p.id} className="bg-white rounded-[45px] p-10 border border-gray-100 flex flex-col group hover:shadow-premium transition-all">
+                       <div className="aspect-square mb-8 flex items-center justify-center relative">
+                          <img src={p.image} className="max-h-[85%] object-contain relative z-10 transition-transform group-hover:scale-110" />
                        </div>
-                       <a href={`https://wa.me/${activeAgent?.wa || settings.contactPhone}?text=Inquire: ${p.name}`} className="bg-gray-950 text-white p-5 rounded-full hover:bg-lg-red transition-all shadow-xl"><Icon name="arrow-right" size={24} /></a>
+                       <h3 className="text-2xl font-black uppercase">{p.name}</h3>
+                       <p className="text-[10px] font-bold text-gray-400 uppercase mb-8">{p.subName[lang]}</p>
+                       <div className="mt-auto pt-8 border-t border-gray-50 flex items-end justify-between">
+                          <div>
+                            <span className="text-lg-red text-[10px] font-black uppercase block">{t.monthly}</span>
+                            <span className="text-4xl font-black">RM{displayPrice}</span>
+                          </div>
+                          <a href={`https://wa.me/${activeAgent?.wa || settings.contactPhone}?text=Inquire: ${p.name}`} className="bg-lg-dark text-white p-5 rounded-full hover:bg-lg-red transition-all shadow-xl"><Icon name="arrow-right" size={24} /></a>
+                       </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </section>
 
-              <footer className="bg-lg-dark text-white py-24 px-6 text-center space-y-8">
-                 <p className="text-gray-500 text-[9px] font-black uppercase tracking-[0.5em] flex justify-center items-center gap-2">
-                   <button onClick={() => { if(prompt("Admin PIN:") === settings.adminPin) {setView('admin'); setIsAdmin(true);}}} className="hover:text-white transition-colors opacity-30">©</button> 2025 LG Subscribe Digital Hub
-                 </p>
+              <footer className="bg-lg-dark text-white py-20 px-6 text-center">
+                 <button onClick={() => { if(prompt("PIN") === settings.adminPin) setView('admin'); }} className="opacity-20 hover:opacity-100 transition-opacity">© 2025 LG Hub</button>
               </footer>
             </div>
           ) : (
-            <div className="pt-32 px-6 max-w-6xl mx-auto min-h-screen pb-32 space-y-12 animate-fade-up">
-               <div className="flex flex-wrap gap-4 border-b border-gray-100 pb-8 items-center">
+            <div className="pt-32 px-6 max-w-7xl mx-auto pb-32 space-y-12 animate-fade-up">
+               <div className="flex flex-wrap gap-4 border-b pb-8 items-center">
                  <h1 className="text-xl font-black uppercase mr-8">{t.adminTitle}</h1>
-                 {['inventory', 'settings', 'agents', 'promo', 'backup'].map(tab => (
-                   <button key={tab} onClick={() => setActiveTab(tab)} className={`px-6 py-2.5 rounded-full text-[9px] font-black uppercase tracking-widest transition-all ${activeTab === tab ? 'bg-lg-red text-white shadow-lg' : 'bg-gray-100 text-gray-400 hover:text-lg-dark'}`}>{t[tab]}</button>
+                 {['inventory', 'settings', 'affiliates', 'promo', 'backup'].map(tab => (
+                   <button key={tab} onClick={() => setActiveTab(tab)} className={`px-6 py-2.5 rounded-full text-[9px] font-black uppercase tracking-widest ${activeTab === tab ? 'bg-lg-red text-white' : 'bg-gray-100 text-gray-400'}`}>{t[tab]}</button>
                  ))}
-                 <button onClick={() => setView('home')} className="ml-auto text-[9px] font-black uppercase text-gray-300 hover:text-lg-red">Exit</button>
+                 <button onClick={() => setView('home')} className="ml-auto text-[9px] font-black uppercase text-gray-300">Exit</button>
                </div>
 
                {activeTab === 'inventory' && (
@@ -271,91 +257,144 @@
                      <div key={p.id} className="admin-card flex items-center gap-6 group">
                         <img src={p.image} className="w-16 h-16 object-contain bg-gray-50 rounded-2xl" />
                         <div className="flex-grow">
-                           <p className="font-black uppercase text-sm leading-none mb-1">{p.name}</p>
-                           <p className="text-[9px] font-bold text-gray-300 uppercase">RM{p.price} / {p.category}</p>
+                           <p className="font-black uppercase text-sm">{p.name}</p>
+                           <p className="text-[10px] text-gray-400">RM{p.price}</p>
                         </div>
                         <button onClick={() => setEditingProduct({...p})} className="p-3 bg-gray-50 rounded-full hover:bg-lg-red hover:text-white transition-all"><Icon name="edit-3" size={16}/></button>
                      </div>
                    ))}
-                   <button onClick={() => setEditingProduct({ id: Date.now(), category: 'Water Purifier', name: 'New Model', subName: {cn:'',en:'',ms:''}, image: '', price: 0, isHot: false, features: [], painPoints: [], variants: [], plans: [] })} className="border-4 border-dashed border-gray-100 rounded-[40px] flex items-center justify-center text-gray-300 hover:text-lg-red hover:border-lg-red transition-all aspect-[3/1]"><Icon name="plus" size={32}/></button>
+                   <button onClick={() => setEditingProduct({ id: Date.now().toString(), category: 'New', name: 'New Product', subName:{cn:'',en:'',ms:''}, image: '', price: 0, features: [], painPoints: [], variants: [], plans: [] })} className="border-4 border-dashed border-gray-100 rounded-[40px] flex items-center justify-center text-gray-300 hover:text-lg-red aspect-[3/1]"><Icon name="plus" size={32}/></button>
+                 </div>
+               )}
+
+               {activeTab === 'settings' && (
+                 <div className="bg-gray-50 p-12 rounded-[50px] grid md:grid-cols-2 gap-8">
+                    <div className="space-y-4">
+                       <label className="text-[10px] font-black text-gray-400 uppercase">Logo</label>
+                       <div className="flex items-center gap-4">
+                          <img src={settings.logo} className="h-10 bg-white p-2 rounded-lg" />
+                          <label className="file-upload-btn"><Icon name="upload" size={12}/>Upload<input type="file" className="hidden" accept="image/*" onChange={(e) => handleImageUpload(e, (b) => setSettings({...settings, logo: b}))} /></label>
+                       </div>
+                    </div>
+                    <div className="space-y-4">
+                       <label className="text-[10px] font-black text-gray-400 uppercase">Hero Background</label>
+                       <div className="flex items-center gap-4">
+                          <img src={settings.heroImage} className="h-10 w-20 object-cover rounded-lg" />
+                          <label className="file-upload-btn"><Icon name="upload" size={12}/>Upload<input type="file" className="hidden" accept="image/*" onChange={(e) => handleImageUpload(e, (b) => setSettings({...settings, heroImage: b}))} /></label>
+                       </div>
+                    </div>
+                    <div className="space-y-2"><label className="text-[9px] font-black uppercase text-gray-400">Admin PIN</label><input value={settings.adminPin} onChange={e => setSettings({...settings, adminPin: e.target.value})} className="w-full" /></div>
+                    <div className="space-y-2"><label className="text-[9px] font-black uppercase text-gray-400">Master WhatsApp</label><input value={settings.contactPhone} onChange={e => setSettings({...settings, contactPhone: e.target.value})} className="w-full" /></div>
+                    {['cn','en','ms'].map(l => (
+                      <div key={l} className="space-y-2"><label className="text-[9px] font-black uppercase text-gray-400">Hero Title ({l})</label><input value={settings.heroTitle[l]} onChange={e => setSettings({...settings, heroTitle: {...settings.heroTitle, [l]: e.target.value}})} className="w-full" /></div>
+                    ))}
+                 </div>
+               )}
+
+               {activeTab === 'affiliates' && (
+                 <div className="space-y-8">
+                    <div className="bg-lg-dark p-10 rounded-[45px] grid md:grid-cols-3 gap-6">
+                      <input id="an" placeholder="Name" className="bg-white/5 border-none text-white" />
+                      <input id="aw" placeholder="WhatsApp (601...)" className="bg-white/5 border-none text-white" />
+                      <button onClick={() => { const n=document.getElementById('an').value, w=document.getElementById('aw').value; if(n&&w) setAgents([...agents, {name:n, wa:w.replace(/\D/g,'')}]); }} className="bg-lg-red text-white font-black uppercase text-[10px] rounded-3xl">Add Agent</button>
+                    </div>
+                    {agents.map(a => (
+                      <div key={a.wa} className="admin-card flex justify-between items-center">
+                        <div><p className="font-black uppercase">{a.name}</p><p className="text-[9px] text-gray-400">WA: {a.wa}</p></div>
+                        <div className="flex gap-2">
+                           <button onClick={() => { const link = `${window.location.origin}${window.location.pathname}?wa=${a.wa}&name=${encodeURIComponent(a.name)}`; navigator.clipboard.writeText(link); alert("Copied!"); }} className="px-6 py-2 bg-gray-100 rounded-full text-[9px] font-black uppercase">Copy Promo Link</button>
+                           <button onClick={() => setAgents(agents.filter(x => x.wa !== a.wa))} className="p-3 text-red-400"><Icon name="trash-2" size={16}/></button>
+                        </div>
+                      </div>
+                    ))}
                  </div>
                )}
 
                {activeTab === 'promo' && (
-                 <div className="bg-gray-50 p-12 rounded-[50px] space-y-8">
-                    <h3 className="text-2xl font-black uppercase">促销策略管理</h3>
-                    <div className="grid md:grid-cols-4 gap-4">
-                      <input id="pn" placeholder="活动名称" />
-                      <select id="pt">
-                        <option value="percent">% 折扣 (Percentage)</option>
-                        <option value="fixed">RM 减免 (Monthly Offset)</option>
-                        <option value="direct">Direct 固定价 (Until End)</option>
-                      </select>
-                      <input id="pv" placeholder="数值 (如 10 或 45)" />
+                 <div className="space-y-8">
+                    <div className="bg-gray-50 p-10 rounded-[45px] grid md:grid-cols-5 gap-4">
+                      <div className="col-span-1"><label className="text-[8px] font-black uppercase opacity-40 ml-2">Name</label><input id="pn" className="w-full" /></div>
+                      <div className="col-span-1"><label className="text-[8px] font-black uppercase opacity-40 ml-2">Type</label>
+                        <select id="pt" className="w-full">
+                          <option value="percent">% Off</option>
+                          <option value="fixed">RM Offset</option>
+                          <option value="direct">Direct Price</option>
+                        </select>
+                      </div>
+                      <div className="col-span-1"><label className="text-[8px] font-black uppercase opacity-40 ml-2">Value</label><input id="pv" className="w-full" /></div>
+                      <div className="col-span-1"><label className="text-[8px] font-black uppercase opacity-40 ml-2">EndDate</label><input id="ped" type="date" className="w-full" /></div>
                       <button onClick={() => {
-                        const n=document.getElementById('pn').value, t=document.getElementById('pt').value, v=document.getElementById('pv').value;
-                        if(n&&v) setTemplates([...templates, {id: Date.now(), name:n, type:t, value:v}]);
-                      }} className="bg-lg-red text-white rounded-2xl font-black uppercase text-[10px]">添加促销</button>
+                        const n=document.getElementById('pn').value, t=document.getElementById('pt').value, v=Number(document.getElementById('pv').value), ed=document.getElementById('ped').value;
+                        if(n && v) setTemplates([...templates, { id: Date.now().toString(), name:n, type:t, value:v, endDate:ed, isActive:true, applyToAll:true }]);
+                      }} className="bg-lg-red text-white font-black uppercase text-[10px] rounded-3xl">Add Promo</button>
                     </div>
                     <div className="grid gap-4">
-                      {templates.map(tp => (
-                        <div key={tp.id} className="admin-card flex justify-between items-center">
-                          <div><p className="font-black uppercase">{tp.name}</p><p className="text-[10px] text-lg-red font-bold uppercase">{tp.type === 'percent' ? `-${tp.value}%` : tp.type === 'fixed' ? `-RM${tp.value}` : `Flat RM${tp.value}`}</p></div>
-                          <button onClick={() => setTemplates(templates.filter(x => x.id !== tp.id))} className="text-red-400"><Icon name="trash-2" size={16}/></button>
-                        </div>
-                      ))}
+                       {templates.map(tp => (
+                         <div key={tp.id} className="admin-card flex justify-between items-center">
+                            <div>
+                               <p className="font-black uppercase">{tp.name}</p>
+                               <p className="text-[10px] text-lg-red font-bold uppercase">
+                                 {tp.type === 'percent' ? `-${tp.value}%` : tp.type === 'fixed' ? `-RM${tp.value}` : `Flat RM${tp.value}`} 
+                                 <span className="ml-4 text-gray-300">Until: {tp.endDate || 'Unlimited'}</span>
+                               </p>
+                            </div>
+                            <div className="flex items-center gap-4">
+                               <button onClick={() => setTemplates(templates.map(x => x.id === tp.id ? {...x, isActive: !x.isActive} : x))} className={`p-2 rounded-full ${tp.isActive ? 'text-green-500 bg-green-50' : 'text-gray-300 bg-gray-50'}`}><Icon name="power" size={16}/></button>
+                               <button onClick={() => setTemplates(templates.filter(x => x.id !== tp.id))} className="text-red-400"><Icon name="trash-2" size={16}/></button>
+                            </div>
+                         </div>
+                       ))}
                     </div>
                  </div>
                )}
 
                {activeTab === 'backup' && (
                  <div className="bg-lg-pearl p-20 rounded-[60px] text-center space-y-8">
-                    <h2 className="text-3xl font-black uppercase tracking-tighter">系统数据备份</h2>
+                    <h2 className="text-3xl font-black uppercase tracking-tighter">System Data Backup</h2>
+                    <p className="text-gray-400 text-sm">所有图片已转为 Base64 包含在备份文件中。还原后即刻恢复完整功能。</p>
                     <div className="flex justify-center gap-6 pt-10">
                        <button onClick={() => {
                          const blob = new Blob([JSON.stringify({products, settings, agents, templates})], {type: 'application/json'});
                          const url = URL.createObjectURL(blob);
-                         const a = document.createElement('a'); a.href = url; a.download=`lg_backup.json`; a.click();
-                       }} className="bg-black text-white px-12 py-5 rounded-full font-black uppercase text-[10px]">导出备份</button>
-                       <label className="bg-white text-lg-red border-2 border-lg-red px-12 py-5 rounded-full font-black uppercase text-[10px] cursor-pointer">导入还原<input type="file" className="hidden" onChange={handleRestore} accept=".json" /></label>
+                         const a = document.createElement('a'); a.href = url; a.download=`lg_backup_${Date.now()}.json`; a.click();
+                       }} className="bg-black text-white px-12 py-5 rounded-full font-black uppercase text-[10px]">Export Full JSON</button>
+                       <label className="bg-white text-lg-red border-2 border-lg-red px-12 py-5 rounded-full font-black uppercase text-[10px] cursor-pointer">Restore Data<input type="file" className="hidden" onChange={handleRestore} accept=".json" /></label>
                     </div>
                  </div>
                )}
-
-               {/* 其他标签保持不变或类似逻辑 */}
             </div>
           )}
 
-          {/* Master Product Editor Modal */}
+          {/* Master Product Editor */}
           {editingProduct && (
             <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 overflow-hidden">
                <div className="absolute inset-0 bg-lg-dark/60 backdrop-blur-md" onClick={() => setEditingProduct(null)}></div>
-               <div className="bg-white w-full max-w-6xl rounded-[50px] p-10 relative z-10 shadow-3xl max-h-[90vh] overflow-y-auto space-y-8 no-scrollbar">
+               <div className="bg-white w-full max-w-6xl rounded-[50px] p-10 relative z-10 shadow-3xl max-h-[90vh] overflow-y-auto no-scrollbar space-y-8">
                  <div className="flex justify-between items-center border-b pb-6">
-                    <h3 className="text-3xl font-black uppercase tracking-tighter">Product Architect</h3>
-                    <div className="flex gap-4">
-                      <div className="relative">
-                         <input id="aiurl" placeholder="Paste LG URL..." className="w-80 pr-24 bg-gray-50" />
-                         <button onClick={() => handleAiExtract(document.getElementById('aiurl').value)} className="absolute right-2 top-2 bottom-2 px-4 bg-lg-red text-white text-[9px] font-black uppercase rounded-xl flex items-center gap-2">
-                           {isAiLoading ? <Icon name="loader" size={12} className="animate-spin" /> : <Icon name="sparkles" size={12}/>} AI Extract
-                         </button>
-                      </div>
-                      <button onClick={() => setEditingProduct(null)} className="p-2 hover:text-lg-red transition-colors"><Icon name="x" size={24}/></button>
+                    <h3 className="text-3xl font-black uppercase tracking-tighter">Edit Product Architecture</h3>
+                    <div className="flex gap-4 items-center">
+                       <input id="aiurl" placeholder="Paste LG URL..." className="w-64 pr-2 bg-gray-50" />
+                       <button onClick={() => handleAiExtract(document.getElementById('aiurl').value)} className="px-6 py-4 bg-lg-red text-white text-[9px] font-black uppercase rounded-2xl flex items-center gap-2">
+                          {isAiLoading ? <Icon name="loader" className="animate-spin" size={12}/> : <Icon name="sparkles" size={12}/>} AI Extract
+                       </button>
+                       <button onClick={() => setEditingProduct(null)} className="p-2 text-gray-400 hover:text-lg-red"><Icon name="x" size={24}/></button>
                     </div>
                  </div>
 
                  <div className="grid md:grid-cols-12 gap-10">
-                    {/* Basic Info */}
+                    {/* Basic */}
                     <div className="md:col-span-4 space-y-6">
                        <div className="bg-gray-50 p-8 rounded-[40px] space-y-4">
-                          <label className="text-[9px] font-black uppercase text-gray-400">Basic Attributes</label>
-                          <input className="w-full" placeholder="Model Name" value={editingProduct.name} onChange={e=>setEditingProduct({...editingProduct, name: e.target.value})} />
-                          <input className="w-full" placeholder="Category (e.g. TV)" value={editingProduct.category} onChange={e=>setEditingProduct({...editingProduct, category: e.target.value})} />
-                          <input className="w-full" placeholder="Main Display Price" type="number" value={editingProduct.price} onChange={e=>setEditingProduct({...editingProduct, price: e.target.value})} />
-                          <input className="w-full" placeholder="Main Image URL" value={editingProduct.image} onChange={e=>setEditingProduct({...editingProduct, image: e.target.value})} />
+                          <label className="text-[9px] font-black uppercase text-gray-300">Image & Info</label>
+                          <div className="flex items-center gap-4 bg-white p-4 rounded-2xl">
+                             <img src={editingProduct.image} className="w-16 h-16 object-contain" />
+                             <label className="file-upload-btn flex-grow justify-center"><Icon name="upload" size={12}/>Upload Main<input type="file" className="hidden" onChange={(e) => handleImageUpload(e, (b) => setEditingProduct({...editingProduct, image: b}))} /></label>
+                          </div>
+                          <input className="w-full" placeholder="Name" value={editingProduct.name} onChange={e=>setEditingProduct({...editingProduct, name: e.target.value})} />
+                          <input className="w-full" placeholder="Base Price RM" type="number" value={editingProduct.price} onChange={e=>setEditingProduct({...editingProduct, price: Number(e.target.value)})} />
                        </div>
                        <div className="bg-gray-50 p-8 rounded-[40px] space-y-4">
-                          <label className="text-[9px] font-black uppercase text-gray-400">Subtitles</label>
+                          <label className="text-[9px] font-black uppercase text-gray-300">Subtitles</label>
                           {['cn','en','ms'].map(l => (
                              <input key={l} className="w-full" placeholder={`Sub (${l})`} value={editingProduct.subName[l]} onChange={e=>setEditingProduct({...editingProduct, subName: {...editingProduct.subName, [l]: e.target.value}})} />
                           ))}
@@ -363,29 +402,32 @@
                     </div>
 
                     <div className="md:col-span-8 space-y-8">
-                       {/* Variants Section */}
+                       {/* Variants */}
                        <div className="space-y-4">
-                          <div className="flex justify-between items-center"><label className="text-[10px] font-black uppercase tracking-widest">Colors & Images (Variants)</label><button onClick={()=>setEditingProduct({...editingProduct, variants: [...editingProduct.variants, {name:'', colorCode:'#eee', image:''}]})} className="text-lg-red"><Icon name="plus-circle" size={18}/></button></div>
+                          <div className="flex justify-between items-center"><label className="text-[10px] font-black uppercase tracking-widest">Colors & Multi-Images</label><button onClick={()=>setEditingProduct({...editingProduct, variants: [...editingProduct.variants, {name:'', colorCode:'#eee', image:''}]})} className="text-lg-red"><Icon name="plus-circle" size={18}/></button></div>
                           <div className="grid md:grid-cols-2 gap-4">
                              {editingProduct.variants.map((v, i) => (
-                                <div key={i} className="bg-gray-50 p-6 rounded-3xl flex items-center gap-6">
-                                   <input type="color" className="w-10 h-10 p-0 border-none rounded-full cursor-pointer overflow-hidden" value={v.colorCode} onChange={e=>{const nv=[...editingProduct.variants]; nv[i].colorCode=e.target.value; setEditingProduct({...editingProduct, variants:nv})}} />
-                                   <div className="flex-grow space-y-2">
+                                <div key={i} className="bg-gray-50 p-6 rounded-3xl flex items-center gap-4">
+                                   <input type="color" className="w-10 h-10 border-none rounded-full" value={v.colorCode} onChange={e=>{const nv=[...editingProduct.variants]; nv[i].colorCode=e.target.value; setEditingProduct({...editingProduct, variants:nv})}} />
+                                   <div className="flex-grow space-y-1">
                                       <input className="w-full p-2 text-xs" placeholder="Color Name" value={v.name} onChange={e=>{const nv=[...editingProduct.variants]; nv[i].name=e.target.value; setEditingProduct({...editingProduct, variants:nv})}} />
-                                      <input className="w-full p-2 text-xs" placeholder="Variant Image URL" value={v.image} onChange={e=>{const nv=[...editingProduct.variants]; nv[i].image=e.target.value; setEditingProduct({...editingProduct, variants:nv})}} />
+                                      <div className="flex items-center gap-2 mt-2">
+                                         <img src={v.image} className="w-8 h-8 object-contain bg-white rounded" />
+                                         <label className="file-upload-btn flex-grow"><Icon name="image" size={10}/>Upload<input type="file" className="hidden" onChange={async (e)=>{ const b=await fileToBase64(e.target.files[0]); const nv=[...editingProduct.variants]; nv[i].image=b; setEditingProduct({...editingProduct, variants:nv}); }} /></label>
+                                      </div>
                                    </div>
-                                   <button onClick={()=>{const nv=editingProduct.variants.filter((_,idx)=>idx!==i); setEditingProduct({...editingProduct, variants:nv})}} className="text-red-400 hover:scale-110 transition-transform"><Icon name="trash-2" size={16}/></button>
+                                   <button onClick={()=>{const nv=editingProduct.variants.filter((_,idx)=>idx!==i); setEditingProduct({...editingProduct, variants:nv})}} className="text-red-400"><Icon name="trash-2" size={14}/></button>
                                 </div>
                              ))}
                           </div>
                        </div>
 
-                       {/* Pricing Plans Section */}
+                       {/* Plans */}
                        <div className="space-y-4">
-                          <div className="flex justify-between items-center"><label className="text-[10px] font-black uppercase tracking-widest text-lg-red">Package & Pricing (Plans)</label><button onClick={()=>setEditingProduct({...editingProduct, plans: [...editingProduct.plans, {term:'7', type:'Self Service', interval:'6mth', price:0}]})} className="text-lg-red"><Icon name="plus-circle" size={18}/></button></div>
-                          <div className="grid gap-4">
+                          <div className="flex justify-between items-center"><label className="text-[10px] font-black uppercase tracking-widest text-lg-red">Packages & Prices</label><button onClick={()=>setEditingProduct({...editingProduct, plans: [...editingProduct.plans, {term:'7', type:'Self Service', interval:'6mth', price:0}]})} className="text-lg-red"><Icon name="plus-circle" size={18}/></button></div>
+                          <div className="grid gap-3">
                              {editingProduct.plans.map((pl, i) => (
-                                <div key={i} className="bg-lg-dark text-white p-6 rounded-[35px] flex flex-wrap md:flex-nowrap gap-4 items-end shadow-xl">
+                                <div key={i} className="bg-lg-dark text-white p-5 rounded-[30px] flex flex-wrap md:flex-nowrap gap-4 items-end">
                                    <div className="w-full md:w-32 space-y-1">
                                       <label className="text-[8px] font-black uppercase opacity-40 block ml-2">Term</label>
                                       <select className="w-full bg-white/10 text-white border-none p-3 rounded-2xl text-xs" value={pl.term} onChange={e=>{const npl=[...editingProduct.plans]; npl[i].term=e.target.value; setEditingProduct({...editingProduct, plans:npl})}}>
@@ -404,7 +446,7 @@
                                          <option value="No Service" className="text-black">No Service</option>
                                       </select>
                                    </div>
-                                   <div className="w-full md:w-36 space-y-1">
+                                   <div className="w-full md:w-32 space-y-1">
                                       <label className="text-[8px] font-black uppercase opacity-40 block ml-2">Interval</label>
                                       <select className="w-full bg-white/10 text-white border-none p-3 rounded-2xl text-xs" value={pl.interval} onChange={e=>{const npl=[...editingProduct.plans]; npl[i].interval=e.target.value; setEditingProduct({...editingProduct, plans:npl})}}>
                                          <option value="None" className="text-black">None</option>
@@ -414,31 +456,10 @@
                                       </select>
                                    </div>
                                    <div className="w-full md:w-32 space-y-1">
-                                      <label className="text-[8px] font-black uppercase opacity-40 block ml-2">Monthly RM</label>
-                                      <input type="number" className="w-full bg-white/10 text-white border-none p-3 rounded-2xl text-xs" value={pl.price} onChange={e=>{const npl=[...editingProduct.plans]; npl[i].price=e.target.value; setEditingProduct({...editingProduct, plans:npl})}} />
+                                      <label className="text-[8px] font-black uppercase opacity-40 block ml-2">Price RM</label>
+                                      <input type="number" className="w-full bg-white/10 text-white border-none p-3 rounded-2xl text-xs" value={pl.price} onChange={e=>{const npl=[...editingProduct.plans]; npl[i].price=Number(e.target.value); setEditingProduct({...editingProduct, plans:npl})}} />
                                    </div>
-                                   <button onClick={()=>{const npl=editingProduct.plans.filter((_,idx)=>idx!==i); setEditingProduct({...editingProduct, plans:npl})}} className="p-3 bg-white/5 rounded-full hover:bg-lg-red transition-all"><Icon name="trash-2" size={16}/></button>
-                                </div>
-                             ))}
-                          </div>
-                       </div>
-
-                       <div className="grid md:grid-cols-2 gap-8">
-                          <div className="space-y-4">
-                             <div className="flex justify-between items-center"><label className="text-[10px] font-black uppercase tracking-widest text-lg-red">卖点 (Features)</label><button onClick={()=>setEditingProduct({...editingProduct, features: [...editingProduct.features, {cn:'',en:'',ms:''}]})}><Icon name="plus-circle" size={18}/></button></div>
-                             {editingProduct.features.map((f, i) => (
-                                <div key={i} className="flex gap-2 bg-gray-50 p-3 rounded-2xl">
-                                   <input className="w-full p-2 text-xs" placeholder="CN Description" value={f.cn} onChange={e=>{const nf=[...editingProduct.features]; nf[i].cn=e.target.value; setEditingProduct({...editingProduct, features:nf})}} />
-                                   <button onClick={()=>{const nf=editingProduct.features.filter((_,idx)=>idx!==i); setEditingProduct({...editingProduct, features:nf})}} className="text-gray-300"><Icon name="x-circle" size={14}/></button>
-                                </div>
-                             ))}
-                          </div>
-                          <div className="space-y-4">
-                             <div className="flex justify-between items-center"><label className="text-[10px] font-black uppercase tracking-widest text-gray-400">痛点 (Pain Points)</label><button onClick={()=>setEditingProduct({...editingProduct, painPoints: [...editingProduct.painPoints, {cn:'',en:'',ms:''}]})}><Icon name="plus-circle" size={18}/></button></div>
-                             {editingProduct.painPoints.map((p, i) => (
-                                <div key={i} className="flex gap-2 bg-gray-50 p-3 rounded-2xl">
-                                   <input className="w-full p-2 text-xs" placeholder="CN Description" value={p.cn} onChange={e=>{const np=[...editingProduct.painPoints]; np[i].cn=e.target.value; setEditingProduct({...editingProduct, painPoints:np})}} />
-                                   <button onClick={()=>{const np=editingProduct.painPoints.filter((_,idx)=>idx!==i); setEditingProduct({...editingProduct, painPoints:np})}} className="text-gray-300"><Icon name="x-circle" size={14}/></button>
+                                   <button onClick={()=>{const npl=editingProduct.plans.filter((_,idx)=>idx!==i); setEditingProduct({...editingProduct, plans:npl})}} className="p-3 bg-white/5 rounded-full"><Icon name="trash-2" size={14}/></button>
                                 </div>
                              ))}
                           </div>
@@ -446,14 +467,14 @@
                     </div>
                  </div>
 
-                 <div className="flex gap-4 pt-10 border-t border-gray-50">
+                 <div className="flex gap-4 pt-10 border-t">
                     <button onClick={() => {
                        const updated = products.map(p => p.id === editingProduct.id ? editingProduct : p);
                        if (!products.some(p => p.id === editingProduct.id)) updated.push(editingProduct);
                        setProducts(updated);
                        setEditingProduct(null);
-                    }} className="flex-grow bg-lg-red text-white py-6 rounded-full font-black uppercase text-xs tracking-widest shadow-xl">提交保存库存</button>
-                    <button onClick={()=>{ if(confirm("确定永久删除此商品？")) {setProducts(products.filter(p=>p.id!==editingProduct.id)); setEditingProduct(null);}}} className="px-10 bg-gray-100 text-red-500 rounded-full hover:bg-red-500 hover:text-white transition-all"><Icon name="trash-2" size={24}/></button>
+                    }} className="flex-grow bg-lg-red text-white py-6 rounded-full font-black uppercase text-xs tracking-widest shadow-xl">提交并永久保存</button>
+                    <button onClick={()=>{ if(confirm("Confirm Delete?")) {setProducts(products.filter(p=>p.id!==editingProduct.id)); setEditingProduct(null);}}} className="px-10 bg-gray-100 text-red-500 rounded-full hover:bg-red-500 hover:text-white transition-all"><Icon name="trash-2" size={20}/></button>
                  </div>
                </div>
             </div>
