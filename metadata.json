@@ -1,0 +1,8 @@
+{
+  "name": "LG Subscribe Affiliate Hub",
+  "description": "Premium LG affiliate platform with automated tracking and high-end visuals.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
