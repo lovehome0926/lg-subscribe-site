@@ -4,57 +4,43 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>LG Subscribe Malaysia | Premium Digital Hub</title>
+  
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;900&display=swap" rel="stylesheet">
+  
   <script>
     tailwind.config = {
       theme: {
         extend: {
-          colors: { 
-            'lg-red': '#e60044', 
-            'lg-dark': '#05090f',
-            'lg-pearl': '#f8f9fa'
-          },
+          colors: { 'lg-red': '#e60044', 'lg-dark': '#05090f', 'lg-pearl': '#f8f9fa' },
           fontFamily: { sans: ['Outfit', 'sans-serif'] },
-          animation: {
-            'fade-up': 'fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards'
-          },
-          keyframes: {
-            fadeUp: {
-              '0%': { opacity: '0', transform: 'translateY(20px)' },
-              '100%': { opacity: '1', transform: 'translateY(0)' }
-            }
-          }
+          animation: { 'fade-up': 'fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards' },
+          keyframes: { fadeUp: { '0%': { opacity: '0', transform: 'translateY(20px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } } }
         }
       }
     }
   </script>
+
   <style type="text/tailwindcss">
-    @tailwind base;
-    @tailwind components;
-    @tailwind utilities;
-    @layer base { 
-      body { @apply bg-white text-lg-dark font-sans antialiased m-0 p-0 overflow-x-hidden; } 
-    }
+    @layer base { body { @apply bg-white text-lg-dark font-sans antialiased; } }
     .premium-blur { @apply backdrop-blur-2xl bg-white/80 border-b border-gray-100; }
     .shadow-premium { box-shadow: 0 40px 100px rgba(0,0,0,0.08); }
-    input, select, textarea { @apply bg-white border border-gray-100 rounded-2xl p-4 outline-none focus:border-lg-red transition-all font-medium text-sm shadow-sm; }
     .hero-gradient { background: radial-gradient(circle at 50% 50%, rgba(230,0,68,0.05) 0%, transparent 70%); }
     .no-scrollbar::-webkit-scrollbar { display: none; }
+    input, select, textarea { @apply bg-white border border-gray-100 rounded-2xl p-4 outline-none focus:border-lg-red transition-all font-medium text-sm shadow-sm; }
   </style>
+
   <script type="importmap">
 {
   "imports": {
     "react": "https://esm.sh/react@18.2.0",
     "react-dom": "https://esm.sh/react-dom@18.2.0",
     "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
-    "react/jsx-runtime": "https://esm.sh/react@18.2.0/jsx-runtime",
     "lucide-react": "https://esm.sh/lucide-react@0.460.0?external=react",
-    "@google/genai": "https://esm.sh/@google/genai@1.39.0",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
+    "htm": "https://esm.sh/htm@3.1.1",
     "react/": "https://esm.sh/react@^19.2.4/",
+    "@google/genai": "https://esm.sh/@google/genai@^1.39.0",
     "vite": "https://esm.sh/vite@^7.3.1",
     "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.2"
   }
@@ -63,6 +49,205 @@
 </head>
 <body>
   <div id="root"></div>
-  <script type="module" src="index.tsx"></script>
+
+  <script type="module">
+    import React, { useState, useEffect } from 'react';
+    import { createRoot } from 'react-dom/client';
+    import { 
+      ArrowRight, ShieldCheck, CheckCircle, Trash2, Plus, Edit3, X, Copy, UserPlus 
+    } from 'lucide-react';
+    import htm from 'htm';
+
+    const html = htm.bind(React.createElement);
+
+    const STORE_KEY = 'lg_v24_store';
+    const INITIAL_PRODUCTS = [
+      { id: '1', name: 'PuriCare™ Self-Running', category: 'Water Purifier', price: 60, image: 'https://www.lg.com/content/dam/channel/wcms/my/images/water-purifiers/wd516an_answ_e_my_c/gallery/dz-01.jpg', sub: { cn: '智能直饮净水机', en: 'Self-Running Purifier' } },
+      { id: '2', name: 'DualCool™ Premium', category: 'Air Conditioner', price: 45, image: 'https://www.lg.com/content/dam/channel/wcms/my/images/air-conditioners/v10api_answ_e_my_c/gallery/dz-01.jpg', sub: { cn: '双变频冷气机', en: 'Inverter AC' } }
+    ];
+
+    const DICT = {
+      cn: {
+        heroTitle: "科技让生活更优雅",
+        heroSub: "LG Subscribe 官方授权推广。解锁全球顶尖的家电月付计划。",
+        all: "全部产品",
+        monthly: "月供低至",
+        agentHub: "下线代理专区",
+        agentDesc: "生成您的专属链接。客户咨询和佣金都归您！",
+        genBtn: "生成专属推广链接",
+        copyBtn: "复制链接",
+        copied: "已复制！",
+        partnerNote: "官方认证顾问：",
+        exit: "退出管理"
+      },
+      en: {
+        heroTitle: "ELEGANCE IN TECH",
+        heroSub: "Official LG Subscribe Partner. Unlock premium appliances with flexible plans.",
+        all: "All Products",
+        monthly: "From RM",
+        agentHub: "Partner Tools",
+        agentDesc: "Generate your unique link. Commissions go directly to you!",
+        genBtn: "Generate My Link",
+        copyBtn: "Copy Link",
+        copied: "Copied!",
+        partnerNote: "Certified Partner:",
+        exit: "Exit Admin"
+      }
+    };
+
+    const App = () => {
+      const [view, setView] = useState('home');
+      const [lang, setLang] = useState('cn');
+      const [activeCategory, setActiveCategory] = useState('All');
+      const [products, setProducts] = useState(() => {
+        const saved = localStorage.getItem(STORE_KEY);
+        return saved ? JSON.parse(saved) : INITIAL_PRODUCTS;
+      });
+      const [activeAgent, setActiveAgent] = useState(null);
+      const [agentForm, setAgentForm] = useState({ name: '', wa: '' });
+      const [promoLink, setPromoLink] = useState('');
+      const [copied, setCopied] = useState(false);
+
+      useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        const wa = params.get('wa');
+        const name = params.get('name');
+        if (wa) setActiveAgent({ wa: wa.replace(/\D/g, ''), name: name || 'Partner' });
+      }, []);
+
+      useEffect(() => {
+        localStorage.setItem(STORE_KEY, JSON.stringify(products));
+      }, [products]);
+
+      const t = DICT[lang];
+      const contactWA = activeAgent ? activeAgent.wa : "60177473787";
+      const categories = ['All', ...new Set(products.map(p => p.category))];
+      const filtered = activeCategory === 'All' ? products : products.filter(p => p.category === activeCategory);
+
+      const renderProduct = (p) => html`
+        <div key=${p.id} className="bg-white rounded-[45px] p-10 border border-gray-100 flex flex-col group hover:shadow-premium transition-all">
+          <div className="aspect-square mb-10 flex items-center justify-center bg-gray-50 rounded-[35px] p-6">
+            <img src=${p.image} className="max-h-full object-contain group-hover:scale-110 transition-transform duration-700" alt=${p.name} />
+          </div>
+          <h3 className="text-2xl font-black uppercase tracking-tighter mb-1">${p.name}</h3>
+          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-10">${p.sub[lang] || p.sub.en}</p>
+          <div className="mt-auto pt-8 border-t border-gray-50 flex items-end justify-between">
+            <div>
+              <span className="text-lg-red text-[10px] font-black uppercase block mb-1">${t.monthly}</span>
+              <span className="text-4xl font-black tracking-tighter text-lg-dark">RM${p.price}</span>
+            </div>
+            <a href=${`https://wa.me/${contactWA}?text=Interested in ${p.name}`} target="_blank" className="bg-lg-dark text-white p-5 rounded-full hover:bg-lg-red transition-all shadow-xl">
+              <${ArrowRight} size=${24} />
+            </a>
+          </div>
+        </div>
+      `;
+
+      return html`
+        <div className="min-h-screen hero-gradient">
+          <nav className="fixed top-0 w-full z-50 h-20 premium-blur flex items-center px-6 justify-between shadow-sm">
+            <img src="https://i.ibb.co/Rk6m7Yw/lg-sub-logo-red.png" className="h-6" alt="LG" />
+            <div className="flex items-center gap-4">
+              <div className="flex bg-gray-100 p-1 rounded-full">
+                <button onClick=${() => setLang('cn')} className=${`px-4 py-1.5 rounded-full text-[10px] font-black ${lang === 'cn' ? 'bg-white text-lg-red shadow-sm' : 'text-gray-400'}`}>CN</button>
+                <button onClick=${() => setLang('en')} className=${`px-4 py-1.5 rounded-full text-[10px] font-black ${lang === 'en' ? 'bg-white text-lg-red shadow-sm' : 'text-gray-400'}`}>EN</button>
+              </div>
+              <button onClick=${() => { if(prompt("PIN") === "8888") setView('admin'); }} className="p-2 text-gray-200 hover:text-lg-red transition-colors"><${ShieldCheck} size=${20}/></button>
+            </div>
+          </nav>
+
+          ${view === 'home' ? html`
+            <main className="pt-20 animate-fade-up">
+              ${activeAgent && html`
+                <div className="bg-lg-red text-white py-3 px-6 text-center text-[10px] font-black tracking-widest uppercase flex items-center justify-center gap-3">
+                  <${UserPlus} size=${14} /> ${t.partnerNote} ${activeAgent.name} • 佣金已保护
+                </div>
+              `}
+
+              <section className="py-24 px-6 text-center max-w-4xl mx-auto">
+                <h1 className="text-6xl md:text-8xl font-black uppercase tracking-tighter mb-6 leading-none text-lg-dark">${t.heroTitle}</h1>
+                <p className="text-gray-400 text-lg mb-10 font-medium">${t.heroSub}</p>
+                <div className="mt-12 relative">
+                  <div className="absolute inset-0 bg-lg-red/5 blur-[100px] rounded-full"></div>
+                  <img src="https://www.lg.com/content/dam/channel/wcms/my/images/air-conditioners/v10api_answ_e_my_c/gallery/dz-01.jpg" className="w-full drop-shadow-2xl rounded-3xl relative z-10" />
+                </div>
+              </section>
+
+              <section className="py-32 container mx-auto px-6">
+                <div className="flex flex-col md:flex-row justify-between items-end gap-12 mb-20">
+                  <div className="space-y-4">
+                    <span className="text-lg-red font-black uppercase tracking-[0.6em] text-[10px]">Showroom</span>
+                    <h2 className="text-5xl font-black uppercase tracking-tighter">${t.all}.</h2>
+                  </div>
+                  <div className="flex gap-2 overflow-x-auto no-scrollbar">
+                    ${categories.map(c => html`
+                      <button key=${c} onClick=${() => setActiveCategory(c)} className=${`px-8 py-3 rounded-full text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${activeCategory === c ? 'bg-lg-dark text-white shadow-xl' : 'bg-gray-50 text-gray-400'}`}>${c === 'All' ? t.all : c}</button>
+                    `)}
+                  </div>
+                </div>
+
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-12">
+                  ${filtered.map(renderProduct)}
+                </div>
+              </section>
+
+              <section className="bg-lg-dark py-32 px-6">
+                <div className="max-w-4xl mx-auto bg-white/5 backdrop-blur-3xl rounded-[60px] p-12 md:p-20 border border-white/10 text-center space-y-12">
+                  <h2 className="text-4xl font-black text-white uppercase tracking-tighter">${t.agentHub}</h2>
+                  <p className="text-gray-400 font-medium">${t.agentDesc}</p>
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <input className="bg-white/10 border-white/10 text-white placeholder:text-gray-600 outline-none p-5 rounded-2xl" placeholder="代理姓名" value=${agentForm.name} onInput=${e => setAgentForm({...agentForm, name: e.target.value})} />
+                    <input className="bg-white/10 border-white/10 text-white placeholder:text-gray-600 outline-none p-5 rounded-2xl" placeholder="WhatsApp (601...)" value=${agentForm.wa} onInput=${e => setAgentForm({...agentForm, wa: e.target.value})} />
+                  </div>
+                  <button onClick=${() => {
+                    if(!agentForm.name || !agentForm.wa) return alert("Please fill info");
+                    setPromoLink(`${window.location.origin}${window.location.pathname}?wa=${agentForm.wa.replace(/\D/g,'')}&name=${encodeURIComponent(agentForm.name)}`);
+                  }} className="w-full bg-lg-red text-white py-6 rounded-full font-black uppercase tracking-widest hover:bg-white hover:text-lg-red transition-all">${t.genBtn}</button>
+                  
+                  ${promoLink && html`
+                    <div className="p-8 bg-black/40 rounded-[35px] border border-white/5 flex flex-col md:flex-row items-center gap-6 animate-fade-up">
+                      <div className="flex-grow text-white text-[10px] font-mono break-all opacity-60 text-left">${promoLink}</div>
+                      <button onClick=${() => { navigator.clipboard.writeText(promoLink); setCopied(true); setTimeout(()=>setCopied(false),2000); }} className=${`shrink-0 px-8 py-4 rounded-full font-black uppercase text-[10px] tracking-widest flex items-center gap-2 transition-all ${copied ? 'bg-green-500 text-white' : 'bg-white text-lg-dark'}`}>
+                        <${copied ? CheckCircle : Copy} size=${14}/> ${copied ? t.copied : t.copyBtn}
+                      </button>
+                    </div>
+                  `}
+                </div>
+              </section>
+
+              <footer className="py-16 text-center text-[10px] font-black uppercase tracking-[0.5em] text-gray-300">© 2026 LG SUBSCRIBE DIGITAL HUB</footer>
+            </main>
+          ` : html`
+            <div className="pt-32 px-6 max-w-7xl mx-auto pb-32 animate-fade-up">
+              <div className="flex justify-between items-center border-b pb-8 mb-12 border-gray-100">
+                <h1 className="text-3xl font-black uppercase tracking-tighter">Admin Console</h1>
+                <button onClick=${() => setView('home')} className="bg-gray-100 px-6 py-2 rounded-full font-black text-[10px] uppercase hover:bg-lg-red hover:text-white transition-all">${t.exit}</button>
+              </div>
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                ${products.map(p => html`
+                  <div key=${p.id} className="bg-white p-8 rounded-[40px] border border-gray-100 flex items-center gap-8 shadow-sm">
+                    <img src=${p.image} className="w-20 h-20 object-contain" />
+                    <div className="flex-grow">
+                      <p className="font-black uppercase text-lg leading-none mb-1">${p.name}</p>
+                      <p className="text-[10px] font-bold text-gray-400">RM${p.price}</p>
+                    </div>
+                    <button onClick=${() => setProducts(products.filter(x => x.id !== p.id))} className="text-gray-200 hover:text-lg-red"><${Trash2} size=${20}/></button>
+                  </div>
+                `)}
+                <button onClick=${() => {
+                  const n = prompt("Name?");
+                  const pr = prompt("Price?");
+                  const img = prompt("Image URL?");
+                  if(n && pr && img) setProducts([...products, { id: Date.now(), name: n, price: pr, image: img, sub: {cn: n, en: n}, category: 'Other' }]);
+                }} className="border-4 border-dashed border-gray-50 rounded-[40px] flex items-center justify-center text-gray-200 hover:text-lg-red aspect-[2/1] transition-all"><${Plus} size=${48}/></button>
+              </div>
+            </div>
+          `}
+        </div>
+      `;
+    };
+
+    createRoot(document.getElementById('root')).render(React.createElement(App));
+  </script>
 </body>
 </html>
