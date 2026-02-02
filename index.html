@@ -13,7 +13,7 @@
     tailwind.config = {
       theme: {
         extend: {
-          colors: { 'lg-red': '#e60044', 'lg-dark': '#05090f', 'lg-pearl': '#f8f9fa' },
+          colors: { 'lg-red': '#e60044', 'lg-dark': '#05090f' },
           fontFamily: { sans: ['Outfit', 'sans-serif'] },
           animation: { 'fade-up': 'fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards' },
           keyframes: { fadeUp: { '0%': { opacity: '0', transform: 'translateY(20px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } } }
@@ -28,7 +28,7 @@
     .shadow-premium { box-shadow: 0 40px 100px rgba(0,0,0,0.08); }
     .hero-gradient { background: radial-gradient(circle at 50% 50%, rgba(230,0,68,0.05) 0%, transparent 70%); }
     .no-scrollbar::-webkit-scrollbar { display: none; }
-    input, select, textarea { @apply bg-white border border-gray-100 rounded-2xl p-4 outline-none focus:border-lg-red transition-all font-medium text-sm shadow-sm; }
+    input { @apply bg-white border border-gray-100 rounded-2xl p-4 outline-none focus:border-lg-red transition-all font-medium text-sm; }
   </style>
 
   <script type="importmap">
@@ -51,29 +51,31 @@
   <div id="root"></div>
 
   <script type="module">
-    import React, { useState, useEffect } from 'react';
+    import React, { useState, useEffect, useMemo } from 'react';
     import { createRoot } from 'react-dom/client';
     import { 
-      ArrowRight, ShieldCheck, CheckCircle, Trash2, Plus, Edit3, X, Copy, UserPlus 
+      ArrowRight, ShieldCheck, CheckCircle, Trash2, Plus, X, Copy, UserPlus 
     } from 'lucide-react';
     import htm from 'htm';
 
     const html = htm.bind(React.createElement);
 
-    const STORE_KEY = 'lg_v24_store';
+    const STORE_KEY = 'lg_v25_data';
     const INITIAL_PRODUCTS = [
-      { id: '1', name: 'PuriCare™ Self-Running', category: 'Water Purifier', price: 60, image: 'https://www.lg.com/content/dam/channel/wcms/my/images/water-purifiers/wd516an_answ_e_my_c/gallery/dz-01.jpg', sub: { cn: '智能直饮净水机', en: 'Self-Running Purifier' } },
-      { id: '2', name: 'DualCool™ Premium', category: 'Air Conditioner', price: 45, image: 'https://www.lg.com/content/dam/channel/wcms/my/images/air-conditioners/v10api_answ_e_my_c/gallery/dz-01.jpg', sub: { cn: '双变频冷气机', en: 'Inverter AC' } }
+      { id: '1', name: 'PuriCare™ Self-Running', category: 'Water Purifier', price: 60, image: 'https://www.lg.com/content/dam/channel/wcms/my/images/water-purifiers/wd516an_answ_e_my_c/gallery/dz-01.jpg', sub: { cn: '智能直饮净水机', en: 'Self-Running Purifier', ms: 'Penulen Air Pintar' } },
+      { id: '2', name: 'DualCool™ Premium', category: 'Air Conditioner', price: 45, image: 'https://www.lg.com/content/dam/channel/wcms/my/images/air-conditioners/v10api_answ_e_my_c/gallery/dz-01.jpg', sub: { cn: '双变频冷气机', en: 'Inverter AC', ms: 'Penyaman Udara Inverter' } },
+      { id: '3', name: 'InstaView™ Refrigerator', category: 'Refrigerator', price: 150, image: 'https://www.lg.com/content/dam/channel/wcms/my/images/refrigerators/gr-b247sluv_asbp_e_my_c/gallery/dz-01.jpg', sub: { cn: '透视窗对开门冰箱', en: 'InstaView™ Fridge', ms: 'Peti Sejuk InstaView™' } }
     ];
 
     const DICT = {
       cn: {
-        heroTitle: "科技让生活更优雅",
-        heroSub: "LG Subscribe 官方授权推广。解锁全球顶尖的家电月付计划。",
+        hero: "科技让生活更优雅",
+        sub: "LG Subscribe 官方授权推广。全马最灵活的家电月付计划。",
+        showroom: "数字化展厅",
         all: "全部产品",
         monthly: "月供低至",
-        agentHub: "下线代理专区",
-        agentDesc: "生成您的专属链接。客户咨询和佣金都归您！",
+        agentHub: "合作伙伴赚钱工具",
+        agentDesc: "生成您的专属推广链接。所有通过该链接咨询的客户都会直接联系到您的 WhatsApp，佣金全归您！",
         genBtn: "生成专属推广链接",
         copyBtn: "复制链接",
         copied: "已复制！",
@@ -81,17 +83,32 @@
         exit: "退出管理"
       },
       en: {
-        heroTitle: "ELEGANCE IN TECH",
-        heroSub: "Official LG Subscribe Partner. Unlock premium appliances with flexible plans.",
+        hero: "ELEGANCE IN TECH",
+        sub: "Official LG Subscribe Partner. Unlock premium living with flexible plans.",
+        showroom: "Digital Showroom",
         all: "All Products",
         monthly: "From RM",
-        agentHub: "Partner Tools",
-        agentDesc: "Generate your unique link. Commissions go directly to you!",
+        agentHub: "Partner Growth Tools",
+        agentDesc: "Generate your unique link. All inquiries and commissions go directly to you!",
         genBtn: "Generate My Link",
         copyBtn: "Copy Link",
         copied: "Copied!",
         partnerNote: "Certified Partner:",
-        exit: "Exit Admin"
+        exit: "Exit"
+      },
+      ms: {
+        hero: "KEANGGUNAN TEKNOLOGI",
+        sub: "Rakan Kongsi Sah LG Subscribe. Pelan langganan perkakas rumah paling fleksibel.",
+        showroom: "Bilik Pameran",
+        all: "Semua Produk",
+        monthly: "Dari RM",
+        agentHub: "Pusat Rakan Niaga",
+        agentDesc: "Jana pautan peribadi anda. Semua komisyen dan pertanyaan milik anda!",
+        genBtn: "Jana Pautan Saya",
+        copyBtn: "Salin Pautan",
+        copied: "Disalin!",
+        partnerNote: "Rakan Kongsi Sah:",
+        exit: "Keluar"
       }
     };
 
@@ -112,7 +129,10 @@
         const params = new URLSearchParams(window.location.search);
         const wa = params.get('wa');
         const name = params.get('name');
-        if (wa) setActiveAgent({ wa: wa.replace(/\D/g, ''), name: name || 'Partner' });
+        if (wa) {
+          setActiveAgent({ wa: wa.replace(/\D/g, ''), name: name || 'Partner' });
+          window.scrollTo(0, 0);
+        }
       }, []);
 
       useEffect(() => {
@@ -124,35 +144,17 @@
       const categories = ['All', ...new Set(products.map(p => p.category))];
       const filtered = activeCategory === 'All' ? products : products.filter(p => p.category === activeCategory);
 
-      const renderProduct = (p) => html`
-        <div key=${p.id} className="bg-white rounded-[45px] p-10 border border-gray-100 flex flex-col group hover:shadow-premium transition-all">
-          <div className="aspect-square mb-10 flex items-center justify-center bg-gray-50 rounded-[35px] p-6">
-            <img src=${p.image} className="max-h-full object-contain group-hover:scale-110 transition-transform duration-700" alt=${p.name} />
-          </div>
-          <h3 className="text-2xl font-black uppercase tracking-tighter mb-1">${p.name}</h3>
-          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-10">${p.sub[lang] || p.sub.en}</p>
-          <div className="mt-auto pt-8 border-t border-gray-50 flex items-end justify-between">
-            <div>
-              <span className="text-lg-red text-[10px] font-black uppercase block mb-1">${t.monthly}</span>
-              <span className="text-4xl font-black tracking-tighter text-lg-dark">RM${p.price}</span>
-            </div>
-            <a href=${`https://wa.me/${contactWA}?text=Interested in ${p.name}`} target="_blank" className="bg-lg-dark text-white p-5 rounded-full hover:bg-lg-red transition-all shadow-xl">
-              <${ArrowRight} size=${24} />
-            </a>
-          </div>
-        </div>
-      `;
-
       return html`
         <div className="min-h-screen hero-gradient">
-          <nav className="fixed top-0 w-full z-50 h-20 premium-blur flex items-center px-6 justify-between shadow-sm">
-            <img src="https://i.ibb.co/Rk6m7Yw/lg-sub-logo-red.png" className="h-6" alt="LG" />
+          <nav className="fixed top-0 w-full z-50 h-20 premium-blur flex items-center px-6 justify-between">
+            <img src="https://i.ibb.co/Rk6m7Yw/lg-sub-logo-red.png" className="h-6 cursor-pointer" onClick=${() => setView('home')} />
             <div className="flex items-center gap-4">
               <div className="flex bg-gray-100 p-1 rounded-full">
-                <button onClick=${() => setLang('cn')} className=${`px-4 py-1.5 rounded-full text-[10px] font-black ${lang === 'cn' ? 'bg-white text-lg-red shadow-sm' : 'text-gray-400'}`}>CN</button>
-                <button onClick=${() => setLang('en')} className=${`px-4 py-1.5 rounded-full text-[10px] font-black ${lang === 'en' ? 'bg-white text-lg-red shadow-sm' : 'text-gray-400'}`}>EN</button>
+                ${['cn', 'en', 'ms'].map(l => html`
+                  <button key=${l} onClick=${() => setLang(l)} className=${`px-4 py-1.5 rounded-full text-[9px] font-black uppercase ${lang === l ? 'bg-white text-lg-red shadow-sm' : 'text-gray-400'}`}>${l}</button>
+                `)}
               </div>
-              <button onClick=${() => { if(prompt("PIN") === "8888") setView('admin'); }} className="p-2 text-gray-200 hover:text-lg-red transition-colors"><${ShieldCheck} size=${20}/></button>
+              <button onClick=${() => { if(prompt("Admin PIN") === "8888") setView('admin'); }} className="p-2 text-gray-200 hover:text-lg-red transition-colors"><${ShieldCheck} size=${20}/></button>
             </div>
           </nav>
 
@@ -160,13 +162,13 @@
             <main className="pt-20 animate-fade-up">
               ${activeAgent && html`
                 <div className="bg-lg-red text-white py-3 px-6 text-center text-[10px] font-black tracking-widest uppercase flex items-center justify-center gap-3">
-                  <${UserPlus} size=${14} /> ${t.partnerNote} ${activeAgent.name} • 佣金已保护
+                  <${UserPlus} size=${14} /> ${t.partnerNote} ${activeAgent.name} • 佣金已激活
                 </div>
               `}
 
               <section className="py-24 px-6 text-center max-w-4xl mx-auto">
-                <h1 className="text-6xl md:text-8xl font-black uppercase tracking-tighter mb-6 leading-none text-lg-dark">${t.heroTitle}</h1>
-                <p className="text-gray-400 text-lg mb-10 font-medium">${t.heroSub}</p>
+                <h1 className="text-6xl md:text-8xl font-black uppercase tracking-tighter mb-6 leading-none text-lg-dark">${t.hero}</h1>
+                <p className="text-gray-400 text-lg mb-10 font-medium">${t.sub}</p>
                 <div className="mt-12 relative">
                   <div className="absolute inset-0 bg-lg-red/5 blur-[100px] rounded-full"></div>
                   <img src="https://www.lg.com/content/dam/channel/wcms/my/images/air-conditioners/v10api_answ_e_my_c/gallery/dz-01.jpg" className="w-full drop-shadow-2xl rounded-3xl relative z-10" />
@@ -176,7 +178,7 @@
               <section className="py-32 container mx-auto px-6">
                 <div className="flex flex-col md:flex-row justify-between items-end gap-12 mb-20">
                   <div className="space-y-4">
-                    <span className="text-lg-red font-black uppercase tracking-[0.6em] text-[10px]">Showroom</span>
+                    <span className="text-lg-red font-black uppercase tracking-[0.6em] text-[10px]">${t.showroom}</span>
                     <h2 className="text-5xl font-black uppercase tracking-tighter">${t.all}.</h2>
                   </div>
                   <div className="flex gap-2 overflow-x-auto no-scrollbar">
@@ -187,7 +189,24 @@
                 </div>
 
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-12">
-                  ${filtered.map(renderProduct)}
+                  ${filtered.map(p => html`
+                    <div key=${p.id} className="bg-white rounded-[45px] p-10 border border-gray-100 flex flex-col group hover:shadow-premium transition-all">
+                      <div className="aspect-square mb-10 flex items-center justify-center bg-gray-50 rounded-[35px] p-6">
+                        <img src=${p.image} className="max-h-full object-contain group-hover:scale-110 transition-transform duration-700" />
+                      </div>
+                      <h3 className="text-2xl font-black uppercase tracking-tighter mb-1">${p.name}</h3>
+                      <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-10">${p.sub[lang] || p.sub.en}</p>
+                      <div className="mt-auto pt-8 border-t border-gray-50 flex items-end justify-between">
+                        <div>
+                          <span className="text-lg-red text-[10px] font-black uppercase block mb-1">${t.monthly}</span>
+                          <span className="text-4xl font-black tracking-tighter text-lg-dark">RM${p.price}</span>
+                        </div>
+                        <a href=${`https://wa.me/${contactWA}?text=Interested in ${p.name}`} target="_blank" className="bg-lg-dark text-white p-5 rounded-full hover:bg-lg-red transition-all shadow-xl">
+                          <${ArrowRight} size=${24} />
+                        </a>
+                      </div>
+                    </div>
+                  `)}
                 </div>
               </section>
 
@@ -196,8 +215,8 @@
                   <h2 className="text-4xl font-black text-white uppercase tracking-tighter">${t.agentHub}</h2>
                   <p className="text-gray-400 font-medium">${t.agentDesc}</p>
                   <div className="grid md:grid-cols-2 gap-6">
-                    <input className="bg-white/10 border-white/10 text-white placeholder:text-gray-600 outline-none p-5 rounded-2xl" placeholder="代理姓名" value=${agentForm.name} onInput=${e => setAgentForm({...agentForm, name: e.target.value})} />
-                    <input className="bg-white/10 border-white/10 text-white placeholder:text-gray-600 outline-none p-5 rounded-2xl" placeholder="WhatsApp (601...)" value=${agentForm.wa} onInput=${e => setAgentForm({...agentForm, wa: e.target.value})} />
+                    <input className="bg-white/10 border-white/10 text-white placeholder:text-gray-600 p-5 rounded-2xl" placeholder="代理姓名" value=${agentForm.name} onInput=${e => setAgentForm({...agentForm, name: e.target.value})} />
+                    <input className="bg-white/10 border-white/10 text-white placeholder:text-gray-600 p-5 rounded-2xl" placeholder="WhatsApp (601...)" value=${agentForm.wa} onInput=${e => setAgentForm({...agentForm, wa: e.target.value})} />
                   </div>
                   <button onClick=${() => {
                     if(!agentForm.name || !agentForm.wa) return alert("Please fill info");
@@ -238,7 +257,7 @@
                   const n = prompt("Name?");
                   const pr = prompt("Price?");
                   const img = prompt("Image URL?");
-                  if(n && pr && img) setProducts([...products, { id: Date.now(), name: n, price: pr, image: img, sub: {cn: n, en: n}, category: 'Other' }]);
+                  if(n && pr && img) setProducts([...products, { id: Date.now(), name: n, price: pr, image: img, sub: {cn: n, en: n, ms: n}, category: 'Other' }]);
                 }} className="border-4 border-dashed border-gray-50 rounded-[40px] flex items-center justify-center text-gray-200 hover:text-lg-red aspect-[2/1] transition-all"><${Plus} size=${48}/></button>
               </div>
             </div>
