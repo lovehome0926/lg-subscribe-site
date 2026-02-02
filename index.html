@@ -3,9 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>LG Subscribe Malaysia | 数字化合作伙伴中心</title>
+  <title>LG Subscribe Malaysia | Digital Partner Hub</title>
   
-  <!-- 基础库加载 (UMD模式，最稳定) -->
   <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -46,6 +45,9 @@
       to { opacity: 1; transform: translateY(0); }
     }
     .animate-fade-up { animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    
+    input, select, textarea { @apply bg-gray-50 border border-gray-100 rounded-2xl p-4 outline-none focus:border-lg-red transition-all font-medium; }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
   </style>
 <script type="importmap">
 {
@@ -63,221 +65,436 @@
 <body>
   <div id="root"></div>
 
-  <!-- 使用 Babel 实时编译 React 代码 -->
   <script type="text/babel">
     const { useState, useEffect, useMemo } = React;
 
-    // --- 图标组件封装 (解决 Lucide 在 React UMD 下的兼容性) ---
     const Icon = ({ name, size = 20, className = "" }) => {
-      useEffect(() => {
-        if (window.lucide) {
-          window.lucide.createIcons();
-        }
-      }, [name]);
+      useEffect(() => { if (window.lucide) window.lucide.createIcons(); }, [name]);
       return <i data-lucide={name} className={className} style={{ width: size, height: size }}></i>;
     };
 
-    // --- 配置与数据 ---
-    const DEFAULT_WA = "60177473787"; 
-    const ADMIN_PIN = "8888";
-
-    const PRODUCTS = [
-      {
-        id: 'WP-PURI-V',
-        category: 'Water Purifier',
-        name: 'PuriCare™ Tankless',
-        subName: '无水箱净水机',
-        image: 'https://www.lg.com/content/dam/channel/wcms/my/images/water-purifiers/wd516an_answ_e_my_c/gallery/dz-01.jpg',
-        price: 60,
-        isHot: true
+    // --- 字典数据 ---
+    const DICT = {
+      cn: {
+        heroSub: "LG Subscribe 马来西亚认证合作伙伴。以极简的月付方案，解锁全球顶尖家电艺术。",
+        explore: "立即浏览展厅",
+        partnerNote: "专属认证顾问",
+        contactNow: "立即咨询",
+        monthly: "月付低至",
+         showroom: "数字化展厅",
+        joinUs: "加入我们的合作伙伴计划",
+        earnComm: "赚取高达 13% 佣金",
+        adminTitle: "后台管理",
+        inventory: "库存管理",
+        siteConfig: "站点配置",
+        affiliates: "代理分销",
+        promo: "促销模板",
+        backup: "数据备份",
+        perMo: "/月"
       },
-      {
-        id: 'AC-V13ENS',
-        category: 'Air Conditioner',
-        name: 'DUALCOOL™ Inverter',
-        subName: '双变频冷气机',
-        image: 'https://www.lg.com/content/dam/channel/wcms/my/images/air-conditioners/v10api_answ_e_my_c/gallery/dz-01.jpg',
-        price: 45,
-        isHot: true
+      en: {
+        heroSub: "LG Subscribe Malaysia Certified Partner. Experience premium living with flexible subscription plans.",
+        explore: "Explore Showroom",
+        partnerNote: "Certified Consultant",
+        contactNow: "Contact Now",
+        monthly: "Monthly From",
+        showroom: "Digital Showroom",
+        joinUs: "Join Our Partner Program",
+        earnComm: "Earn up to 13% Commission",
+        adminTitle: "Admin Console",
+        inventory: "Inventory",
+        siteConfig: "Site Settings",
+        affiliates: "Affiliates",
+        promo: "Promotions",
+        backup: "Backup",
+        perMo: "/Mo"
       },
-      {
-        id: 'REF-SIDE',
-        category: 'Refrigerator',
-        name: 'Side-by-Side Inverter',
-        subName: '对开门变频冰箱',
-        image: 'https://www.lg.com/content/dam/channel/wcms/my/images/refrigerators/gr-b247sluv_asbp_e_my_c/gallery/dz-01.jpg',
-        price: 150,
-        isHot: false
+      ms: {
+        heroSub: "Rakan Kongsi Sah LG Subscribe Malaysia. Alami kehidupan premium dengan pelan langganan fleksibel.",
+        explore: "Teroka Koleksi",
+        partnerNote: "Perunding Sah",
+        contactNow: "Hubungi Sekarang",
+        monthly: "Bulanan Dari",
+        showroom: "Bilik Pameran Digital",
+        joinUs: "Sertai Program Rakan Kami",
+        earnComm: "Komisyen sehingga 13%",
+        adminTitle: "Konsol Admin",
+        inventory: "Inventori",
+        siteConfig: "Konfigurasi",
+        affiliates: "Ejen/Afiliasi",
+        promo: "Promosi",
+        backup: "Sandaran",
+        perMo: "/Bulan"
       }
+    };
+
+    // --- 初始数据 ---
+    const INITIAL_PRODUCTS = [
+      { id: 'WP-PURI-V', category: 'Water Purifier', name: 'PuriCare™ Tankless', subName: { cn: '无水箱净水机', en: 'Tankless Self-Service', ms: 'Penapis Air Tanpa Tangki' }, image: 'https://www.lg.com/content/dam/channel/wcms/my/images/water-purifiers/wd516an_answ_e_my_c/gallery/dz-01.jpg', price: 60, isHot: true },
+      { id: 'AC-V13ENS', category: 'Air Conditioner', name: 'DUALCOOL™ Inverter', subName: { cn: '双变频冷气机', en: 'Dual Inverter AC', ms: 'Penyaman Udara Inverter' }, image: 'https://www.lg.com/content/dam/channel/wcms/my/images/air-conditioners/v10api_answ_e_my_c/gallery/dz-01.jpg', price: 45, isHot: true },
+      { id: 'REF-SIDE', category: 'Refrigerator', name: 'Side-by-Side Inverter', subName: { cn: '对开门变频冰箱', en: 'Large Capacity Fridge', ms: 'Peti Sejuk Kapasiti Besar' }, image: 'https://www.lg.com/content/dam/channel/wcms/my/images/refrigerators/gr-b247sluv_asbp_e_my_c/gallery/dz-01.jpg', price: 150, isHot: false }
     ];
+
+    const INITIAL_SETTINGS = {
+      logo: 'https://i.ibb.co/Rk6m7Yw/lg-sub-logo-red.png',
+      heroImage: 'https://www.lg.com/content/dam/channel/wcms/my/images/air-conditioners/v10api_answ_e_my_c/gallery/dz-01.jpg',
+      heroTitle: { cn: '科技定义 优雅生活', en: 'ELEGANCE IN TECH', ms: 'KEANGGUNAN TEKNOLOGI' },
+      contactPhone: '60177473787',
+      adminPin: '8888'
+    };
 
     const App = () => {
       const [view, setView] = useState('home');
+      const [lang, setLang] = useState('cn');
       const [isAdmin, setIsAdmin] = useState(false);
-      const [agents, setAgents] = useState(() => JSON.parse(localStorage.getItem('lg_affiliates_v5') || '[]'));
+      const [activeTab, setActiveTab] = useState('inventory');
+      
+      const [products, setProducts] = useState(() => JSON.parse(localStorage.getItem('lg_products_v7') || JSON.stringify(INITIAL_PRODUCTS)));
+      const [settings, setSettings] = useState(() => JSON.parse(localStorage.getItem('lg_settings_v7') || JSON.stringify(INITIAL_SETTINGS)));
+      const [agents, setAgents] = useState(() => JSON.parse(localStorage.getItem('lg_affiliates_v7') || '[]'));
+      const [templates, setTemplates] = useState(() => JSON.parse(localStorage.getItem('lg_templates_v7') || '[]'));
+      
       const [activeAgent, setActiveAgent] = useState(null);
+      const [editingProduct, setEditingProduct] = useState(null);
       const [copiedId, setCopiedId] = useState(null);
 
-      // --- 核心追踪逻辑 ---
+      useEffect(() => {
+        localStorage.setItem('lg_products_v7', JSON.stringify(products));
+        localStorage.setItem('lg_settings_v7', JSON.stringify(settings));
+        localStorage.setItem('lg_affiliates_v7', JSON.stringify(agents));
+        localStorage.setItem('lg_templates_v7', JSON.stringify(templates));
+      }, [products, settings, agents, templates]);
+
       useEffect(() => {
         const params = new URLSearchParams(window.location.search);
         const wa = params.get('wa');
         const name = params.get('name');
-        
         if (wa) {
-          const current = { name: name || '授权代理', wa: wa.replace(/\D/g, '') };
+          const current = { name: name || 'Authorized Partner', wa: wa.replace(/\D/g, '') };
           setActiveAgent(current);
-          localStorage.setItem('cached_lg_agent', JSON.stringify(current));
+          localStorage.setItem('cached_agent_v7', JSON.stringify(current));
         } else {
-          const saved = localStorage.getItem('cached_lg_agent');
+          const saved = localStorage.getItem('cached_agent_v7');
           if (saved) setActiveAgent(JSON.parse(saved));
         }
       }, []);
 
-      const handleCopyLink = (agent) => {
-        const baseUrl = window.location.href.split('?')[0];
-        const link = `${baseUrl}?wa=${agent.wa}&name=${encodeURIComponent(agent.name)}`;
-        navigator.clipboard.writeText(link);
-        setCopiedId(agent.wa);
-        setTimeout(() => setCopiedId(null), 2000);
+      const t = DICT[lang];
+
+      const handleBackup = () => {
+        const data = { products, settings, agents, templates };
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `lg_backup_${new Date().toISOString().split('T')[0]}.json`;
+        link.click();
+      };
+
+      const handleRestore = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          try {
+            const data = JSON.parse(event.target.result);
+            if (data.products) setProducts(data.products);
+            if (data.settings) setSettings(data.settings);
+            if (data.agents) setAgents(data.agents);
+            if (data.templates) setTemplates(data.templates);
+            alert("Success!");
+          } catch (err) { alert("Invalid Format"); }
+        };
+        reader.readAsText(file);
       };
 
       return (
-        <div className="min-h-screen">
-          {/* 导航 */}
+        <div className="min-h-screen bg-white">
+          {/* Navigation */}
           <nav className="fixed top-0 w-full z-50 h-20 premium-blur flex items-center px-6 justify-between border-b border-gray-100">
-            <div className="flex items-center gap-10">
-              <img src="https://i.ibb.co/Rk6m7Yw/lg-sub-logo-red.png" className="h-6" alt="LG" />
-              <div className="hidden md:flex gap-8 text-[10px] font-black uppercase tracking-widest text-gray-400">
-                <button onClick={() => setView('home')} className={view === 'home' ? 'text-lg-red' : ''}>展厅</button>
-                <button onClick={() => setView('admin')} className={view === 'admin' ? 'text-lg-red' : ''}>管理</button>
-              </div>
+            <button onClick={() => setView('home')}>
+              <img src={settings.logo} className="h-6" alt="LG" />
+            </button>
+            <div className="flex items-center gap-3">
+              {['cn', 'en', 'ms'].map(l => (
+                <button 
+                  key={l} 
+                  onClick={() => setLang(l)} 
+                  className={`px-3 py-1.5 rounded-full text-[9px] font-black uppercase transition-all ${lang === l ? 'bg-lg-red text-white shadow-lg' : 'bg-gray-100 text-gray-400 hover:text-gray-950'}`}
+                >
+                  {l}
+                </button>
+              ))}
             </div>
           </nav>
 
           {view === 'home' ? (
             <div className="pt-20">
-              {/* Hero */}
-              <section className="bg-lg-pearl py-20 md:py-32 px-6 text-center">
+              {/* Hero Section */}
+              <section className="bg-lg-pearl py-20 px-6 flex flex-col items-center text-center">
                 <div className="max-w-4xl mx-auto space-y-8 animate-fade-up">
                   <span className="inline-flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow-sm text-[10px] font-black text-gray-400 uppercase tracking-widest border border-gray-100">
-                    <Icon name="shield-check" size={14} className="text-lg-red" /> LG Official Partner
+                    <Icon name="shield-check" size={14} className="text-lg-red" /> Certified Partner
                   </span>
-                  <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter leading-none">
-                    科技定义 <span className="text-lg-red">优雅生活</span>
+                  <h1 className="text-5xl md:text-8xl font-black uppercase tracking-tighter leading-none">
+                    {settings.heroTitle[lang]}
                   </h1>
-                  <p className="text-gray-400 font-medium text-lg max-w-2xl mx-auto">
-                    LG Subscribe 马来西亚认证合作伙伴。通过极简月付方案，解锁全球顶尖家电艺术。
-                  </p>
+                  <p className="text-gray-400 font-medium text-lg max-w-2xl mx-auto">{t.heroSub}</p>
+                  <button onClick={() => document.getElementById('catalog').scrollIntoView({behavior:'smooth'})} className="bg-lg-red text-white px-12 py-6 rounded-full font-black uppercase text-[11px] tracking-widest shadow-2xl hover:bg-lg-dark transition-all">
+                    {t.explore}
+                  </button>
                 </div>
+                <img src={settings.heroImage} className="max-w-4xl w-full h-auto mt-16 drop-shadow-2xl animate-fade-up" />
               </section>
 
-              {/* 代理商浮动名片 */}
+              {/* Agent Floating Badge */}
               {activeAgent && (
                 <div className="sticky top-24 z-40 flex justify-center px-6 -mt-10 pointer-events-none">
                   <div className="premium-blur shadow-premium rounded-full px-8 py-4 flex items-center gap-8 pointer-events-auto animate-fade-up">
                     <div className="flex items-center gap-4 border-r pr-8 border-gray-100">
                       <div className="w-10 h-10 bg-lg-red rounded-full flex items-center justify-center text-white shadow-lg"><Icon name="star" size={20} /></div>
                       <div className="text-left">
-                        <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest block leading-none">您的专属顾问</span>
+                        <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest block leading-none">{t.partnerNote}</span>
                         <span className="text-sm font-black uppercase text-gray-950 mt-1">{activeAgent.name}</span>
                       </div>
                     </div>
-                    <a href={`https://wa.me/${activeAgent.wa}?text=Hi, 我在展厅看到LG产品想咨询。`} target="_blank" className="text-[10px] font-black text-lg-red uppercase tracking-widest flex items-center gap-2">
-                      立即联系 <Icon name="arrow-right" size={14} />
+                    <a href={`https://wa.me/${activeAgent.wa}?text=Hi, I am interested in LG Subscribe from your showroom.`} target="_blank" className="text-[10px] font-black text-lg-red uppercase tracking-widest flex items-center gap-2">
+                      {t.contactNow} <Icon name="arrow-right" size={14} />
                     </a>
                   </div>
                 </div>
               )}
 
-              {/* 产品列表 */}
-              <section className="py-20 max-w-7xl mx-auto px-6 grid md:grid-cols-3 gap-10">
-                {PRODUCTS.map(p => (
-                  <div key={p.id} className="bg-white rounded-[40px] p-8 border border-gray-100 flex flex-col group hover:shadow-premium transition-all duration-500 animate-fade-up">
-                    <div className="flex justify-between mb-6">
+              {/* Catalog */}
+              <section id="catalog" className="py-24 max-w-7xl mx-auto px-6 grid md:grid-cols-3 gap-12">
+                {products.map(p => (
+                  <div key={p.id} className="bg-white rounded-[45px] p-10 border border-gray-100 flex flex-col group hover:shadow-premium transition-all duration-700 animate-fade-up">
+                    <div className="flex justify-between mb-8">
                       <span className="text-[10px] font-black text-gray-300 uppercase tracking-widest">{p.category}</span>
-                      {p.isHot && <span className="bg-lg-red text-white text-[8px] font-black px-2 py-1 rounded-full uppercase">Hot</span>}
+                      {p.isHot && <span className="bg-lg-red text-white text-[9px] font-black px-3 py-1.5 rounded-full uppercase">Hot</span>}
                     </div>
-                    <div className="aspect-square mb-8 flex items-center justify-center relative">
+                    <div className="aspect-square mb-10 flex items-center justify-center relative">
                       <div className="absolute inset-0 bg-lg-pearl rounded-full scale-90 group-hover:scale-100 transition-transform"></div>
-                      <img src={p.image} className="max-h-[80%] object-contain relative z-10 group-hover:scale-110 transition-transform duration-700" alt={p.name} />
+                      <img src={p.image} className="max-h-[85%] object-contain relative z-10 group-hover:scale-110 transition-transform duration-700" alt={p.name} />
                     </div>
-                    <h3 className="text-xl font-black uppercase mb-1">{p.name}</h3>
-                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-8">{p.subName}</p>
-                    <div className="mt-auto pt-6 border-t border-gray-50 flex items-end justify-between">
+                    <h3 className="text-2xl font-black uppercase mb-1">{p.name}</h3>
+                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-10">{p.subName[lang]}</p>
+                    <div className="mt-auto pt-8 border-t border-gray-50 flex items-end justify-between">
                       <div>
-                        <span className="text-lg-red text-[10px] font-black uppercase tracking-widest block mb-1">月付低至</span>
-                        <span className="text-3xl font-black text-gray-950 tracking-tighter">RM{p.price}</span>
+                        <span className="text-lg-red text-[10px] font-black uppercase tracking-widest block mb-1">{t.monthly}</span>
+                        <span className="text-4xl font-black text-gray-950 tracking-tighter">RM{p.price}</span>
+                        <span className="text-[10px] font-black text-gray-300 ml-1">{t.perMo}</span>
                       </div>
-                      <a href={`https://wa.me/${activeAgent?.wa || DEFAULT_WA}?text=我想了解 ${p.name}`} target="_blank" className="bg-gray-950 text-white p-4 rounded-full hover:bg-lg-red transition-all">
-                        <Icon name="arrow-right" size={20} />
+                      <a href={`https://wa.me/${activeAgent?.wa || settings.contactPhone}?text=Hi, I want to inquire about ${p.name}`} target="_blank" className="bg-gray-950 text-white p-5 rounded-full hover:bg-lg-red transition-all shadow-xl">
+                        <Icon name="arrow-right" size={24} />
                       </a>
                     </div>
                   </div>
                 ))}
               </section>
 
-              <footer className="bg-lg-dark text-white py-20 px-6 text-center">
-                <p className="text-gray-500 text-[10px] font-bold uppercase tracking-widest">© 2025 LG Subscribe Digital Partner Malaysia</p>
+              {/* Footer Recruitment */}
+              <footer className="bg-lg-dark text-white py-32 px-6 text-center space-y-12">
+                 <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter max-w-3xl mx-auto leading-none">
+                   {t.joinUs} <br/><span className="text-lg-red">{t.earnComm}</span>
+                 </h2>
+                 <div className="flex flex-wrap justify-center gap-10 opacity-30 text-[10px] font-bold uppercase tracking-widest">
+                   <span>Zero Inventory</span>
+                   <span>Nationwide Support</span>
+                   <span>Official Service</span>
+                 </div>
+                 <a href={`https://wa.me/${settings.contactPhone}?text=I want to join the LG partner program.`} target="_blank" className="bg-white text-lg-dark px-16 py-6 rounded-full font-black uppercase text-[11px] tracking-widest shadow-2xl hover:bg-lg-red hover:text-white transition-all">
+                   Become a Partner
+                 </a>
+                 <div className="pt-20 opacity-20 text-[9px] font-black uppercase tracking-[0.5em] flex justify-center items-center gap-2">
+                   <button onClick={() => { if(prompt("Passcode") === settings.adminPin) { setView('admin'); setIsAdmin(true); } }} className="hover:text-white transition-colors">©</button> 2025 LG Subscribe Malaysia Hub
+                 </div>
               </footer>
             </div>
           ) : (
-            /* 管理后台 */
-            <div className="pt-32 px-6 max-w-4xl mx-auto min-h-screen">
-              {!isAdmin ? (
-                <div className="text-center py-20 space-y-10">
-                  <div className="w-20 h-20 bg-lg-red/5 rounded-full flex items-center justify-center mx-auto text-lg-red"><Icon name="lock" size={40}/></div>
-                  <h2 className="text-3xl font-black uppercase tracking-tighter">管理员认证</h2>
-                  <button onClick={() => { if(prompt("后台密码") === ADMIN_PIN) setIsAdmin(true) }} className="bg-black text-white px-12 py-5 rounded-full font-black text-xs uppercase tracking-widest shadow-xl">解锁面板</button>
-                </div>
-              ) : (
-                <div className="space-y-12 animate-fade-up pb-20">
-                  <div className="bg-lg-dark text-white p-10 rounded-[50px]">
-                    <h1 className="text-3xl font-black uppercase">下线代理管理</h1>
-                    <div className="grid md:grid-cols-3 gap-6 mt-10">
-                      <input id="pname" placeholder="代理姓名" className="w-full bg-white/5 border border-white/10 p-5 rounded-3xl outline-none text-sm font-bold" />
-                      <input id="pwa" placeholder="WA号码 (601...)" className="w-full bg-white/5 border border-white/10 p-5 rounded-3xl outline-none text-sm font-bold" />
-                      <button onClick={() => {
-                        const n = document.getElementById('pname').value;
-                        const w = document.getElementById('pwa').value.replace(/\D/g, '');
-                        if(!n || !w) return alert("请完整填写");
-                        const updated = [...agents, { name: n, wa: w }];
-                        setAgents(updated);
-                        localStorage.setItem('lg_affiliates_v5', JSON.stringify(updated));
-                        document.getElementById('pname').value = '';
-                        document.getElementById('pwa').value = '';
-                      }} className="bg-lg-red text-white py-5 rounded-3xl font-black uppercase text-[10px] tracking-widest">添加代理</button>
-                    </div>
+            /* Admin Console (Discrete Entry) */
+            <div className="pt-32 px-6 max-w-6xl mx-auto min-h-screen pb-32">
+               <div className="space-y-12 animate-fade-up">
+                  {/* Admin Nav */}
+                  <div className="flex flex-wrap gap-4 border-b border-gray-100 pb-8 items-center">
+                    <h1 className="text-xl font-black uppercase tracking-tighter mr-8">{t.adminTitle}</h1>
+                    {['inventory', 'settings', 'agents', 'templates', 'backup'].map(tab => (
+                      <button key={tab} onClick={() => setActiveTab(tab)} className={`px-6 py-2.5 rounded-full text-[9px] font-black uppercase tracking-widest transition-all ${activeTab === tab ? 'bg-lg-red text-white shadow-lg' : 'bg-gray-50 text-gray-400 hover:text-lg-dark'}`}>
+                        {t[tab]}
+                      </button>
+                    ))}
+                    <button onClick={() => setView('home')} className="ml-auto text-[9px] font-black uppercase text-gray-300 hover:text-lg-red">Exit</button>
                   </div>
 
-                  <div className="space-y-6">
-                    <h3 className="text-2xl font-black uppercase">已授权列表</h3>
-                    <div className="grid gap-6">
-                      {agents.map(a => (
-                        <div key={a.wa} className="bg-white p-6 rounded-[35px] border border-gray-100 flex justify-between items-center group shadow-sm">
-                          <div className="flex items-center gap-5">
-                            <div className="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center text-lg-red"><Icon name="shield-check" size={24}/></div>
-                            <div>
-                              <p className="font-black uppercase text-lg leading-none">{a.name}</p>
-                              <p className="text-[10px] font-bold text-gray-300 mt-2 uppercase tracking-widest">WA: {a.wa}</p>
+                  {/* Tab Contents */}
+                  {activeTab === 'inventory' && (
+                    <div className="grid md:grid-cols-3 gap-8">
+                       {products.map(p => (
+                         <div key={p.id} className="bg-white p-6 rounded-[40px] border border-gray-100 flex items-center gap-6 group hover:border-lg-red transition-all">
+                            <img src={p.image} className="w-16 h-16 object-contain bg-gray-50 rounded-2xl" />
+                            <div className="flex-grow">
+                               <p className="font-black uppercase text-sm">{p.name}</p>
+                               <p className="text-[10px] font-bold text-gray-400">RM{p.price}</p>
                             </div>
-                          </div>
-                          <div className="flex gap-2">
-                            <button onClick={() => handleCopyLink(a)} className={`px-6 py-4 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${copiedId === a.wa ? 'bg-green-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-black hover:text-white'}`}>
-                              {copiedId === a.wa ? '已复制' : '复制推广链接'}
-                            </button>
-                            <button onClick={() => {
-                              const filtered = agents.filter(x => x.wa !== a.wa);
-                              setAgents(filtered);
-                              localStorage.setItem('lg_affiliates_v5', JSON.stringify(filtered));
-                            }} className="p-4 bg-red-50 text-red-400 rounded-full"><Icon name="trash-2" size={18}/></button>
-                          </div>
-                        </div>
-                      ))}
+                            <button onClick={() => setEditingProduct({...p})} className="p-3 bg-gray-50 rounded-full hover:bg-lg-red hover:text-white transition-all"><Icon name="edit-3" size={16}/></button>
+                         </div>
+                       ))}
+                       <button onClick={() => {
+                         const nP = { id: Date.now(), category: 'NEW', name: 'New Product', subName: { cn: '', en: '', ms: '' }, image: '', price: 99, isHot: false };
+                         setProducts([...products, nP]);
+                         setEditingProduct(nP);
+                       }} className="border-4 border-dashed border-gray-100 rounded-[40px] flex items-center justify-center text-gray-300 hover:text-lg-red hover:border-lg-red transition-all aspect-[3/1]">
+                         <Icon name="plus" size={24} />
+                       </button>
                     </div>
-                  </div>
+                  )}
+
+                  {activeTab === 'settings' && (
+                    <div className="bg-gray-50 p-12 rounded-[50px] grid md:grid-cols-2 gap-8">
+                       <div className="space-y-4">
+                         <label className="text-[9px] font-black uppercase text-gray-400 tracking-widest ml-4">Logo URL</label>
+                         <input value={settings.logo} onChange={e => setSettings({...settings, logo: e.target.value})} className="w-full" />
+                       </div>
+                       <div className="space-y-4">
+                         <label className="text-[9px] font-black uppercase text-gray-400 tracking-widest ml-4">Master WhatsApp</label>
+                         <input value={settings.contactPhone} onChange={e => setSettings({...settings, contactPhone: e.target.value})} className="w-full" />
+                       </div>
+                       <div className="space-y-4">
+                         <label className="text-[9px] font-black uppercase text-gray-400 tracking-widest ml-4">Hero Image URL</label>
+                         <input value={settings.heroImage} onChange={e => setSettings({...settings, heroImage: e.target.value})} className="w-full" />
+                       </div>
+                       <div className="space-y-4">
+                         <label className="text-[9px] font-black uppercase text-gray-400 tracking-widest ml-4">Admin PIN</label>
+                         <input value={settings.adminPin} onChange={e => setSettings({...settings, adminPin: e.target.value})} className="w-full" />
+                       </div>
+                       {['cn', 'en', 'ms'].map(l => (
+                         <div key={l} className="space-y-4">
+                           <label className="text-[9px] font-black uppercase text-gray-400 tracking-widest ml-4">Hero Title ({l.toUpperCase()})</label>
+                           <input value={settings.heroTitle[l]} onChange={e => {
+                             const newTitles = {...settings.heroTitle, [l]: e.target.value};
+                             setSettings({...settings, heroTitle: newTitles});
+                           }} className="w-full" />
+                         </div>
+                       ))}
+                    </div>
+                  )}
+
+                  {activeTab === 'agents' && (
+                    <div className="space-y-8">
+                       <div className="bg-lg-dark p-10 rounded-[45px] grid md:grid-cols-3 gap-6">
+                         <input id="aname" placeholder="Agent Name" className="bg-white/5 border-white/10 text-white" />
+                         <input id="awa" placeholder="WhatsApp (601...)" className="bg-white/5 border-white/10 text-white" />
+                         <button onClick={() => {
+                           const n = document.getElementById('aname').value;
+                           const w = document.getElementById('awa').value.replace(/\D/g, '');
+                           if(!n || !w) return;
+                           setAgents([...agents, { name: n, wa: w }]);
+                           document.getElementById('aname').value = '';
+                           document.getElementById('awa').value = '';
+                         }} className="bg-lg-red text-white font-black uppercase text-[10px] tracking-widest rounded-3xl hover:bg-white hover:text-lg-red transition-all">Add Agent</button>
+                       </div>
+                       <div className="grid gap-4">
+                         {agents.map(a => (
+                           <div key={a.wa} className="bg-white p-6 rounded-[30px] border border-gray-100 flex justify-between items-center shadow-sm">
+                             <div><p className="font-black uppercase">{a.name}</p><p className="text-[9px] text-gray-300 font-bold uppercase mt-1 tracking-widest">WA: {a.wa}</p></div>
+                             <div className="flex gap-2">
+                               <button onClick={() => {
+                                 const baseUrl = window.location.href.split('?')[0];
+                                 const link = `${baseUrl}?wa=${a.wa}&name=${encodeURIComponent(a.name)}`;
+                                 navigator.clipboard.writeText(link);
+                                 setCopiedId(a.wa);
+                                 setTimeout(() => setCopiedId(null), 2000);
+                               }} className={`px-6 py-3 rounded-full text-[9px] font-black uppercase tracking-widest transition-all ${copiedId === a.wa ? 'bg-green-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-black hover:text-white'}`}>
+                                 {copiedId === a.wa ? 'Copied' : 'Copy Promo Link'}
+                               </button>
+                               <button onClick={() => setAgents(agents.filter(x => x.wa !== a.wa))} className="p-3 bg-red-50 text-red-400 rounded-full hover:bg-red-500 hover:text-white transition-all"><Icon name="trash-2" size={16}/></button>
+                             </div>
+                           </div>
+                         ))}
+                       </div>
+                    </div>
+                  )}
+
+                  {activeTab === 'templates' && (
+                    <div className="bg-gray-50 p-12 rounded-[50px] space-y-8">
+                       <h3 className="text-2xl font-black uppercase tracking-tighter">Promotions</h3>
+                       <div className="grid md:grid-cols-4 gap-4">
+                          <input id="tname" placeholder="Campaign Name" />
+                          <input id="tdisc" placeholder="Discount RM" />
+                          <input id="tend" type="date" />
+                          <button onClick={() => {
+                            const n = document.getElementById('tname').value;
+                            const d = document.getElementById('tdisc').value;
+                            const e = document.getElementById('tend').value;
+                            if(!n || !d) return;
+                            setTemplates([...templates, { id: Date.now(), name: n, discount: d, end: e }]);
+                          }} className="bg-black text-white rounded-2xl font-black uppercase text-[9px] tracking-widest">Save Promo</button>
+                       </div>
+                       <div className="space-y-4">
+                         {templates.map(t => (
+                           <div key={t.id} className="bg-white p-6 rounded-3xl flex justify-between items-center shadow-sm">
+                             <div><span className="font-black uppercase">{t.name}</span> <span className="text-lg-red ml-4">-RM{t.discount}</span></div>
+                             <button onClick={() => setTemplates(templates.filter(x => x.id !== t.id))} className="text-red-400"><Icon name="x-circle" size={18}/></button>
+                           </div>
+                         ))}
+                       </div>
+                    </div>
+                  )}
+
+                  {activeTab === 'backup' && (
+                    <div className="bg-lg-pearl p-20 rounded-[60px] text-center space-y-8">
+                       <h2 className="text-3xl font-black uppercase tracking-tighter">System Backup</h2>
+                       <div className="flex justify-center gap-6 pt-10">
+                          <button onClick={handleBackup} className="bg-black text-white px-12 py-5 rounded-full font-black uppercase text-[10px] tracking-widest shadow-xl">Export JSON</button>
+                          <label className="bg-white text-lg-red border-2 border-lg-red px-12 py-5 rounded-full font-black uppercase text-[10px] tracking-widest shadow-xl cursor-pointer">
+                            Import JSON
+                            <input type="file" className="hidden" onChange={handleRestore} accept=".json" />
+                          </label>
+                       </div>
+                    </div>
+                  )}
+               </div>
+            </div>
+          )}
+
+          {/* Product Modal */}
+          {editingProduct && (
+            <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
+              <div className="absolute inset-0 bg-lg-dark/60 backdrop-blur-md" onClick={() => setEditingProduct(null)}></div>
+              <div className="bg-white w-full max-w-2xl rounded-[50px] p-10 relative z-10 shadow-3xl max-h-[90vh] overflow-y-auto space-y-6">
+                <h3 className="text-2xl font-black uppercase tracking-tighter">Edit Product</h3>
+                <div className="grid md:grid-cols-2 gap-6">
+                   <div className="space-y-2">
+                     <label className="text-[9px] font-black uppercase text-gray-300 ml-4">Name</label>
+                     <input className="w-full" value={editingProduct.name} onChange={e => setEditingProduct({...editingProduct, name: e.target.value})} />
+                   </div>
+                   <div className="space-y-2">
+                     <label className="text-[9px] font-black uppercase text-gray-300 ml-4">Price RM</label>
+                     <input className="w-full" type="number" value={editingProduct.price} onChange={e => setEditingProduct({...editingProduct, price: e.target.value})} />
+                   </div>
+                   <div className="space-y-2 md:col-span-2">
+                     <label className="text-[9px] font-black uppercase text-gray-300 ml-4">Image URL</label>
+                     <input className="w-full" value={editingProduct.image} onChange={e => setEditingProduct({...editingProduct, image: e.target.value})} />
+                   </div>
+                   {['cn', 'en', 'ms'].map(l => (
+                     <div key={l} className="space-y-2 md:col-span-2">
+                       <label className="text-[9px] font-black uppercase text-gray-300 ml-4">Subtitle ({l.toUpperCase()})</label>
+                       <input className="w-full" value={editingProduct.subName[l]} onChange={e => {
+                         const newSub = {...editingProduct.subName, [l]: e.target.value};
+                         setEditingProduct({...editingProduct, subName: newSub});
+                       }} />
+                     </div>
+                   ))}
                 </div>
-              )}
+                <div className="flex gap-4 pt-6">
+                  <button onClick={() => {
+                    const updated = products.map(p => p.id === editingProduct.id ? editingProduct : p);
+                    setProducts(updated);
+                    setEditingProduct(null);
+                  }} className="flex-grow bg-lg-red text-white py-5 rounded-full font-black uppercase text-[10px] tracking-widest shadow-xl">Update Product</button>
+                  <button onClick={() => { if(confirm("Delete?")) { setProducts(products.filter(p => p.id !== editingProduct.id)); setEditingProduct(null); } }} className="px-8 bg-gray-100 text-red-500 rounded-full hover:bg-red-500 hover:text-white transition-all"><Icon name="trash-2" size={20}/></button>
+                </div>
+              </div>
             </div>
           )}
         </div>
