@@ -81,7 +81,7 @@
         partnerNote: "专属认证顾问",
         contactNow: "立即咨询",
         monthly: "月付低至",
-         showroom: "数字化展厅",
+        showroom: "数字化展厅",
         joinUs: "加入我们的合作伙伴计划",
         earnComm: "赚取高达 13% 佣金",
         adminTitle: "后台管理",
@@ -143,16 +143,35 @@
       adminPin: '8888'
     };
 
+    // 数据迁移工具：确保旧格式（字符串）转换为新格式（多语言对象）
+    const migrateMultilingual = (data, defaultValue = "") => {
+      if (typeof data === 'string') return { cn: data, en: data, ms: data };
+      if (data && typeof data === 'object' && (data.cn || data.en || data.ms)) return data;
+      return { cn: defaultValue, en: defaultValue, ms: defaultValue };
+    };
+
     const App = () => {
       const [view, setView] = useState('home');
       const [lang, setLang] = useState('cn');
       const [isAdmin, setIsAdmin] = useState(false);
       const [activeTab, setActiveTab] = useState('inventory');
       
-      const [products, setProducts] = useState(() => JSON.parse(localStorage.getItem('lg_products_v7') || JSON.stringify(INITIAL_PRODUCTS)));
-      const [settings, setSettings] = useState(() => JSON.parse(localStorage.getItem('lg_settings_v7') || JSON.stringify(INITIAL_SETTINGS)));
-      const [agents, setAgents] = useState(() => JSON.parse(localStorage.getItem('lg_affiliates_v7') || '[]'));
-      const [templates, setTemplates] = useState(() => JSON.parse(localStorage.getItem('lg_templates_v7') || '[]'));
+      const loadData = (key, initial) => {
+        const saved = localStorage.getItem(key);
+        if (!saved) return initial;
+        try { return JSON.parse(saved); } catch (e) { return initial; }
+      };
+
+      const [products, setProducts] = useState(() => {
+        let items = loadData('lg_products_v7', INITIAL_PRODUCTS);
+        return items.map(p => ({ ...p, subName: migrateMultilingual(p.subName) }));
+      });
+      const [settings, setSettings] = useState(() => {
+        let s = loadData('lg_settings_v7', INITIAL_SETTINGS);
+        return { ...s, heroTitle: migrateMultilingual(s.heroTitle) };
+      });
+      const [agents, setAgents] = useState(() => loadData('lg_affiliates_v7', []));
+      const [templates, setTemplates] = useState(() => loadData('lg_templates_v7', []));
       
       const [activeAgent, setActiveAgent] = useState(null);
       const [editingProduct, setEditingProduct] = useState(null);
@@ -182,7 +201,7 @@
       const t = DICT[lang];
 
       const handleBackup = () => {
-        const data = { products, settings, agents, templates };
+        const data = { products, settings, agents, templates, version: 'v7' };
         const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
@@ -198,14 +217,36 @@
         reader.onload = (event) => {
           try {
             const data = JSON.parse(event.target.result);
-            if (data.products) setProducts(data.products);
-            if (data.settings) setSettings(data.settings);
+            
+            // 数据迁移适配逻辑
+            if (data.products) {
+              const migratedProducts = data.products.map(p => ({
+                ...p,
+                subName: migrateMultilingual(p.subName)
+              }));
+              setProducts(migratedProducts);
+            }
+            
+            if (data.settings) {
+              const migratedSettings = {
+                ...data.settings,
+                heroTitle: migrateMultilingual(data.settings.heroTitle)
+              };
+              setSettings(migratedSettings);
+            }
+            
             if (data.agents) setAgents(data.agents);
             if (data.templates) setTemplates(data.templates);
-            alert("Success!");
-          } catch (err) { alert("Invalid Format"); }
+            
+            alert("数据还原成功！部分旧版数据已自动适配多语言格式。");
+          } catch (err) { 
+            console.error(err);
+            alert("读取备份文件失败，请确保文件格式正确。"); 
+          }
         };
         reader.readAsText(file);
+        // 清空 input 确保下次选择同一文件也能触发
+        e.target.value = '';
       };
 
       return (
@@ -237,7 +278,7 @@
                     <Icon name="shield-check" size={14} className="text-lg-red" /> Certified Partner
                   </span>
                   <h1 className="text-5xl md:text-8xl font-black uppercase tracking-tighter leading-none">
-                    {settings.heroTitle[lang]}
+                    {settings.heroTitle[lang] || settings.heroTitle.cn}
                   </h1>
                   <p className="text-gray-400 font-medium text-lg max-w-2xl mx-auto">{t.heroSub}</p>
                   <button onClick={() => document.getElementById('catalog').scrollIntoView({behavior:'smooth'})} className="bg-lg-red text-white px-12 py-6 rounded-full font-black uppercase text-[11px] tracking-widest shadow-2xl hover:bg-lg-dark transition-all">
@@ -278,7 +319,7 @@
                       <img src={p.image} className="max-h-[85%] object-contain relative z-10 group-hover:scale-110 transition-transform duration-700" alt={p.name} />
                     </div>
                     <h3 className="text-2xl font-black uppercase mb-1">{p.name}</h3>
-                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-10">{p.subName[lang]}</p>
+                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-10">{p.subName[lang] || p.subName.cn}</p>
                     <div className="mt-auto pt-8 border-t border-gray-50 flex items-end justify-between">
                       <div>
                         <span className="text-lg-red text-[10px] font-black uppercase tracking-widest block mb-1">{t.monthly}</span>
@@ -307,15 +348,18 @@
                    Become a Partner
                  </a>
                  <div className="pt-20 opacity-20 text-[9px] font-black uppercase tracking-[0.5em] flex justify-center items-center gap-2">
-                   <button onClick={() => { if(prompt("Passcode") === settings.adminPin) { setView('admin'); setIsAdmin(true); } }} className="hover:text-white transition-colors">©</button> 2025 LG Subscribe Malaysia Hub
+                   <button onClick={() => { 
+                     const pin = prompt("Admin PIN:"); 
+                     if(pin === settings.adminPin) { setView('admin'); setIsAdmin(true); } 
+                     else if(pin !== null) alert("PIN 错误");
+                   }} className="hover:text-white transition-colors">©</button> 2025 LG Subscribe Malaysia Hub
                  </div>
               </footer>
             </div>
           ) : (
-            /* Admin Console (Discrete Entry) */
+            /* Admin Console */
             <div className="pt-32 px-6 max-w-6xl mx-auto min-h-screen pb-32">
                <div className="space-y-12 animate-fade-up">
-                  {/* Admin Nav */}
                   <div className="flex flex-wrap gap-4 border-b border-gray-100 pb-8 items-center">
                     <h1 className="text-xl font-black uppercase tracking-tighter mr-8">{t.adminTitle}</h1>
                     {['inventory', 'settings', 'agents', 'templates', 'backup'].map(tab => (
@@ -323,10 +367,9 @@
                         {t[tab]}
                       </button>
                     ))}
-                    <button onClick={() => setView('home')} className="ml-auto text-[9px] font-black uppercase text-gray-300 hover:text-lg-red">Exit</button>
+                    <button onClick={() => { setView('home'); setIsAdmin(false); }} className="ml-auto text-[9px] font-black uppercase text-gray-300 hover:text-lg-red">Exit</button>
                   </div>
 
-                  {/* Tab Contents */}
                   {activeTab === 'inventory' && (
                     <div className="grid md:grid-cols-3 gap-8">
                        {products.map(p => (
@@ -443,10 +486,11 @@
 
                   {activeTab === 'backup' && (
                     <div className="bg-lg-pearl p-20 rounded-[60px] text-center space-y-8">
-                       <h2 className="text-3xl font-black uppercase tracking-tighter">System Backup</h2>
+                       <h2 className="text-3xl font-black uppercase tracking-tighter">System Backup & Recovery</h2>
+                       <p className="text-gray-400 font-medium max-w-md mx-auto">导出的 JSON 文件包含所有产品、代理及站点配置。导入旧版本备份时，系统会自动尝试转换数据结构以保持兼容。</p>
                        <div className="flex justify-center gap-6 pt-10">
-                          <button onClick={handleBackup} className="bg-black text-white px-12 py-5 rounded-full font-black uppercase text-[10px] tracking-widest shadow-xl">Export JSON</button>
-                          <label className="bg-white text-lg-red border-2 border-lg-red px-12 py-5 rounded-full font-black uppercase text-[10px] tracking-widest shadow-xl cursor-pointer">
+                          <button onClick={handleBackup} className="bg-black text-white px-12 py-5 rounded-full font-black uppercase text-[10px] tracking-widest shadow-xl hover:bg-lg-red transition-all">Export JSON</button>
+                          <label className="bg-white text-lg-red border-2 border-lg-red px-12 py-5 rounded-full font-black uppercase text-[10px] tracking-widest shadow-xl cursor-pointer hover:bg-lg-red hover:text-white transition-all">
                             Import JSON
                             <input type="file" className="hidden" onChange={handleRestore} accept=".json" />
                           </label>
@@ -479,7 +523,7 @@
                    {['cn', 'en', 'ms'].map(l => (
                      <div key={l} className="space-y-2 md:col-span-2">
                        <label className="text-[9px] font-black uppercase text-gray-300 ml-4">Subtitle ({l.toUpperCase()})</label>
-                       <input className="w-full" value={editingProduct.subName[l]} onChange={e => {
+                       <input className="w-full" value={editingProduct.subName[l] || ""} onChange={e => {
                          const newSub = {...editingProduct.subName, [l]: e.target.value};
                          setEditingProduct({...editingProduct, subName: newSub});
                        }} />
