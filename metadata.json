@@ -1,0 +1,8 @@
+{
+  "name": "LG Subscribe Partner Portal",
+  "description": "A comprehensive platform for LG Subscribe partners to manage their appliance catalog, track referral performance, and access AI-powered sales tools.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
