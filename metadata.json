@@ -1,6 +1,6 @@
 {
   "name": "LG Subscribe Affiliate Hub",
-  "description": "Premium LG affiliate platform with automated tracking and high-end visuals.",
+  "description": "Premium LG affiliate platform with local image uploads and advanced promotion logic.",
   "requestFramePermissions": [
     "camera",
     "microphone"
