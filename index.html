@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>LG Subscribe Malaysia | Digital Partner Hub</title>
+  <title>LG Subscribe Malaysia | Advanced Digital Hub</title>
   
   <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -19,11 +19,7 @@
     tailwind.config = {
       theme: {
         extend: {
-          colors: { 
-            'lg-red': '#e60044', 
-            'lg-dark': '#05090f', 
-            'lg-pearl': '#f8f9fa'
-          },
+          colors: { 'lg-red': '#e60044', 'lg-dark': '#05090f', 'lg-pearl': '#f8f9fa' },
           fontFamily: { sans: ['Outfit', 'sans-serif'] }
         }
       }
@@ -34,20 +30,14 @@
     @tailwind base;
     @tailwind components;
     @tailwind utilities;
-
-    @layer base {
-      body { @apply bg-white text-lg-dark font-sans antialiased m-0 p-0 overflow-x-hidden; }
-    }
+    @layer base { body { @apply bg-white text-lg-dark font-sans antialiased m-0 p-0 overflow-x-hidden; } }
     .premium-blur { @apply backdrop-blur-2xl bg-white/80 border border-white/20; }
     .shadow-premium { box-shadow: 0 30px 60px rgba(0,0,0,0.06); }
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     .animate-fade-up { animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-    
-    input, select, textarea { @apply bg-gray-50 border border-gray-100 rounded-2xl p-4 outline-none focus:border-lg-red transition-all font-medium; }
+    input, select, textarea { @apply bg-white border border-gray-100 rounded-2xl p-4 outline-none focus:border-lg-red transition-all font-medium text-sm; }
     .no-scrollbar::-webkit-scrollbar { display: none; }
+    .admin-card { @apply bg-white p-6 rounded-[35px] border border-gray-100 shadow-sm hover:shadow-md transition-all; }
   </style>
 <script type="importmap">
 {
@@ -65,6 +55,11 @@
 <body>
   <div id="root"></div>
 
+  <script type="module">
+    import { GoogleGenAI } from "@google/genai";
+    window.GoogleGenAI = GoogleGenAI;
+  </script>
+
   <script type="text/babel">
     const { useState, useEffect, useMemo } = React;
 
@@ -73,66 +68,30 @@
       return <i data-lucide={name} className={className} style={{ width: size, height: size }}></i>;
     };
 
-    // --- 字典数据 ---
     const DICT = {
-      cn: {
-        heroSub: "LG Subscribe 马来西亚认证合作伙伴。以极简的月付方案，解锁全球顶尖家电艺术。",
-        explore: "立即浏览展厅",
-        partnerNote: "专属认证顾问",
-        contactNow: "立即咨询",
-        monthly: "月付低至",
-        showroom: "数字化展厅",
-        joinUs: "加入我们的合作伙伴计划",
-        earnComm: "赚取高达 13% 佣金",
-        adminTitle: "后台管理",
-        inventory: "库存管理",
-        siteConfig: "站点配置",
-        affiliates: "代理分销",
-        promo: "促销模板",
-        backup: "数据备份",
-        perMo: "/月"
-      },
-      en: {
-        heroSub: "LG Subscribe Malaysia Certified Partner. Experience premium living with flexible subscription plans.",
-        explore: "Explore Showroom",
-        partnerNote: "Certified Consultant",
-        contactNow: "Contact Now",
-        monthly: "Monthly From",
-        showroom: "Digital Showroom",
-        joinUs: "Join Our Partner Program",
-        earnComm: "Earn up to 13% Commission",
-        adminTitle: "Admin Console",
-        inventory: "Inventory",
-        siteConfig: "Site Settings",
-        affiliates: "Affiliates",
-        promo: "Promotions",
-        backup: "Backup",
-        perMo: "/Mo"
-      },
-      ms: {
-        heroSub: "Rakan Kongsi Sah LG Subscribe Malaysia. Alami kehidupan premium dengan pelan langganan fleksibel.",
-        explore: "Teroka Koleksi",
-        partnerNote: "Perunding Sah",
-        contactNow: "Hubungi Sekarang",
-        monthly: "Bulanan Dari",
-        showroom: "Bilik Pameran Digital",
-        joinUs: "Sertai Program Rakan Kami",
-        earnComm: "Komisyen sehingga 13%",
-        adminTitle: "Konsol Admin",
-        inventory: "Inventori",
-        siteConfig: "Konfigurasi",
-        affiliates: "Ejen/Afiliasi",
-        promo: "Promosi",
-        backup: "Sandaran",
-        perMo: "/Bulan"
-      }
+      cn: { heroSub: "LG Subscribe 认证合作伙伴。以极简方案解锁全球顶尖家电。", explore: "浏览展厅", contactNow: "立即咨询", monthly: "月供低至", showroom: "数字化展厅", adminTitle: "管理终端", inventory: "库存", siteConfig: "配置", affiliates: "代理", promo: "促销", backup: "备份", outright: "买断" },
+      en: { heroSub: "Certified LG Partner. Unlock premium living with flexible subscription plans.", explore: "Explore Hub", contactNow: "Contact Now", monthly: "From RM", showroom: "Digital Showroom", adminTitle: "Admin Panel", inventory: "Inventory", siteConfig: "Settings", affiliates: "Affiliates", promo: "Promo", backup: "Backup", outright: "Outright" },
+      ms: { heroSub: "Rakan Kongsi Sah LG. Alami kehidupan premium dengan pelan fleksibel.", explore: "Teroka", contactNow: "Hubungi", monthly: "Dari RM", showroom: "Bilik Pameran", adminTitle: "Panel Admin", inventory: "Inventori", siteConfig: "Tetapan", affiliates: "Ejen", promo: "Promosi", backup: "Sandaran", outright: "Tunai" }
     };
 
-    // --- 初始数据 ---
     const INITIAL_PRODUCTS = [
-      { id: 'WP-PURI-V', category: 'Water Purifier', name: 'PuriCare™ Tankless', subName: { cn: '无水箱净水机', en: 'Tankless Self-Service', ms: 'Penapis Air Tanpa Tangki' }, image: 'https://www.lg.com/content/dam/channel/wcms/my/images/water-purifiers/wd516an_answ_e_my_c/gallery/dz-01.jpg', price: 60, isHot: true },
-      { id: 'AC-V13ENS', category: 'Air Conditioner', name: 'DUALCOOL™ Inverter', subName: { cn: '双变频冷气机', en: 'Dual Inverter AC', ms: 'Penyaman Udara Inverter' }, image: 'https://www.lg.com/content/dam/channel/wcms/my/images/air-conditioners/v10api_answ_e_my_c/gallery/dz-01.jpg', price: 45, isHot: true },
-      { id: 'REF-SIDE', category: 'Refrigerator', name: 'Side-by-Side Inverter', subName: { cn: '对开门变频冰箱', en: 'Large Capacity Fridge', ms: 'Peti Sejuk Kapasiti Besar' }, image: 'https://www.lg.com/content/dam/channel/wcms/my/images/refrigerators/gr-b247sluv_asbp_e_my_c/gallery/dz-01.jpg', price: 150, isHot: false }
+      {
+        id: 'WP-PURI-V',
+        category: 'Water Purifier',
+        name: 'PuriCare™ Tankless',
+        subName: { cn: '无水箱净水机', en: 'Self-Service Tankless', ms: 'Penapis Air Tanpa Tangki' },
+        image: 'https://www.lg.com/content/dam/channel/wcms/my/images/water-purifiers/wd516an_answ_e_my_c/gallery/dz-01.jpg',
+        price: 60,
+        isHot: true,
+        features: [{ cn: '极速制冷', en: 'Instant Cold', ms: 'Sejuk Segera' }],
+        painPoints: [{ cn: '储水箱细菌滋生', en: 'Tank bacteria growth', ms: 'Bakteria dalam tangki' }],
+        variants: [{ name: 'White', colorCode: '#FFFFFF', image: 'https://www.lg.com/content/dam/channel/wcms/my/images/water-purifiers/wd516an_answ_e_my_c/gallery/dz-01.jpg' }],
+        plans: [
+          { term: 7, type: 'Self Service', price: 60 },
+          { term: 5, type: 'Regular Visit', price: 90 },
+          { term: 'Outright', type: 'Owner', price: 3200 }
+        ]
+      }
     ];
 
     const INITIAL_SETTINGS = {
@@ -143,72 +102,38 @@
       adminPin: '8888'
     };
 
-    // 数据迁移工具：确保旧格式（字符串）转换为新格式（多语言对象）
-    const migrateMultilingual = (data, defaultValue = "") => {
-      if (typeof data === 'string') return { cn: data, en: data, ms: data };
-      if (data && typeof data === 'object' && (data.cn || data.en || data.ms)) return data;
-      return { cn: defaultValue, en: defaultValue, ms: defaultValue };
-    };
-
     const App = () => {
       const [view, setView] = useState('home');
       const [lang, setLang] = useState('cn');
       const [isAdmin, setIsAdmin] = useState(false);
       const [activeTab, setActiveTab] = useState('inventory');
       
-      const loadData = (key, initial) => {
-        const saved = localStorage.getItem(key);
-        if (!saved) return initial;
-        try { return JSON.parse(saved); } catch (e) { return initial; }
-      };
-
-      const [products, setProducts] = useState(() => {
-        let items = loadData('lg_products_v7', INITIAL_PRODUCTS);
-        return items.map(p => ({ ...p, subName: migrateMultilingual(p.subName) }));
-      });
-      const [settings, setSettings] = useState(() => {
-        let s = loadData('lg_settings_v7', INITIAL_SETTINGS);
-        return { ...s, heroTitle: migrateMultilingual(s.heroTitle) };
-      });
-      const [agents, setAgents] = useState(() => loadData('lg_affiliates_v7', []));
-      const [templates, setTemplates] = useState(() => loadData('lg_templates_v7', []));
+      const [products, setProducts] = useState(() => JSON.parse(localStorage.getItem('lg_pro_v8') || JSON.stringify(INITIAL_PRODUCTS)));
+      const [settings, setSettings] = useState(() => JSON.parse(localStorage.getItem('lg_set_v8') || JSON.stringify(INITIAL_SETTINGS)));
+      const [agents, setAgents] = useState(() => JSON.parse(localStorage.getItem('lg_age_v8') || '[]'));
+      const [templates, setTemplates] = useState(() => JSON.parse(localStorage.getItem('lg_tpl_v8') || '[]'));
       
       const [activeAgent, setActiveAgent] = useState(null);
       const [editingProduct, setEditingProduct] = useState(null);
-      const [copiedId, setCopiedId] = useState(null);
+      const [isAiLoading, setIsAiLoading] = useState(false);
 
       useEffect(() => {
-        localStorage.setItem('lg_products_v7', JSON.stringify(products));
-        localStorage.setItem('lg_settings_v7', JSON.stringify(settings));
-        localStorage.setItem('lg_affiliates_v7', JSON.stringify(agents));
-        localStorage.setItem('lg_templates_v7', JSON.stringify(templates));
+        localStorage.setItem('lg_pro_v8', JSON.stringify(products));
+        localStorage.setItem('lg_set_v8', JSON.stringify(settings));
+        localStorage.setItem('lg_age_v8', JSON.stringify(agents));
+        localStorage.setItem('lg_tpl_v8', JSON.stringify(templates));
       }, [products, settings, agents, templates]);
 
       useEffect(() => {
         const params = new URLSearchParams(window.location.search);
         const wa = params.get('wa');
-        const name = params.get('name');
         if (wa) {
-          const current = { name: name || 'Authorized Partner', wa: wa.replace(/\D/g, '') };
-          setActiveAgent(current);
-          localStorage.setItem('cached_agent_v7', JSON.stringify(current));
-        } else {
-          const saved = localStorage.getItem('cached_agent_v7');
-          if (saved) setActiveAgent(JSON.parse(saved));
+          const a = { name: params.get('name') || 'Partner', wa: wa.replace(/\D/g, '') };
+          setActiveAgent(a);
         }
       }, []);
 
       const t = DICT[lang];
-
-      const handleBackup = () => {
-        const data = { products, settings, agents, templates, version: 'v7' };
-        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `lg_backup_${new Date().toISOString().split('T')[0]}.json`;
-        link.click();
-      };
 
       const handleRestore = (e) => {
         const file = e.target.files[0];
@@ -217,328 +142,312 @@
         reader.onload = (event) => {
           try {
             const data = JSON.parse(event.target.result);
-            
-            // 数据迁移适配逻辑
+            // 强力迁移逻辑
             if (data.products) {
-              const migratedProducts = data.products.map(p => ({
+              setProducts(data.products.map(p => ({
                 ...p,
-                subName: migrateMultilingual(p.subName)
-              }));
-              setProducts(migratedProducts);
+                subName: typeof p.subName === 'string' ? {cn:p.subName, en:p.subName, ms:p.subName} : (p.subName || {cn:'',en:'',ms:''}),
+                features: p.features || [],
+                painPoints: p.painPoints || [],
+                variants: p.variants || [{name:'Default', colorCode:'#eee', image: p.image}],
+                plans: p.plans || [{term: 7, type: 'Self Service', price: p.price}]
+              })));
             }
-            
-            if (data.settings) {
-              const migratedSettings = {
-                ...data.settings,
-                heroTitle: migrateMultilingual(data.settings.heroTitle)
-              };
-              setSettings(migratedSettings);
-            }
-            
+            if (data.settings) setSettings(data.settings);
             if (data.agents) setAgents(data.agents);
             if (data.templates) setTemplates(data.templates);
-            
-            alert("数据还原成功！部分旧版数据已自动适配多语言格式。");
-          } catch (err) { 
-            console.error(err);
-            alert("读取备份文件失败，请确保文件格式正确。"); 
-          }
+            alert("Data Restored Successfully!");
+          } catch (err) { alert("Format Error"); }
         };
         reader.readAsText(file);
-        // 清空 input 确保下次选择同一文件也能触发
-        e.target.value = '';
+      };
+
+      const handleAiExtract = async (url) => {
+        if (!url) return;
+        setIsAiLoading(true);
+        try {
+          const ai = new window.GoogleGenAI({ apiKey: process.env.API_KEY });
+          const response = await ai.models.generateContent({
+            model: 'gemini-3-pro-preview',
+            contents: `Analyze LG product URL: ${url}. Extract into JSON: { name, subName: {cn,en,ms}, category, features:[{cn,en,ms}], painPoints:[{cn,en,ms}], variants:[{name,colorCode,image}], plans:[{term,type,price}] }. Keep it consistent with LG Malaysia subscription market prices.`,
+            config: { responseMimeType: "application/json" }
+          });
+          const result = JSON.parse(response.text);
+          setEditingProduct({ ...editingProduct, ...result });
+        } catch (e) { alert("AI extraction failed. Please fill manually."); }
+        setIsAiLoading(false);
       };
 
       return (
-        <div className="min-h-screen bg-white">
-          {/* Navigation */}
+        <div className="min-h-screen">
           <nav className="fixed top-0 w-full z-50 h-20 premium-blur flex items-center px-6 justify-between border-b border-gray-100">
-            <button onClick={() => setView('home')}>
-              <img src={settings.logo} className="h-6" alt="LG" />
-            </button>
-            <div className="flex items-center gap-3">
-              {['cn', 'en', 'ms'].map(l => (
-                <button 
-                  key={l} 
-                  onClick={() => setLang(l)} 
-                  className={`px-3 py-1.5 rounded-full text-[9px] font-black uppercase transition-all ${lang === l ? 'bg-lg-red text-white shadow-lg' : 'bg-gray-100 text-gray-400 hover:text-gray-950'}`}
-                >
-                  {l}
-                </button>
+            <button onClick={() => setView('home')}><img src={settings.logo} className="h-6" /></button>
+            <div className="flex gap-2">
+              {['cn','en','ms'].map(l => (
+                <button key={l} onClick={() => setLang(l)} className={`px-3 py-1.5 rounded-full text-[9px] font-black uppercase ${lang === l ? 'bg-lg-red text-white shadow-lg' : 'bg-gray-100 text-gray-400'}`}>{l}</button>
               ))}
             </div>
           </nav>
 
           {view === 'home' ? (
             <div className="pt-20">
-              {/* Hero Section */}
+              {/* Hero */}
               <section className="bg-lg-pearl py-20 px-6 flex flex-col items-center text-center">
-                <div className="max-w-4xl mx-auto space-y-8 animate-fade-up">
-                  <span className="inline-flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow-sm text-[10px] font-black text-gray-400 uppercase tracking-widest border border-gray-100">
-                    <Icon name="shield-check" size={14} className="text-lg-red" /> Certified Partner
-                  </span>
-                  <h1 className="text-5xl md:text-8xl font-black uppercase tracking-tighter leading-none">
-                    {settings.heroTitle[lang] || settings.heroTitle.cn}
-                  </h1>
+                <div className="max-w-4xl space-y-6 animate-fade-up">
+                  <h1 className="text-5xl md:text-8xl font-black uppercase tracking-tighter leading-none">{settings.heroTitle[lang]}</h1>
                   <p className="text-gray-400 font-medium text-lg max-w-2xl mx-auto">{t.heroSub}</p>
-                  <button onClick={() => document.getElementById('catalog').scrollIntoView({behavior:'smooth'})} className="bg-lg-red text-white px-12 py-6 rounded-full font-black uppercase text-[11px] tracking-widest shadow-2xl hover:bg-lg-dark transition-all">
-                    {t.explore}
-                  </button>
                 </div>
-                <img src={settings.heroImage} className="max-w-4xl w-full h-auto mt-16 drop-shadow-2xl animate-fade-up" />
+                <img src={settings.heroImage} className="max-w-4xl w-full h-auto mt-12 drop-shadow-2xl animate-fade-up" />
               </section>
 
-              {/* Agent Floating Badge */}
+              {/* Agent Badge */}
               {activeAgent && (
                 <div className="sticky top-24 z-40 flex justify-center px-6 -mt-10 pointer-events-none">
                   <div className="premium-blur shadow-premium rounded-full px-8 py-4 flex items-center gap-8 pointer-events-auto animate-fade-up">
-                    <div className="flex items-center gap-4 border-r pr-8 border-gray-100">
-                      <div className="w-10 h-10 bg-lg-red rounded-full flex items-center justify-center text-white shadow-lg"><Icon name="star" size={20} /></div>
-                      <div className="text-left">
-                        <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest block leading-none">{t.partnerNote}</span>
-                        <span className="text-sm font-black uppercase text-gray-950 mt-1">{activeAgent.name}</span>
-                      </div>
+                    <div className="flex items-center gap-4 border-r pr-8 border-gray-100 text-left">
+                      <div className="w-10 h-10 bg-lg-red rounded-full flex items-center justify-center text-white shadow-lg"><Icon name="star" /></div>
+                      <div><span className="text-[9px] font-black text-gray-400 uppercase block">Consultant</span><span className="text-sm font-black uppercase text-gray-950">{activeAgent.name}</span></div>
                     </div>
-                    <a href={`https://wa.me/${activeAgent.wa}?text=Hi, I am interested in LG Subscribe from your showroom.`} target="_blank" className="text-[10px] font-black text-lg-red uppercase tracking-widest flex items-center gap-2">
-                      {t.contactNow} <Icon name="arrow-right" size={14} />
-                    </a>
+                    <a href={`https://wa.me/${activeAgent.wa}?text=Hi, I'm interested in LG Subscribe.`} className="text-[10px] font-black text-lg-red uppercase tracking-widest flex items-center gap-2">{t.contactNow} <Icon name="arrow-right" size={14} /></a>
                   </div>
                 </div>
               )}
 
               {/* Catalog */}
-              <section id="catalog" className="py-24 max-w-7xl mx-auto px-6 grid md:grid-cols-3 gap-12">
+              <section className="py-24 max-w-7xl mx-auto px-6 grid md:grid-cols-3 gap-12">
                 {products.map(p => (
                   <div key={p.id} className="bg-white rounded-[45px] p-10 border border-gray-100 flex flex-col group hover:shadow-premium transition-all duration-700 animate-fade-up">
                     <div className="flex justify-between mb-8">
                       <span className="text-[10px] font-black text-gray-300 uppercase tracking-widest">{p.category}</span>
-                      {p.isHot && <span className="bg-lg-red text-white text-[9px] font-black px-3 py-1.5 rounded-full uppercase">Hot</span>}
+                      {p.isHot && <span className="bg-lg-red text-white text-[9px] font-black px-3 py-1.5 rounded-full uppercase shadow-lg shadow-lg-red/20">Hot</span>}
                     </div>
-                    <div className="aspect-square mb-10 flex items-center justify-center relative">
-                      <div className="absolute inset-0 bg-lg-pearl rounded-full scale-90 group-hover:scale-100 transition-transform"></div>
-                      <img src={p.image} className="max-h-[85%] object-contain relative z-10 group-hover:scale-110 transition-transform duration-700" alt={p.name} />
+                    <div className="aspect-square mb-8 flex items-center justify-center relative">
+                       <div className="absolute inset-0 bg-lg-pearl rounded-full scale-90 group-hover:scale-100 transition-transform"></div>
+                       <img src={p.image} className="max-h-[85%] object-contain relative z-10 group-hover:scale-110 transition-transform duration-700" />
                     </div>
                     <h3 className="text-2xl font-black uppercase mb-1">{p.name}</h3>
-                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-10">{p.subName[lang] || p.subName.cn}</p>
+                    <p className="text-[10px] font-bold text-gray-400 uppercase mb-8">{p.subName[lang]}</p>
                     <div className="mt-auto pt-8 border-t border-gray-50 flex items-end justify-between">
-                      <div>
-                        <span className="text-lg-red text-[10px] font-black uppercase tracking-widest block mb-1">{t.monthly}</span>
-                        <span className="text-4xl font-black text-gray-950 tracking-tighter">RM{p.price}</span>
-                        <span className="text-[10px] font-black text-gray-300 ml-1">{t.perMo}</span>
-                      </div>
-                      <a href={`https://wa.me/${activeAgent?.wa || settings.contactPhone}?text=Hi, I want to inquire about ${p.name}`} target="_blank" className="bg-gray-950 text-white p-5 rounded-full hover:bg-lg-red transition-all shadow-xl">
-                        <Icon name="arrow-right" size={24} />
-                      </a>
+                       <div>
+                         <span className="text-lg-red text-[10px] font-black uppercase tracking-widest block mb-1">{t.monthly}</span>
+                         <span className="text-4xl font-black text-gray-950 tracking-tighter">RM{p.price}</span>
+                       </div>
+                       <a href={`https://wa.me/${activeAgent?.wa || settings.contactPhone}?text=Inquire: ${p.name}`} className="bg-gray-950 text-white p-5 rounded-full hover:bg-lg-red transition-all shadow-xl"><Icon name="arrow-right" size={24} /></a>
                     </div>
                   </div>
                 ))}
               </section>
 
-              {/* Footer Recruitment */}
-              <footer className="bg-lg-dark text-white py-32 px-6 text-center space-y-12">
-                 <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter max-w-3xl mx-auto leading-none">
-                   {t.joinUs} <br/><span className="text-lg-red">{t.earnComm}</span>
-                 </h2>
-                 <div className="flex flex-wrap justify-center gap-10 opacity-30 text-[10px] font-bold uppercase tracking-widest">
-                   <span>Zero Inventory</span>
-                   <span>Nationwide Support</span>
-                   <span>Official Service</span>
-                 </div>
-                 <a href={`https://wa.me/${settings.contactPhone}?text=I want to join the LG partner program.`} target="_blank" className="bg-white text-lg-dark px-16 py-6 rounded-full font-black uppercase text-[11px] tracking-widest shadow-2xl hover:bg-lg-red hover:text-white transition-all">
-                   Become a Partner
-                 </a>
-                 <div className="pt-20 opacity-20 text-[9px] font-black uppercase tracking-[0.5em] flex justify-center items-center gap-2">
-                   <button onClick={() => { 
-                     const pin = prompt("Admin PIN:"); 
-                     if(pin === settings.adminPin) { setView('admin'); setIsAdmin(true); } 
-                     else if(pin !== null) alert("PIN 错误");
-                   }} className="hover:text-white transition-colors">©</button> 2025 LG Subscribe Malaysia Hub
-                 </div>
+              {/* Footer */}
+              <footer className="bg-lg-dark text-white py-24 px-6 text-center space-y-8">
+                 <img src={settings.logo} className="h-6 mx-auto brightness-200 opacity-50" />
+                 <p className="text-gray-500 text-[9px] font-black uppercase tracking-[0.5em] flex justify-center items-center gap-2">
+                   <button onClick={() => { if(prompt("Passcode") === settings.adminPin) {setView('admin'); setIsAdmin(true);}}} className="hover:text-white transition-colors opacity-30">©</button> 2025 LG Subscribe Digital Hub
+                 </p>
               </footer>
             </div>
           ) : (
-            /* Admin Console */
-            <div className="pt-32 px-6 max-w-6xl mx-auto min-h-screen pb-32">
-               <div className="space-y-12 animate-fade-up">
-                  <div className="flex flex-wrap gap-4 border-b border-gray-100 pb-8 items-center">
-                    <h1 className="text-xl font-black uppercase tracking-tighter mr-8">{t.adminTitle}</h1>
-                    {['inventory', 'settings', 'agents', 'templates', 'backup'].map(tab => (
-                      <button key={tab} onClick={() => setActiveTab(tab)} className={`px-6 py-2.5 rounded-full text-[9px] font-black uppercase tracking-widest transition-all ${activeTab === tab ? 'bg-lg-red text-white shadow-lg' : 'bg-gray-50 text-gray-400 hover:text-lg-dark'}`}>
-                        {t[tab]}
-                      </button>
-                    ))}
-                    <button onClick={() => { setView('home'); setIsAdmin(false); }} className="ml-auto text-[9px] font-black uppercase text-gray-300 hover:text-lg-red">Exit</button>
-                  </div>
-
-                  {activeTab === 'inventory' && (
-                    <div className="grid md:grid-cols-3 gap-8">
-                       {products.map(p => (
-                         <div key={p.id} className="bg-white p-6 rounded-[40px] border border-gray-100 flex items-center gap-6 group hover:border-lg-red transition-all">
-                            <img src={p.image} className="w-16 h-16 object-contain bg-gray-50 rounded-2xl" />
-                            <div className="flex-grow">
-                               <p className="font-black uppercase text-sm">{p.name}</p>
-                               <p className="text-[10px] font-bold text-gray-400">RM{p.price}</p>
-                            </div>
-                            <button onClick={() => setEditingProduct({...p})} className="p-3 bg-gray-50 rounded-full hover:bg-lg-red hover:text-white transition-all"><Icon name="edit-3" size={16}/></button>
-                         </div>
-                       ))}
-                       <button onClick={() => {
-                         const nP = { id: Date.now(), category: 'NEW', name: 'New Product', subName: { cn: '', en: '', ms: '' }, image: '', price: 99, isHot: false };
-                         setProducts([...products, nP]);
-                         setEditingProduct(nP);
-                       }} className="border-4 border-dashed border-gray-100 rounded-[40px] flex items-center justify-center text-gray-300 hover:text-lg-red hover:border-lg-red transition-all aspect-[3/1]">
-                         <Icon name="plus" size={24} />
-                       </button>
-                    </div>
-                  )}
-
-                  {activeTab === 'settings' && (
-                    <div className="bg-gray-50 p-12 rounded-[50px] grid md:grid-cols-2 gap-8">
-                       <div className="space-y-4">
-                         <label className="text-[9px] font-black uppercase text-gray-400 tracking-widest ml-4">Logo URL</label>
-                         <input value={settings.logo} onChange={e => setSettings({...settings, logo: e.target.value})} className="w-full" />
-                       </div>
-                       <div className="space-y-4">
-                         <label className="text-[9px] font-black uppercase text-gray-400 tracking-widest ml-4">Master WhatsApp</label>
-                         <input value={settings.contactPhone} onChange={e => setSettings({...settings, contactPhone: e.target.value})} className="w-full" />
-                       </div>
-                       <div className="space-y-4">
-                         <label className="text-[9px] font-black uppercase text-gray-400 tracking-widest ml-4">Hero Image URL</label>
-                         <input value={settings.heroImage} onChange={e => setSettings({...settings, heroImage: e.target.value})} className="w-full" />
-                       </div>
-                       <div className="space-y-4">
-                         <label className="text-[9px] font-black uppercase text-gray-400 tracking-widest ml-4">Admin PIN</label>
-                         <input value={settings.adminPin} onChange={e => setSettings({...settings, adminPin: e.target.value})} className="w-full" />
-                       </div>
-                       {['cn', 'en', 'ms'].map(l => (
-                         <div key={l} className="space-y-4">
-                           <label className="text-[9px] font-black uppercase text-gray-400 tracking-widest ml-4">Hero Title ({l.toUpperCase()})</label>
-                           <input value={settings.heroTitle[l]} onChange={e => {
-                             const newTitles = {...settings.heroTitle, [l]: e.target.value};
-                             setSettings({...settings, heroTitle: newTitles});
-                           }} className="w-full" />
-                         </div>
-                       ))}
-                    </div>
-                  )}
-
-                  {activeTab === 'agents' && (
-                    <div className="space-y-8">
-                       <div className="bg-lg-dark p-10 rounded-[45px] grid md:grid-cols-3 gap-6">
-                         <input id="aname" placeholder="Agent Name" className="bg-white/5 border-white/10 text-white" />
-                         <input id="awa" placeholder="WhatsApp (601...)" className="bg-white/5 border-white/10 text-white" />
-                         <button onClick={() => {
-                           const n = document.getElementById('aname').value;
-                           const w = document.getElementById('awa').value.replace(/\D/g, '');
-                           if(!n || !w) return;
-                           setAgents([...agents, { name: n, wa: w }]);
-                           document.getElementById('aname').value = '';
-                           document.getElementById('awa').value = '';
-                         }} className="bg-lg-red text-white font-black uppercase text-[10px] tracking-widest rounded-3xl hover:bg-white hover:text-lg-red transition-all">Add Agent</button>
-                       </div>
-                       <div className="grid gap-4">
-                         {agents.map(a => (
-                           <div key={a.wa} className="bg-white p-6 rounded-[30px] border border-gray-100 flex justify-between items-center shadow-sm">
-                             <div><p className="font-black uppercase">{a.name}</p><p className="text-[9px] text-gray-300 font-bold uppercase mt-1 tracking-widest">WA: {a.wa}</p></div>
-                             <div className="flex gap-2">
-                               <button onClick={() => {
-                                 const baseUrl = window.location.href.split('?')[0];
-                                 const link = `${baseUrl}?wa=${a.wa}&name=${encodeURIComponent(a.name)}`;
-                                 navigator.clipboard.writeText(link);
-                                 setCopiedId(a.wa);
-                                 setTimeout(() => setCopiedId(null), 2000);
-                               }} className={`px-6 py-3 rounded-full text-[9px] font-black uppercase tracking-widest transition-all ${copiedId === a.wa ? 'bg-green-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-black hover:text-white'}`}>
-                                 {copiedId === a.wa ? 'Copied' : 'Copy Promo Link'}
-                               </button>
-                               <button onClick={() => setAgents(agents.filter(x => x.wa !== a.wa))} className="p-3 bg-red-50 text-red-400 rounded-full hover:bg-red-500 hover:text-white transition-all"><Icon name="trash-2" size={16}/></button>
-                             </div>
-                           </div>
-                         ))}
-                       </div>
-                    </div>
-                  )}
-
-                  {activeTab === 'templates' && (
-                    <div className="bg-gray-50 p-12 rounded-[50px] space-y-8">
-                       <h3 className="text-2xl font-black uppercase tracking-tighter">Promotions</h3>
-                       <div className="grid md:grid-cols-4 gap-4">
-                          <input id="tname" placeholder="Campaign Name" />
-                          <input id="tdisc" placeholder="Discount RM" />
-                          <input id="tend" type="date" />
-                          <button onClick={() => {
-                            const n = document.getElementById('tname').value;
-                            const d = document.getElementById('tdisc').value;
-                            const e = document.getElementById('tend').value;
-                            if(!n || !d) return;
-                            setTemplates([...templates, { id: Date.now(), name: n, discount: d, end: e }]);
-                          }} className="bg-black text-white rounded-2xl font-black uppercase text-[9px] tracking-widest">Save Promo</button>
-                       </div>
-                       <div className="space-y-4">
-                         {templates.map(t => (
-                           <div key={t.id} className="bg-white p-6 rounded-3xl flex justify-between items-center shadow-sm">
-                             <div><span className="font-black uppercase">{t.name}</span> <span className="text-lg-red ml-4">-RM{t.discount}</span></div>
-                             <button onClick={() => setTemplates(templates.filter(x => x.id !== t.id))} className="text-red-400"><Icon name="x-circle" size={18}/></button>
-                           </div>
-                         ))}
-                       </div>
-                    </div>
-                  )}
-
-                  {activeTab === 'backup' && (
-                    <div className="bg-lg-pearl p-20 rounded-[60px] text-center space-y-8">
-                       <h2 className="text-3xl font-black uppercase tracking-tighter">System Backup & Recovery</h2>
-                       <p className="text-gray-400 font-medium max-w-md mx-auto">导出的 JSON 文件包含所有产品、代理及站点配置。导入旧版本备份时，系统会自动尝试转换数据结构以保持兼容。</p>
-                       <div className="flex justify-center gap-6 pt-10">
-                          <button onClick={handleBackup} className="bg-black text-white px-12 py-5 rounded-full font-black uppercase text-[10px] tracking-widest shadow-xl hover:bg-lg-red transition-all">Export JSON</button>
-                          <label className="bg-white text-lg-red border-2 border-lg-red px-12 py-5 rounded-full font-black uppercase text-[10px] tracking-widest shadow-xl cursor-pointer hover:bg-lg-red hover:text-white transition-all">
-                            Import JSON
-                            <input type="file" className="hidden" onChange={handleRestore} accept=".json" />
-                          </label>
-                       </div>
-                    </div>
-                  )}
+            /* Admin Panel */
+            <div className="pt-32 px-6 max-w-6xl mx-auto min-h-screen pb-32 space-y-12 animate-fade-up">
+               <div className="flex flex-wrap gap-4 border-b border-gray-100 pb-8 items-center">
+                 <h1 className="text-xl font-black uppercase mr-8">{t.adminTitle}</h1>
+                 {['inventory', 'settings', 'agents', 'promo', 'backup'].map(tab => (
+                   <button key={tab} onClick={() => setActiveTab(tab)} className={`px-6 py-2.5 rounded-full text-[9px] font-black uppercase tracking-widest transition-all ${activeTab === tab ? 'bg-lg-red text-white shadow-lg' : 'bg-gray-100 text-gray-400 hover:text-lg-dark'}`}>{t[tab]}</button>
+                 ))}
+                 <button onClick={() => setView('home')} className="ml-auto text-[9px] font-black uppercase text-gray-300 hover:text-lg-red">Exit</button>
                </div>
+
+               {activeTab === 'inventory' && (
+                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                   {products.map(p => (
+                     <div key={p.id} className="admin-card flex items-center gap-6 group">
+                        <img src={p.image} className="w-16 h-16 object-contain bg-gray-50 rounded-2xl" />
+                        <div className="flex-grow">
+                           <p className="font-black uppercase text-sm">{p.name}</p>
+                           <p className="text-[10px] font-bold text-gray-400">RM{p.price}</p>
+                        </div>
+                        <button onClick={() => setEditingProduct({...p})} className="p-3 bg-gray-50 rounded-full hover:bg-lg-red hover:text-white transition-all"><Icon name="edit-3" size={16}/></button>
+                     </div>
+                   ))}
+                   <button onClick={() => setEditingProduct({ id: Date.now(), category: 'New', name: 'New Product', subName: {cn:'',en:'',ms:''}, image: '', price: 99, isHot: false, features: [], painPoints: [], variants: [], plans: [] })} className="border-4 border-dashed border-gray-100 rounded-[40px] flex items-center justify-center text-gray-300 hover:text-lg-red hover:border-lg-red transition-all aspect-[3/1]"><Icon name="plus" size={32}/></button>
+                 </div>
+               )}
+
+               {activeTab === 'settings' && (
+                 <div className="bg-gray-50 p-12 rounded-[50px] grid md:grid-cols-2 gap-8">
+                   <div className="space-y-2"><label className="text-[9px] font-black uppercase text-gray-400 ml-4">Logo URL</label><input value={settings.logo} onChange={e => setSettings({...settings, logo: e.target.value})} className="w-full" /></div>
+                   <div className="space-y-2"><label className="text-[9px] font-black uppercase text-gray-400 ml-4">Master WhatsApp</label><input value={settings.contactPhone} onChange={e => setSettings({...settings, contactPhone: e.target.value})} className="w-full" /></div>
+                   <div className="space-y-2"><label className="text-[9px] font-black uppercase text-gray-400 ml-4">Hero Image</label><input value={settings.heroImage} onChange={e => setSettings({...settings, heroImage: e.target.value})} className="w-full" /></div>
+                   <div className="space-y-2"><label className="text-[9px] font-black uppercase text-gray-400 ml-4">PIN</label><input value={settings.adminPin} onChange={e => setSettings({...settings, adminPin: e.target.value})} className="w-full" /></div>
+                   {['cn','en','ms'].map(l => (
+                     <div key={l} className="space-y-2"><label className="text-[9px] font-black uppercase text-gray-400 ml-4">Hero Title ({l})</label><input value={settings.heroTitle[l]} onChange={e => setSettings({...settings, heroTitle: {...settings.heroTitle, [l]: e.target.value}})} className="w-full" /></div>
+                   ))}
+                 </div>
+               )}
+
+               {activeTab === 'agents' && (
+                 <div className="space-y-8">
+                    <div className="bg-lg-dark p-10 rounded-[45px] grid md:grid-cols-3 gap-6">
+                      <input id="an" placeholder="Name" className="bg-white/5 border-white/10 text-white" />
+                      <input id="aw" placeholder="WhatsApp (601...)" className="bg-white/5 border-white/10 text-white" />
+                      <button onClick={() => { const n=document.getElementById('an').value, w=document.getElementById('aw').value; if(n&&w) setAgents([...agents, {name:n, wa:w.replace(/\D/g,'')}]); }} className="bg-lg-red text-white font-black uppercase text-[10px] rounded-3xl">Add Agent</button>
+                    </div>
+                    {agents.map(a => (
+                      <div key={a.wa} className="admin-card flex justify-between items-center">
+                        <div><p className="font-black uppercase">{a.name}</p><p className="text-[9px] text-gray-400">WA: {a.wa}</p></div>
+                        <div className="flex gap-2">
+                           <button onClick={() => { const link = `${window.location.origin}${window.location.pathname}?wa=${a.wa}&name=${encodeURIComponent(a.name)}`; navigator.clipboard.writeText(link); alert("Link Copied!"); }} className="px-6 py-2 bg-gray-100 rounded-full text-[9px] font-black uppercase">Copy Link</button>
+                           <button onClick={() => setAgents(agents.filter(x => x.wa !== a.wa))} className="p-3 text-red-400"><Icon name="trash-2" size={16}/></button>
+                        </div>
+                      </div>
+                    ))}
+                 </div>
+               )}
+
+               {activeTab === 'promo' && (
+                 <div className="bg-gray-50 p-12 rounded-[50px] space-y-8">
+                    <h3 className="text-2xl font-black uppercase">促销策略</h3>
+                    <div className="grid md:grid-cols-4 gap-4">
+                      <input id="pn" placeholder="Campaign Name" />
+                      <select id="pt">
+                        <option value="percent">% 百分比折扣</option>
+                        <option value="fixed">RM 定价减免</option>
+                        <option value="direct">Direct 一口价</option>
+                      </select>
+                      <input id="pv" placeholder="Value (e.g. 10 or 45)" />
+                      <button onClick={() => {
+                        const n=document.getElementById('pn').value, t=document.getElementById('pt').value, v=document.getElementById('pv').value;
+                        if(n&&v) setTemplates([...templates, {id: Date.now(), name:n, type:t, value:v}]);
+                      }} className="bg-lg-red text-white rounded-2xl font-black uppercase text-[10px]">保存策略</button>
+                    </div>
+                    <div className="grid gap-4">
+                      {templates.map(tp => (
+                        <div key={tp.id} className="admin-card flex justify-between items-center">
+                          <div><p className="font-black uppercase">{tp.name}</p><p className="text-[10px] text-lg-red font-bold uppercase">{tp.type === 'percent' ? `-${tp.value}% Off` : tp.type === 'fixed' ? `-RM${tp.value} Off` : `Price: RM${tp.value}`}</p></div>
+                          <button onClick={() => setTemplates(templates.filter(x => x.id !== tp.id))} className="text-red-400"><Icon name="trash-2" size={16}/></button>
+                        </div>
+                      ))}
+                    </div>
+                 </div>
+               )}
+
+               {activeTab === 'backup' && (
+                 <div className="bg-lg-pearl p-20 rounded-[60px] text-center space-y-8">
+                    <h2 className="text-3xl font-black uppercase tracking-tighter">Backup Hub</h2>
+                    <div className="flex justify-center gap-6 pt-10">
+                       <button onClick={() => {
+                         const blob = new Blob([JSON.stringify({products, settings, agents, templates})], {type: 'application/json'});
+                         const url = URL.createObjectURL(blob);
+                         const a = document.createElement('a'); a.href = url; a.download=`lg_backup.json`; a.click();
+                       }} className="bg-black text-white px-12 py-5 rounded-full font-black uppercase text-[10px]">Export JSON</button>
+                       <label className="bg-white text-lg-red border-2 border-lg-red px-12 py-5 rounded-full font-black uppercase text-[10px] cursor-pointer">Import JSON<input type="file" className="hidden" onChange={handleRestore} accept=".json" /></label>
+                    </div>
+                 </div>
+               )}
             </div>
           )}
 
-          {/* Product Modal */}
+          {/* Master Product Editor Modal */}
           {editingProduct && (
-            <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
-              <div className="absolute inset-0 bg-lg-dark/60 backdrop-blur-md" onClick={() => setEditingProduct(null)}></div>
-              <div className="bg-white w-full max-w-2xl rounded-[50px] p-10 relative z-10 shadow-3xl max-h-[90vh] overflow-y-auto space-y-6">
-                <h3 className="text-2xl font-black uppercase tracking-tighter">Edit Product</h3>
-                <div className="grid md:grid-cols-2 gap-6">
-                   <div className="space-y-2">
-                     <label className="text-[9px] font-black uppercase text-gray-300 ml-4">Name</label>
-                     <input className="w-full" value={editingProduct.name} onChange={e => setEditingProduct({...editingProduct, name: e.target.value})} />
-                   </div>
-                   <div className="space-y-2">
-                     <label className="text-[9px] font-black uppercase text-gray-300 ml-4">Price RM</label>
-                     <input className="w-full" type="number" value={editingProduct.price} onChange={e => setEditingProduct({...editingProduct, price: e.target.value})} />
-                   </div>
-                   <div className="space-y-2 md:col-span-2">
-                     <label className="text-[9px] font-black uppercase text-gray-300 ml-4">Image URL</label>
-                     <input className="w-full" value={editingProduct.image} onChange={e => setEditingProduct({...editingProduct, image: e.target.value})} />
-                   </div>
-                   {['cn', 'en', 'ms'].map(l => (
-                     <div key={l} className="space-y-2 md:col-span-2">
-                       <label className="text-[9px] font-black uppercase text-gray-300 ml-4">Subtitle ({l.toUpperCase()})</label>
-                       <input className="w-full" value={editingProduct.subName[l] || ""} onChange={e => {
-                         const newSub = {...editingProduct.subName, [l]: e.target.value};
-                         setEditingProduct({...editingProduct, subName: newSub});
-                       }} />
-                     </div>
-                   ))}
-                </div>
-                <div className="flex gap-4 pt-6">
-                  <button onClick={() => {
-                    const updated = products.map(p => p.id === editingProduct.id ? editingProduct : p);
-                    setProducts(updated);
-                    setEditingProduct(null);
-                  }} className="flex-grow bg-lg-red text-white py-5 rounded-full font-black uppercase text-[10px] tracking-widest shadow-xl">Update Product</button>
-                  <button onClick={() => { if(confirm("Delete?")) { setProducts(products.filter(p => p.id !== editingProduct.id)); setEditingProduct(null); } }} className="px-8 bg-gray-100 text-red-500 rounded-full hover:bg-red-500 hover:text-white transition-all"><Icon name="trash-2" size={20}/></button>
-                </div>
-              </div>
+            <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 overflow-hidden">
+               <div className="absolute inset-0 bg-lg-dark/60 backdrop-blur-md" onClick={() => setEditingProduct(null)}></div>
+               <div className="bg-white w-full max-w-5xl rounded-[50px] p-10 relative z-10 shadow-3xl max-h-[90vh] overflow-y-auto space-y-8">
+                 <div className="flex justify-between items-center border-b pb-6">
+                    <h3 className="text-3xl font-black uppercase tracking-tighter">编辑产品数据</h3>
+                    <div className="flex gap-4">
+                      <div className="relative">
+                         <input id="aiurl" placeholder="Paste LG URL to AI Extract" className="w-80 pr-24 bg-gray-50 border-gray-200" />
+                         <button onClick={() => handleAiExtract(document.getElementById('aiurl').value)} className="absolute right-2 top-2 bottom-2 px-4 bg-lg-red text-white text-[9px] font-black uppercase rounded-xl flex items-center gap-2">
+                           {isAiLoading ? <Icon name="loader" size={12} className="animate-spin" /> : <Icon name="sparkles" size={12}/>} AI Go
+                         </button>
+                      </div>
+                      <button onClick={() => setEditingProduct(null)} className="p-2 hover:text-lg-red transition-colors"><Icon name="x" size={24}/></button>
+                    </div>
+                 </div>
+
+                 <div className="grid md:grid-cols-12 gap-10">
+                    <div className="md:col-span-4 space-y-6">
+                       <div className="space-y-2"><label className="text-[9px] font-black uppercase text-gray-300 ml-4">Basic Info</label>
+                          <input className="w-full" placeholder="Name" value={editingProduct.name} onChange={e=>setEditingProduct({...editingProduct, name: e.target.value})} />
+                          <input className="w-full mt-2" placeholder="Main Image URL" value={editingProduct.image} onChange={e=>setEditingProduct({...editingProduct, image: e.target.value})} />
+                          <input className="w-full mt-2" placeholder="Category" value={editingProduct.category} onChange={e=>setEditingProduct({...editingProduct, category: e.target.value})} />
+                          <input className="w-full mt-2" placeholder="Display Price RM" type="number" value={editingProduct.price} onChange={e=>setEditingProduct({...editingProduct, price: e.target.value})} />
+                       </div>
+                       <div className="bg-gray-50 p-6 rounded-[30px] space-y-4">
+                          <label className="text-[9px] font-black uppercase text-gray-400">Subtitle (Multilingual)</label>
+                          {['cn','en','ms'].map(l => (
+                             <input key={l} className="w-full" placeholder={`Sub (${l})`} value={editingProduct.subName[l]} onChange={e=>setEditingProduct({...editingProduct, subName: {...editingProduct.subName, [l]: e.target.value}})} />
+                          ))}
+                       </div>
+                    </div>
+
+                    <div className="md:col-span-8 space-y-8">
+                       <div className="grid md:grid-cols-2 gap-8">
+                          {/* Features & Pain Points */}
+                          <div className="space-y-4">
+                             <div className="flex justify-between items-center"><label className="text-[10px] font-black uppercase tracking-widest text-lg-red">卖点 Features</label><button onClick={()=>setEditingProduct({...editingProduct, features: [...editingProduct.features, {cn:'',en:'',ms:''}]})} className="text-lg-red"><Icon name="plus-circle" size={18}/></button></div>
+                             {editingProduct.features.map((f, i) => (
+                                <div key={i} className="flex gap-2 bg-gray-50 p-3 rounded-2xl">
+                                   <input className="w-full p-2 text-xs" placeholder="CN" value={f.cn} onChange={e=>{const nf=[...editingProduct.features]; nf[i].cn=e.target.value; setEditingProduct({...editingProduct, features:nf})}} />
+                                   <button onClick={()=>{const nf=editingProduct.features.filter((_,idx)=>idx!==i); setEditingProduct({...editingProduct, features:nf})}} className="text-gray-300"><Icon name="trash-2" size={14}/></button>
+                                </div>
+                             ))}
+                          </div>
+                          <div className="space-y-4">
+                             <div className="flex justify-between items-center"><label className="text-[10px] font-black uppercase tracking-widest text-gray-400">痛点 Pain Points</label><button onClick={()=>setEditingProduct({...editingProduct, painPoints: [...editingProduct.painPoints, {cn:'',en:'',ms:''}]})} className="text-gray-400"><Icon name="plus-circle" size={18}/></button></div>
+                             {editingProduct.painPoints.map((p, i) => (
+                                <div key={i} className="flex gap-2 bg-gray-50 p-3 rounded-2xl">
+                                   <input className="w-full p-2 text-xs" placeholder="CN" value={p.cn} onChange={e=>{const np=[...editingProduct.painPoints]; np[i].cn=e.target.value; setEditingProduct({...editingProduct, painPoints:np})}} />
+                                   <button onClick={()=>{const np=editingProduct.painPoints.filter((_,idx)=>idx!==i); setEditingProduct({...editingProduct, painPoints:np})}} className="text-gray-300"><Icon name="trash-2" size={14}/></button>
+                                </div>
+                             ))}
+                          </div>
+                       </div>
+
+                       {/* Colors / Variants */}
+                       <div className="space-y-4">
+                          <div className="flex justify-between items-center"><label className="text-[10px] font-black uppercase tracking-widest">颜色/多图 Variants</label><button onClick={()=>setEditingProduct({...editingProduct, variants: [...editingProduct.variants, {name:'', colorCode:'#eee', image:''}]})} className="text-black"><Icon name="plus-circle" size={18}/></button></div>
+                          <div className="grid md:grid-cols-2 gap-4">
+                             {editingProduct.variants.map((v, i) => (
+                                <div key={i} className="bg-gray-50 p-4 rounded-3xl flex items-center gap-4">
+                                   <div className="w-12 h-12 rounded-full border border-white flex-shrink-0" style={{background: v.colorCode}}></div>
+                                   <div className="flex-grow space-y-1">
+                                      <input className="w-full p-2 text-xs" placeholder="Name" value={v.name} onChange={e=>{const nv=[...editingProduct.variants]; nv[i].name=e.target.value; setEditingProduct({...editingProduct, variants:nv})}} />
+                                      <input className="w-full p-2 text-xs" placeholder="Img URL" value={v.image} onChange={e=>{const nv=[...editingProduct.variants]; nv[i].image=e.target.value; setEditingProduct({...editingProduct, variants:nv})}} />
+                                   </div>
+                                   <button onClick={()=>{const nv=editingProduct.variants.filter((_,idx)=>idx!==i); setEditingProduct({...editingProduct, variants:nv})}} className="text-red-400"><Icon name="trash-2" size={14}/></button>
+                                </div>
+                             ))}
+                          </div>
+                       </div>
+
+                       {/* Pricing Plans */}
+                       <div className="space-y-4">
+                          <div className="flex justify-between items-center"><label className="text-[10px] font-black uppercase tracking-widest">配套价钱 Plans</label><button onClick={()=>setEditingProduct({...editingProduct, plans: [...editingProduct.plans, {term:7, type:'Self Service', price:99}]})} className="text-black"><Icon name="plus-circle" size={18}/></button></div>
+                          <div className="grid md:grid-cols-3 gap-4">
+                             {editingProduct.plans.map((pl, i) => (
+                                <div key={i} className="bg-lg-dark text-white p-4 rounded-3xl space-y-2">
+                                   <div className="flex justify-between"><span className="text-[9px] font-black uppercase opacity-40">Plan #{i+1}</span><button onClick={()=>{const npl=editingProduct.plans.filter((_,idx)=>idx!==i); setEditingProduct({...editingProduct, plans:npl})}}><Icon name="x-circle" size={14}/></button></div>
+                                   <input className="w-full bg-white/10 border-none text-white placeholder:text-white/20 p-2 text-xs" placeholder="Term (Y/Outright)" value={pl.term} onChange={e=>{const npl=[...editingProduct.plans]; npl[i].term=e.target.value; setEditingProduct({...editingProduct, plans:npl})}} />
+                                   <input className="w-full bg-white/10 border-none text-white placeholder:text-white/20 p-2 text-xs" placeholder="Type" value={pl.type} onChange={e=>{const npl=[...editingProduct.plans]; npl[i].type=e.target.value; setEditingProduct({...editingProduct, plans:npl})}} />
+                                   <input className="w-full bg-white/10 border-none text-white placeholder:text-white/20 p-2 text-xs" placeholder="Price RM" type="number" value={pl.price} onChange={e=>{const npl=[...editingProduct.plans]; npl[i].price=e.target.value; setEditingProduct({...editingProduct, plans:npl})}} />
+                                </div>
+                             ))}
+                          </div>
+                       </div>
+                    </div>
+                 </div>
+
+                 <div className="flex gap-4 pt-10 border-t border-gray-50">
+                    <button onClick={() => {
+                       const updated = products.map(p => p.id === editingProduct.id ? editingProduct : p);
+                       if (!products.some(p => p.id === editingProduct.id)) updated.push(editingProduct);
+                       setProducts(updated);
+                       setEditingProduct(null);
+                    }} className="flex-grow bg-lg-red text-white py-6 rounded-full font-black uppercase text-xs tracking-widest shadow-xl">保存并更新库存</button>
+                    <button onClick={()=>{ if(confirm("Delete product?")) {setProducts(products.filter(p=>p.id!==editingProduct.id)); setEditingProduct(null);}}} className="px-10 bg-gray-100 text-red-500 rounded-full hover:bg-red-500 hover:text-white transition-all"><Icon name="trash-2" size={24}/></button>
+                 </div>
+               </div>
             </div>
           )}
         </div>
