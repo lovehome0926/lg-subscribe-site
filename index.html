@@ -3,34 +3,28 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>LG Subscribe Malaysia | Premium Digital Showroom</title>
+  <title>LG Subscribe Malaysia | Premium Digital Hub</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;900&display=swap" rel="stylesheet">
   <script>
     tailwind.config = {
       theme: {
         extend: {
           colors: { 
             'lg-red': '#e60044', 
-            'lg-dark': '#05090f', 
-            'lg-pearl': '#f8f9fa',
-            'lg-brand-bg': '#f6f3ef'
+            'lg-dark': '#05090f',
+            'lg-pearl': '#f8f9fa'
           },
           fontFamily: { sans: ['Outfit', 'sans-serif'] },
           animation: {
-            'scroll': 'scroll 40s linear infinite',
             'fade-up': 'fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards'
           },
           keyframes: {
-            scroll: {
-              '0%': { transform: 'translateX(0)' },
-              '100%': { transform: 'translateX(-50%)' },
-            },
             fadeUp: {
-              'from': { opacity: '0', transform: 'translateY(20px)' },
-              'to': { opacity: '1', transform: 'translateY(0)' }
+              '0%': { opacity: '0', transform: 'translateY(20px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' }
             }
           }
         }
@@ -44,13 +38,11 @@
     @layer base { 
       body { @apply bg-white text-lg-dark font-sans antialiased m-0 p-0 overflow-x-hidden; } 
     }
-    .premium-blur { @apply backdrop-blur-2xl bg-white/80 border border-white/20; }
+    .premium-blur { @apply backdrop-blur-2xl bg-white/80 border-b border-gray-100; }
     .shadow-premium { box-shadow: 0 40px 100px rgba(0,0,0,0.08); }
     input, select, textarea { @apply bg-white border border-gray-100 rounded-2xl p-4 outline-none focus:border-lg-red transition-all font-medium text-sm shadow-sm; }
-    .no-scrollbar::-webkit-scrollbar { display: none; }
-    .admin-card { @apply bg-white p-6 rounded-[35px] border border-gray-100 shadow-sm hover:shadow-md transition-all; }
-    .lg-benefit-img { @apply rounded-[40px] shadow-2xl transition-transform duration-700 hover:scale-[1.02] object-cover w-full h-full; }
     .hero-gradient { background: radial-gradient(circle at 50% 50%, rgba(230,0,68,0.05) 0%, transparent 70%); }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
   </style>
   <script type="importmap">
 {
