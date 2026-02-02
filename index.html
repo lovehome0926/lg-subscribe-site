@@ -4,17 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>LG Subscribe Malaysia | Digital Hub Pro</title>
-  
-  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/lucide@latest"></script>
-  
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-  
   <script>
     tailwind.config = {
       theme: {
@@ -28,44 +21,43 @@
           fontFamily: { sans: ['Outfit', 'sans-serif'] },
           animation: {
             'scroll': 'scroll 40s linear infinite',
+            'fade-up': 'fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards'
           },
           keyframes: {
             scroll: {
               '0%': { transform: 'translateX(0)' },
               '100%': { transform: 'translateX(-50%)' },
+            },
+            fadeUp: {
+              'from': { opacity: '0', transform: 'translateY(20px)' },
+              'to': { opacity: '1', transform: 'translateY(0)' }
             }
           }
         }
       }
     }
   </script>
-
   <style type="text/tailwindcss">
     @tailwind base;
     @tailwind components;
     @tailwind utilities;
     @layer base { body { @apply bg-white text-lg-dark font-sans antialiased m-0 p-0 overflow-x-hidden; } }
     .premium-blur { @apply backdrop-blur-2xl bg-white/80 border border-white/20; }
-    .shadow-premium { box-shadow: 0 30px 60px rgba(0,0,0,0.06); }
-    @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-    .animate-fade-up { animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    .shadow-premium { box-shadow: 0 40px 100px rgba(0,0,0,0.08); }
     input, select, textarea { @apply bg-white border border-gray-100 rounded-2xl p-4 outline-none focus:border-lg-red transition-all font-medium text-sm; }
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .admin-card { @apply bg-white p-6 rounded-[35px] border border-gray-100 shadow-sm hover:shadow-md transition-all; }
-    .file-upload-btn { @apply flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-xl text-[10px] font-black uppercase transition-all cursor-pointer; }
     .lg-benefit-img { @apply rounded-[40px] shadow-2xl transition-transform duration-700 hover:scale-[1.02] object-cover w-full h-full; }
-    .marquee-container { @apply flex whitespace-nowrap overflow-hidden py-10; }
-    .marquee-content { @apply flex animate-scroll min-w-max; }
-    .marquee-img { @apply h-[250px] md:h-[400px] object-contain px-2; }
   </style>
-<script type="importmap">
+  <script type="importmap">
 {
   "imports": {
-    "react": "https://esm.sh/react@^18.2.0",
-    "react-dom": "https://esm.sh/react-dom@^18.2.0",
-    "@google/genai": "https://esm.sh/@google/genai@^1.39.0",
-    "lucide-react": "https://esm.sh/lucide-react@^0.563.0",
-    "react/": "https://esm.sh/react@^19.2.4/",
+    "react": "https://esm.sh/react@18.2.0",
+    "react/": "https://esm.sh/react@18.2.0/",
+    "react-dom": "https://esm.sh/react-dom@18.2.0",
+    "react-dom/": "https://esm.sh/react-dom@18.2.0/",
+    "lucide-react": "https://esm.sh/lucide-react@0.460.0?external=react",
+    "@google/genai": "https://esm.sh/@google/genai@1.39.0",
     "vite": "https://esm.sh/vite@^7.3.1",
     "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.2"
   }
@@ -74,60 +66,6 @@
 </head>
 <body>
   <div id="root"></div>
-
-  <script type="module">
-    import { GoogleGenAI } from "@google/genai";
-    window.GoogleGenAI = GoogleGenAI;
-  </script>
-
-  <script type="text/babel">
-    const { useState, useEffect, useMemo, useRef } = React;
-
-    const Icon = ({ name, size = 20, className = "" }) => {
-      useEffect(() => { if (window.lucide) window.lucide.createIcons(); }, [name, size, className]);
-      return <i data-lucide={name} className={className} style={{ width: size, height: size }}></i>;
-    };
-
-    const DICT = {
-      cn: { 
-        heroSub: "LG Subscribe 认证合作伙伴。以极简方案解锁顶尖家电。", 
-        explore: "浏览展厅", contactNow: "立即咨询", monthly: "月供低至", 
-        adminTitle: "管理终端", inventory: "库存管理", siteConfig: "全局配置", 
-        affiliates: "代理授权", promo: "促销策略", backup: "数据备份", 
-        categories: "分类管理", whatIsTitle: "什么是 LG Subscribe？",
-        whatIsDesc: "LG Subscribe 是一项全方位家电订阅服务，旨在通过高性价比的方式助您完善家居配置。从冰箱到电视，丰富的家电选择让您的家焕发温馨活力。",
-        benefitsTitle: "LG Subscribe 的三大核心优势",
-        benefit1Title: "市场首创", benefit1Desc: "在马来西亚首家提供多达 10 条产品线的全面订阅方案。",
-        benefit2Title: "灵活免忧维护", benefit2Desc: "提供从自助服务、定期上门维护到综合保养的多种灵活选择，确保使用无忧。",
-        benefit3Title: "LG ThinQ 智能生活", benefit3Desc: "通过智能互联产品，全方位提升您的生活品质与居住体验。",
-        firstMonths: "首 {n} 个月折扣"
-      },
-      en: { 
-        heroSub: "Certified LG Partner. Unlock premium living with flexible plans.", 
-        explore: "Explore Hub", contactNow: "Contact Now", monthly: "From RM", 
-        adminTitle: "Admin Panel", inventory: "Inventory", siteConfig: "Settings", 
-        affiliates: "Affiliates", promo: "Promotions", backup: "Backup", 
-        categories: "Categories", whatIsTitle: "What is LG Subscribe?",
-        whatIsDesc: "LG Subscribe is a household appliance subscription service that allows you to complete your home in a cost-effective way.",
-        benefitsTitle: "3 Benefits of LG Subscribe",
-        benefit1Title: "First in the market", benefit1Desc: "Offering 10 product lines in Malaysia, providing comprehensive home solutions.",
-        benefit2Title: "Hassle Free Maintenance", benefit2Desc: "From Self-Service, Regular Visit or Combine Maintenance, choose what fits your lifestyle.",
-        benefit3Title: "LG ThinQ Smart Connection", benefit3Desc: "Accessible products designed to upgrade your lifestyle and smart home ecosystem.",
-        firstMonths: "First {n} Months Offer"
-      },
-      ms: { 
-        heroSub: "Rakan Kongsi Sah LG. Alami kehidupan premium dengan pelan fleksibel.", 
-        explore: "Teroka", contactNow: "Hubungi", monthly: "Dari RM", 
-        adminTitle: "Panel Admin", inventory: "Inventori", siteConfig: "Tetapan", 
-        affiliates: "Ejen", promo: "Promosi", backup: "Sandaran", 
-        categories: "Kategori", whatIsTitle: "Apakah LG Subscribe?",
-        whatIsDesc: "LG Subscribe adalah perkhidmatan langganan perkakas rumah yang membolehkan anda melengkapkan kediaman dengan cara kos efektif.",
-        benefitsTitle: "3 Kelebihan LG Subscribe",
-        benefit1Title: "Pertama di Pasaran", benefit1Desc: "Menawarkan 10 barisan produk di Malaysia untuk penyelesaian rumah yang lengkap.",
-        benefit2Title: "Penyelenggaraan Bebas Kerisauan", benefit2Desc: "Dari Servis Sendiri, Lawatan Tetap atau Penyelenggaraan Gabungan.",
-        benefit3Title: "Sambungan Pintar LG ThinQ", benefit3Desc: "Produk yang mudah diakses direka untuk menaik taraf gaya hidup anda.",
-        firstMonths: "Diskaun {n} Bulan Pertama"
-      }
-    };
-
-    const DEFAULT_CATEGORIES = ['Water Purifier', '
+  <script type="module" src="index.tsx"></script>
+</body>
+</html>
