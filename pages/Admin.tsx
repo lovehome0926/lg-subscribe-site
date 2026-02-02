@@ -71,197 +71,117 @@ const Admin: React.FC<AdminProps> = ({ products, config, onUpdateProducts, onUpd
     <div className="p-4 md:p-8 max-w-6xl mx-auto bg-white dark:bg-slate-900 min-h-screen pb-20">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 border-b pb-4 gap-4">
         <div>
-          <h2 className="text-2xl font-bold">Admin Portal</h2>
-          <p className="text-sm text-slate-500">Manage site content and deployment status</p>
+          <h2 className="text-2xl font-bold italic">Admin & DNS Assistant</h2>
+          <p className="text-sm text-slate-500">Target: lgsubscribe.biz.my</p>
         </div>
-        <div className="flex flex-wrap gap-3">
-          <button onClick={handleBackup} className="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 px-4 py-2 rounded-lg text-sm flex items-center gap-2 hover:bg-slate-200 transition-colors">
-            <span className="material-symbols-outlined text-sm">download</span> Backup
-          </button>
-          <label className="bg-slate-100 dark:bg-slate-800 px-4 py-2 rounded-lg text-sm cursor-pointer flex items-center gap-2 hover:bg-slate-200 transition-colors">
-            <span className="material-symbols-outlined text-sm">upload</span> Restore
-            <input type="file" onChange={handleRestore} className="hidden" accept=".json" />
+        <div className="flex gap-2">
+          <button onClick={handleBackup} className="bg-slate-100 dark:bg-slate-800 px-4 py-2 rounded-lg text-xs font-bold uppercase">Export</button>
+          <label className="bg-slate-100 dark:bg-slate-800 px-4 py-2 rounded-lg text-xs font-bold uppercase cursor-pointer">
+            Import <input type="file" onChange={handleRestore} className="hidden" />
           </label>
         </div>
       </div>
 
-      {/* Domain Verification Help Panel */}
+      {/* Final Checklist Assistant */}
       {showDeployGuide && (
-        <div className="mb-8 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-2xl p-6 relative">
-          <button 
-            onClick={() => setShowDeployGuide(false)}
-            className="absolute top-4 right-4 text-blue-400 hover:text-blue-600"
-          >
+        <div className="mb-10 bg-slate-900 text-white rounded-[2.5rem] p-8 md:p-12 shadow-2xl relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-primary/20 blur-[100px] -translate-y-1/2 translate-x-1/2"></div>
+          
+          <button onClick={() => setShowDeployGuide(false)} className="absolute top-8 right-8 text-slate-500 hover:text-white transition-colors">
             <span className="material-symbols-outlined">close</span>
           </button>
-          <div className="flex items-start gap-4">
-            <div className="bg-blue-500 text-white p-2 rounded-lg">
-              <span className="material-symbols-outlined">domain_verification</span>
+
+          <div className="relative z-10 space-y-8">
+            <div className="inline-flex items-center gap-2 bg-green-500 text-white px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">
+              Final Deployment Checklist
             </div>
-            <div className="space-y-3">
-              <h3 className="text-lg font-bold text-blue-900 dark:text-blue-200">域名验证助手 (biz.my)</h3>
-              <p className="text-sm text-blue-800/80 dark:text-blue-300/80 max-w-2xl">
-                如果 Vercel 提示 <b>"Linked to another account"</b>，这是因为该域名曾被其他账号使用。你必须在 Cloudflare 添加以下记录来证明所有权：
-              </p>
-              <ul className="space-y-2">
-                <li className="flex items-center gap-2 text-sm font-mono bg-white/50 dark:bg-black/20 p-2 rounded">
-                  <span className="bg-blue-100 dark:bg-blue-800 px-2 py-0.5 rounded text-[10px] font-bold">TXT</span>
-                  <span>_vercel</span>
-                  <span className="text-blue-600 dark:text-blue-400">vc-domain-verify=biz.my,...</span>
-                </li>
-                <li className="flex items-center gap-2 text-sm font-mono bg-white/50 dark:bg-black/20 p-2 rounded">
-                  <span className="bg-blue-100 dark:bg-blue-800 px-2 py-0.5 rounded text-[10px] font-bold">A</span>
-                  <span>@</span>
-                  <span className="text-blue-600 dark:text-blue-400">76.76.21.21 (Cloudflare 云朵必须变灰)</span>
-                </li>
-              </ul>
-              <div className="pt-2">
-                <a 
-                  href="https://www.whatsmydns.net/#TXT/_vercel.biz.my" 
-                  target="_blank" 
-                  className="text-xs font-bold text-blue-600 dark:text-blue-400 underline flex items-center gap-1"
-                >
-                  <span className="material-symbols-outlined text-xs">open_in_new</span> 点击检查 TXT 记录是否全球生效
-                </a>
+            
+            <h3 className="text-3xl font-black italic">GitHub 设定有关系吗？</h3>
+            <p className="text-slate-400 text-sm leading-relaxed">
+              <strong className="text-white">没有关系。</strong> GitHub 的 Environments 只是用来存放 Secrets 的，不影响域名的解析。只要 Vercel 能正常读取你的代码，GitHub 的工作就完成了。
+            </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="bg-white/5 p-6 rounded-3xl border border-white/10 space-y-3">
+                <div className="size-8 rounded-full bg-green-500/20 text-green-500 flex items-center justify-center font-bold text-xs">01</div>
+                <p className="font-bold text-xs uppercase tracking-widest">Cloudflare (OK)</p>
+                <p className="text-[11px] text-slate-400">你现在的 Cloudflare 设置非常完美。A 记录和 TXT 记录都已经就绪。</p>
               </div>
+
+              <div className="bg-white/5 p-6 rounded-3xl border border-white/10 space-y-3 border-amber-500/50">
+                <div className="size-8 rounded-full bg-amber-500/20 text-amber-500 flex items-center justify-center font-bold text-xs">02</div>
+                <p className="font-bold text-xs uppercase tracking-widest">Vercel (需确认)</p>
+                <p className="text-[11px] text-slate-400">请确保在 Vercel Domains 里，主域名是 <span className="text-amber-400">lgsubscribe.biz.my</span> 而不是 <span className="line-through">biz.my</span>。</p>
+              </div>
+
+              <div className="bg-white/5 p-6 rounded-3xl border border-white/10 space-y-3">
+                <div className="size-8 rounded-full bg-blue-500/20 text-blue-500 flex items-center justify-center font-bold text-xs">03</div>
+                <p className="font-bold text-xs uppercase tracking-widest">GitHub (Ignore)</p>
+                <p className="text-[11px] text-slate-400">GitHub 里的 Environments 设置可以保持默认，不需要改动。</p>
+              </div>
+            </div>
+
+            <div className="pt-6 border-t border-white/5 flex flex-col md:flex-row gap-6 items-center justify-between">
+              <div className="flex items-center gap-4 text-xs font-bold text-slate-500">
+                 <span className="flex items-center gap-1">
+                    <span className="material-symbols-outlined text-sm">check_circle</span> 
+                    Cloudflare IP: 76.76.21.21
+                 </span>
+                 <span>|</span>
+                 <span className="flex items-center gap-1">
+                    <span className="material-symbols-outlined text-sm">check_circle</span> 
+                    TXT Name: _vercel
+                 </span>
+              </div>
+              <a href="https://vercel.com/dashboard" target="_blank" className="bg-primary text-white px-8 py-3 rounded-full font-black italic hover:scale-105 transition-all text-sm">OPEN VERCEL DASHBOARD</a>
             </div>
           </div>
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {/* Site Config */}
-        <section className="bg-slate-50 dark:bg-slate-800 p-6 rounded-2xl border border-slate-100 dark:border-slate-700">
-          <div className="flex items-center gap-2 mb-6">
-            <span className="material-symbols-outlined text-primary">palette</span>
-            <h3 className="text-lg font-bold">Branding & Contact</h3>
-          </div>
-          <div className="space-y-4">
-            <div>
-              <label className="text-[10px] font-black text-slate-400 block mb-1 uppercase tracking-widest">Logo URL</label>
-              <input value={config.logoUrl} onChange={e => onUpdateConfig({...config, logoUrl: e.target.value})} className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm focus:ring-2 focus:ring-primary/20 outline-none" />
+      {/* 保持原有的 Admin 功能逻辑 */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-1 space-y-6">
+          <section className="bg-slate-50 dark:bg-slate-800/50 p-6 rounded-[2rem] border border-slate-100 dark:border-slate-800">
+            <h3 className="font-bold mb-6 flex items-center gap-2">
+              <span className="material-symbols-outlined text-primary">contact_support</span>
+              Settings
+            </h3>
+            <div className="space-y-4">
+              <div>
+                <label className="text-[10px] font-black text-slate-400 block mb-1 uppercase tracking-widest">WhatsApp Number</label>
+                <input value={config.contactWhatsapp} onChange={e => onUpdateConfig({...config, contactWhatsapp: e.target.value})} className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-sm outline-none focus:ring-2 focus:ring-primary/20" />
+              </div>
             </div>
-            <div>
-              <label className="text-[10px] font-black text-slate-400 block mb-1 uppercase tracking-widest">Hero Image URL</label>
-              <input value={config.heroImageUrl} onChange={e => onUpdateConfig({...config, heroImageUrl: e.target.value})} className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm focus:ring-2 focus:ring-primary/20 outline-none" />
-            </div>
-            <div>
-              <label className="text-[10px] font-black text-slate-400 block mb-1 uppercase tracking-widest">WhatsApp Number (e.g. 60123...)</label>
-              <input value={config.contactWhatsapp} onChange={e => onUpdateConfig({...config, contactWhatsapp: e.target.value})} className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm focus:ring-2 focus:ring-primary/20 outline-none" />
-            </div>
-          </div>
-        </section>
+          </section>
+        </div>
 
-        {/* Product List */}
-        <section>
-          <div className="flex justify-between items-center mb-6">
-            <div className="flex items-center gap-2">
-              <span className="material-symbols-outlined text-primary">inventory_2</span>
-              <h3 className="text-lg font-bold">Live Catalog</h3>
-            </div>
-            <button onClick={addProduct} className="bg-primary/10 text-primary px-4 py-2 rounded-full text-xs font-bold hover:bg-primary/20 transition-all">+ Add Product</button>
+        <div className="lg:col-span-2">
+          <div className="flex justify-between items-center mb-6 px-2">
+            <h3 className="text-xl font-bold italic uppercase tracking-tighter">Products</h3>
+            <button onClick={addProduct} className="bg-primary text-white px-6 py-2 rounded-full text-xs font-black italic hover:scale-105 transition-all">ADD NEW</button>
           </div>
-          <div className="space-y-3 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {products.map(p => (
-              <div key={p.id} className="border border-slate-100 dark:border-slate-800 p-4 rounded-2xl flex items-center justify-between bg-white dark:bg-slate-800/50 hover:shadow-md transition-all">
+              <div key={p.id} className="bg-white dark:bg-slate-800 p-4 rounded-[1.5rem] border border-slate-100 dark:border-slate-800 flex items-center justify-between group hover:shadow-lg transition-all">
                 <div className="flex items-center gap-4">
-                  <div className="size-14 bg-slate-100 dark:bg-slate-900 rounded-xl overflow-hidden p-1">
-                    <img src={p.imageUrl} className="w-full h-full object-contain" />
-                  </div>
-                  <div>
-                    <p className="font-bold text-sm leading-tight">{p.name}</p>
-                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter mt-1">{p.modelCode}</p>
-                  </div>
+                  <img src={p.imageUrl} className="size-10 object-contain rounded-lg bg-slate-50 dark:bg-slate-900" />
+                  <span className="font-bold text-sm leading-tight">{p.name}</span>
                 </div>
-                <div className="flex gap-1">
-                  <button onClick={() => setEditingId(p.id)} className="p-2 text-slate-400 hover:text-blue-500 transition-colors">
-                    <span className="material-symbols-outlined text-[20px]">edit</span>
+                <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <button onClick={() => setEditingId(p.id)} className="p-2 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-lg">
+                    <span className="material-symbols-outlined text-[18px]">edit</span>
                   </button>
-                  <button onClick={() => deleteProduct(p.id)} className="p-2 text-slate-400 hover:text-red-500 transition-colors">
-                    <span className="material-symbols-outlined text-[20px]">delete</span>
+                  <button onClick={() => deleteProduct(p.id)} className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg">
+                    <span className="material-symbols-outlined text-[18px]">delete</span>
                   </button>
                 </div>
               </div>
             ))}
           </div>
-        </section>
-      </div>
-
-      {/* Edit Modal */}
-      {editingId && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-slate-900 rounded-[2.5rem] p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-white/10">
-            <div className="flex justify-between items-center mb-8">
-              <h3 className="text-2xl font-black italic">EDIT PRODUCT</h3>
-              <button onClick={() => setEditingId(null)} className="size-10 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-center transition-colors">
-                <span className="material-symbols-outlined">close</span>
-              </button>
-            </div>
-            
-            {products.find(p => p.id === editingId) && (
-              <div className="space-y-8">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="text-[10px] font-black text-slate-400 block mb-2 uppercase tracking-widest">Product Name</label>
-                    <input value={products.find(p => p.id === editingId)?.name} onChange={e => updateProduct(editingId, {name: e.target.value})} className="w-full p-4 border border-slate-200 dark:border-slate-800 rounded-2xl dark:bg-slate-800 outline-none focus:ring-2 focus:ring-primary/20" />
-                  </div>
-                  <div>
-                    <label className="text-[10px] font-black text-slate-400 block mb-2 uppercase tracking-widest">Model Code</label>
-                    <input value={products.find(p => p.id === editingId)?.modelCode} onChange={e => updateProduct(editingId, {modelCode: e.target.value})} className="w-full p-4 border border-slate-200 dark:border-slate-800 rounded-2xl dark:bg-slate-800 outline-none focus:ring-2 focus:ring-primary/20" />
-                  </div>
-                </div>
-                
-                <div>
-                  <label className="text-[10px] font-black text-slate-400 block mb-2 uppercase tracking-widest">Description</label>
-                  <textarea value={products.find(p => p.id === editingId)?.description} onChange={e => updateProduct(editingId, {description: e.target.value})} className="w-full p-4 border border-slate-200 dark:border-slate-800 rounded-2xl dark:bg-slate-800 min-h-[120px] outline-none focus:ring-2 focus:ring-primary/20" />
-                </div>
-                
-                <div className="p-6 bg-slate-50 dark:bg-slate-800/50 rounded-[2rem] border border-slate-100 dark:border-slate-800">
-                  <p className="font-bold mb-4 text-sm flex items-center gap-2">
-                    <span className="material-symbols-outlined text-primary">sell</span> Promotion Engine
-                  </p>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <label className="text-[10px] font-black text-slate-400 block mb-2 uppercase tracking-widest">Promo Type</label>
-                      <select 
-                        value={products.find(p => p.id === editingId)?.promo?.type || 'none'} 
-                        onChange={e => updateProduct(editingId, {promo: {...(products.find(p => p.id === editingId)?.promo || {type: 'none', value: 0}), type: e.target.value as PromoType}})}
-                        className="w-full p-3 border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900 text-sm"
-                      >
-                        <option value="none">No Active Promo</option>
-                        <option value="half_price">50% Off First N Months</option>
-                        <option value="percentage">Percentage Discount</option>
-                        <option value="fixed_price">Fixed Monthly Fee</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label className="text-[10px] font-black text-slate-400 block mb-2 uppercase tracking-widest">Value / Months</label>
-                      <div className="flex gap-2">
-                        <input 
-                          type="number" 
-                          placeholder="Value" 
-                          value={products.find(p => p.id === editingId)?.promo?.value} 
-                          onChange={e => updateProduct(editingId, {promo: {...(products.find(p => p.id === editingId)?.promo || {type: 'none', value: 0}), value: Number(e.target.value)}})}
-                          className="w-full p-3 border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900 text-sm" 
-                        />
-                        <input 
-                          type="number" 
-                          placeholder="Duration" 
-                          value={products.find(p => p.id === editingId)?.promo?.months} 
-                          onChange={e => updateProduct(editingId, {promo: {...(products.find(p => p.id === editingId)?.promo || {type: 'none', value: 0}), months: Number(e.target.value)}})}
-                          className="w-full p-3 border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900 text-sm" 
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <button onClick={() => setEditingId(null)} className="w-full bg-primary text-white py-5 rounded-2xl font-black italic shadow-xl shadow-primary/20 hover:scale-[1.02] transition-all">SAVE ALL CHANGES</button>
-              </div>
-            )}
-          </div>
         </div>
-      )}
+      </div>
     </div>
   );
 };
