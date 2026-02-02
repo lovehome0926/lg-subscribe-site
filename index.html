@@ -3,15 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>LG Subscribe Malaysia | Digital Partner Hub</title>
+  <title>LG Subscribe Malaysia | 数字化合作伙伴中心</title>
   
+  <!-- 基础库加载 (UMD模式，最稳定) -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   
-
-
   <script>
     tailwind.config = {
       theme: {
@@ -789,9 +793,6 @@ video {
     .mb-20 {
   margin-bottom: 5rem;
 }
-    .mb-24 {
-  margin-bottom: 6rem;
-}
     .mb-4 {
   margin-bottom: 1rem;
 }
@@ -816,6 +817,9 @@ video {
     .mt-1 {
   margin-top: 0.25rem;
 }
+    .mt-10 {
+  margin-top: 2.5rem;
+}
     .mt-2 {
   margin-top: 0.5rem;
 }
@@ -824,9 +828,6 @@ video {
 }
     .mt-3 {
   margin-top: 0.75rem;
-}
-    .mt-6 {
-  margin-top: 1.5rem;
 }
     .mt-auto {
   margin-top: auto;
@@ -924,9 +925,6 @@ video {
     .h-12 {
   height: 3rem;
 }
-    .h-14 {
-  height: 3.5rem;
-}
     .h-16 {
   height: 4rem;
 }
@@ -982,8 +980,8 @@ video {
     .max-h-\[40vh\] {
   max-height: 40vh;
 }
-    .max-h-\[85\%\] {
-  max-height: 85%;
+    .max-h-\[80\%\] {
+  max-height: 80%;
 }
     .max-h-full {
   max-height: 100%;
@@ -1005,9 +1003,6 @@ video {
 }
     .w-12 {
   width: 3rem;
-}
-    .w-14 {
-  width: 3.5rem;
 }
     .w-16 {
   width: 4rem;
@@ -1060,9 +1055,6 @@ video {
     .max-w-2xl {
   max-width: 42rem;
 }
-    .max-w-3xl {
-  max-width: 48rem;
-}
     .max-w-4xl {
   max-width: 56rem;
 }
@@ -1074,9 +1066,6 @@ video {
 }
     .max-w-sm {
   max-width: 24rem;
-}
-    .max-w-xs {
-  max-width: 20rem;
 }
     .flex-1 {
   flex: 1 1 0%;
@@ -1146,11 +1135,6 @@ video {
     .scale-110 {
   --tw-scale-x: 1.1;
   --tw-scale-y: 1.1;
-  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
-}
-    .scale-75 {
-  --tw-scale-x: .75;
-  --tw-scale-y: .75;
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
     .scale-90 {
@@ -2253,9 +2237,6 @@ video {
     .bg-white\/5 {
   background-color: rgb(255 255 255 / 0.05);
 }
-    .bg-white\/60 {
-  background-color: rgb(255 255 255 / 0.6);
-}
     .bg-white\/80 {
   background-color: rgb(255 255 255 / 0.8);
 }
@@ -2415,9 +2396,9 @@ video {
   padding-left: 3rem;
   padding-right: 3rem;
 }
-    .px-16 {
-  padding-left: 4rem;
-  padding-right: 4rem;
+    .px-2 {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
 }
     .px-20 {
   padding-left: 5rem;
@@ -2504,9 +2485,6 @@ video {
 }
     .pb-20 {
   padding-bottom: 5rem;
-}
-    .pb-32 {
-  padding-bottom: 8rem;
 }
     .pb-48 {
   padding-bottom: 12rem;
@@ -2716,9 +2694,6 @@ video {
 }
     .leading-\[0\.8\] {
   line-height: 0.8;
-}
-    .leading-\[0\.9\] {
-  line-height: 0.9;
 }
     .leading-loose {
   line-height: 2;
@@ -3362,7 +3337,6 @@ video {
     .\[vite\:react-babel\] {
   vite: react-babel;
 }
-
     .premium-blur {
   border-width: 1px;
   border-color: rgb(255 255 255 / 0.2);
@@ -3370,25 +3344,12 @@ video {
   --tw-backdrop-blur: blur(40px);
   backdrop-filter: var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia);
 }
-    .shadow-premium { box-shadow: 0 40px 100px rgba(0,0,0,0.06); }
-    
+    .shadow-premium { box-shadow: 0 30px 60px rgba(0,0,0,0.06); }
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
     }
     .animate-fade-up { animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-    
-    /* Custom styling for inputs to feel more premium */
-    input::-moz-placeholder {
-  font-weight: 500;
-  --tw-text-opacity: 1;
-  color: rgb(209 213 219 / var(--tw-text-opacity, 1));
-}
-    input::placeholder {
-  font-weight: 500;
-  --tw-text-opacity: 1;
-  color: rgb(209 213 219 / var(--tw-text-opacity, 1));
-}
     @media (min-width: 640px) {
 
   .sm\:container {
@@ -3525,10 +3486,6 @@ video {
   --tw-bg-opacity: 1;
   background-color: rgb(3 7 18 / var(--tw-bg-opacity, 1));
 }
-    .hover\:bg-lg-dark:hover {
-  --tw-bg-opacity: 1;
-  background-color: rgb(5 9 15 / var(--tw-bg-opacity, 1));
-}
     .hover\:bg-lg-red:hover {
   --tw-bg-opacity: 1;
   background-color: rgb(230 0 68 / var(--tw-bg-opacity, 1));
@@ -3541,9 +3498,6 @@ video {
   --tw-bg-opacity: 1;
   background-color: rgb(255 255 255 / var(--tw-bg-opacity, 1));
 }
-    .hover\:bg-white\/10:hover {
-  background-color: rgb(255 255 255 / 0.1);
-}
     .hover\:font-bold:hover {
   font-weight: 700;
 }
@@ -3554,10 +3508,6 @@ video {
     .hover\:text-gray-600:hover {
   --tw-text-opacity: 1;
   color: rgb(75 85 99 / var(--tw-text-opacity, 1));
-}
-    .hover\:text-gray-950:hover {
-  --tw-text-opacity: 1;
-  color: rgb(3 7 18 / var(--tw-text-opacity, 1));
 }
     .hover\:text-lg-red:hover {
   --tw-text-opacity: 1;
@@ -3574,9 +3524,6 @@ video {
     .hover\:text-white:hover {
   --tw-text-opacity: 1;
   color: rgb(255 255 255 / var(--tw-text-opacity, 1));
-}
-    .hover\:opacity-80:hover {
-  opacity: 0.8;
 }
     .hover\:opacity-90:hover {
   opacity: 0.9;
@@ -3652,10 +3599,6 @@ video {
   --tw-translate-x: 0.5rem;
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
-    .group:hover .group-hover\:translate-x-1 {
-  --tw-translate-x: 0.25rem;
-  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
-}
     .group:hover .group-hover\:translate-x-2 {
   --tw-translate-x: 0.5rem;
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
@@ -3724,10 +3667,6 @@ video {
     grid-column: span 8 / span 8;
   }
 
-  .md\:mt-0 {
-    margin-top: 0px;
-  }
-
   .md\:flex {
     display: flex;
   }
@@ -3784,14 +3723,14 @@ video {
     padding: 8rem;
   }
 
+  .md\:py-32 {
+    padding-top: 8rem;
+    padding-bottom: 8rem;
+  }
+
   .md\:py-36 {
     padding-top: 9rem;
     padding-bottom: 9rem;
-  }
-
-  .md\:py-40 {
-    padding-top: 10rem;
-    padding-bottom: 10rem;
   }
 
   .md\:py-8 {
@@ -3843,10 +3782,6 @@ video {
 
   .md\:text-\[14px\] {
     font-size: 14px;
-  }
-
-  .md\:text-\[90px\] {
-    font-size: 90px;
   }
 
   .md\:text-sm {
@@ -3947,14 +3882,11 @@ video {
   }
 }
   </style>
-  <script type="importmap">
+<script type="importmap">
 {
   "imports": {
-    "react": "https://esm.sh/react@19.0.0",
-    "react-dom": "https://esm.sh/react-dom@19.0.0",
-    "react-dom/client": "https://esm.sh/react-dom@19.0.0/client",
-    "lucide-react": "https://esm.sh/lucide-react@0.463.0",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
+    "react": "https://esm.sh/react@^19.2.4",
+    "lucide-react": "https://esm.sh/lucide-react@^0.563.0",
     "react/": "https://esm.sh/react@^19.2.4/",
     "@google/genai": "https://esm.sh/@google/genai@^1.39.0",
     "vite": "https://esm.sh/vite@^7.3.1",
@@ -3962,11 +3894,233 @@ video {
   }
 }
 </script>
-  <script type="module" crossorigin src="./assets/index-C4kc8oOm.js"></script>
-  <link rel="modulepreload" crossorigin href="./assets/icons-C2Rq6Bj2.js">
-  <link rel="modulepreload" crossorigin href="./assets/vendor-Bl5ZObYI.js">
 </head>
 <body>
   <div id="root"></div>
+
+  <!-- 使用 Babel 实时编译 React 代码 -->
+  <script type="text/babel">
+    const { useState, useEffect, useMemo } = React;
+
+    // --- 图标组件封装 (解决 Lucide 在 React UMD 下的兼容性) ---
+    const Icon = ({ name, size = 20, className = "" }) => {
+      useEffect(() => {
+        if (window.lucide) {
+          window.lucide.createIcons();
+        }
+      }, [name]);
+      return <i data-lucide={name} className={className} style={{ width: size, height: size }}></i>;
+    };
+
+    // --- 配置与数据 ---
+    const DEFAULT_WA = "60177473787"; 
+    const ADMIN_PIN = "8888";
+
+    const PRODUCTS = [
+      {
+        id: 'WP-PURI-V',
+        category: 'Water Purifier',
+        name: 'PuriCare™ Tankless',
+        subName: '无水箱净水机',
+        image: 'https://www.lg.com/content/dam/channel/wcms/my/images/water-purifiers/wd516an_answ_e_my_c/gallery/dz-01.jpg',
+        price: 60,
+        isHot: true
+      },
+      {
+        id: 'AC-V13ENS',
+        category: 'Air Conditioner',
+        name: 'DUALCOOL™ Inverter',
+        subName: '双变频冷气机',
+        image: 'https://www.lg.com/content/dam/channel/wcms/my/images/air-conditioners/v10api_answ_e_my_c/gallery/dz-01.jpg',
+        price: 45,
+        isHot: true
+      },
+      {
+        id: 'REF-SIDE',
+        category: 'Refrigerator',
+        name: 'Side-by-Side Inverter',
+        subName: '对开门变频冰箱',
+        image: 'https://www.lg.com/content/dam/channel/wcms/my/images/refrigerators/gr-b247sluv_asbp_e_my_c/gallery/dz-01.jpg',
+        price: 150,
+        isHot: false
+      }
+    ];
+
+    const App = () => {
+      const [view, setView] = useState('home');
+      const [isAdmin, setIsAdmin] = useState(false);
+      const [agents, setAgents] = useState(() => JSON.parse(localStorage.getItem('lg_affiliates_v5') || '[]'));
+      const [activeAgent, setActiveAgent] = useState(null);
+      const [copiedId, setCopiedId] = useState(null);
+
+      // --- 核心追踪逻辑 ---
+      useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        const wa = params.get('wa');
+        const name = params.get('name');
+        
+        if (wa) {
+          const current = { name: name || '授权代理', wa: wa.replace(/\D/g, '') };
+          setActiveAgent(current);
+          localStorage.setItem('cached_lg_agent', JSON.stringify(current));
+        } else {
+          const saved = localStorage.getItem('cached_lg_agent');
+          if (saved) setActiveAgent(JSON.parse(saved));
+        }
+      }, []);
+
+      const handleCopyLink = (agent) => {
+        const baseUrl = window.location.href.split('?')[0];
+        const link = `${baseUrl}?wa=${agent.wa}&name=${encodeURIComponent(agent.name)}`;
+        navigator.clipboard.writeText(link);
+        setCopiedId(agent.wa);
+        setTimeout(() => setCopiedId(null), 2000);
+      };
+
+      return (
+        <div className="min-h-screen">
+          {/* 导航 */}
+          <nav className="fixed top-0 w-full z-50 h-20 premium-blur flex items-center px-6 justify-between border-b border-gray-100">
+            <div className="flex items-center gap-10">
+              <img src="https://i.ibb.co/Rk6m7Yw/lg-sub-logo-red.png" className="h-6" alt="LG" />
+              <div className="hidden md:flex gap-8 text-[10px] font-black uppercase tracking-widest text-gray-400">
+                <button onClick={() => setView('home')} className={view === 'home' ? 'text-lg-red' : ''}>展厅</button>
+                <button onClick={() => setView('admin')} className={view === 'admin' ? 'text-lg-red' : ''}>管理</button>
+              </div>
+            </div>
+          </nav>
+
+          {view === 'home' ? (
+            <div className="pt-20">
+              {/* Hero */}
+              <section className="bg-lg-pearl py-20 md:py-32 px-6 text-center">
+                <div className="max-w-4xl mx-auto space-y-8 animate-fade-up">
+                  <span className="inline-flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow-sm text-[10px] font-black text-gray-400 uppercase tracking-widest border border-gray-100">
+                    <Icon name="shield-check" size={14} className="text-lg-red" /> LG Official Partner
+                  </span>
+                  <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter leading-none">
+                    科技定义 <span className="text-lg-red">优雅生活</span>
+                  </h1>
+                  <p className="text-gray-400 font-medium text-lg max-w-2xl mx-auto">
+                    LG Subscribe 马来西亚认证合作伙伴。通过极简月付方案，解锁全球顶尖家电艺术。
+                  </p>
+                </div>
+              </section>
+
+              {/* 代理商浮动名片 */}
+              {activeAgent && (
+                <div className="sticky top-24 z-40 flex justify-center px-6 -mt-10 pointer-events-none">
+                  <div className="premium-blur shadow-premium rounded-full px-8 py-4 flex items-center gap-8 pointer-events-auto animate-fade-up">
+                    <div className="flex items-center gap-4 border-r pr-8 border-gray-100">
+                      <div className="w-10 h-10 bg-lg-red rounded-full flex items-center justify-center text-white shadow-lg"><Icon name="star" size={20} /></div>
+                      <div className="text-left">
+                        <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest block leading-none">您的专属顾问</span>
+                        <span className="text-sm font-black uppercase text-gray-950 mt-1">{activeAgent.name}</span>
+                      </div>
+                    </div>
+                    <a href={`https://wa.me/${activeAgent.wa}?text=Hi, 我在展厅看到LG产品想咨询。`} target="_blank" className="text-[10px] font-black text-lg-red uppercase tracking-widest flex items-center gap-2">
+                      立即联系 <Icon name="arrow-right" size={14} />
+                    </a>
+                  </div>
+                </div>
+              )}
+
+              {/* 产品列表 */}
+              <section className="py-20 max-w-7xl mx-auto px-6 grid md:grid-cols-3 gap-10">
+                {PRODUCTS.map(p => (
+                  <div key={p.id} className="bg-white rounded-[40px] p-8 border border-gray-100 flex flex-col group hover:shadow-premium transition-all duration-500 animate-fade-up">
+                    <div className="flex justify-between mb-6">
+                      <span className="text-[10px] font-black text-gray-300 uppercase tracking-widest">{p.category}</span>
+                      {p.isHot && <span className="bg-lg-red text-white text-[8px] font-black px-2 py-1 rounded-full uppercase">Hot</span>}
+                    </div>
+                    <div className="aspect-square mb-8 flex items-center justify-center relative">
+                      <div className="absolute inset-0 bg-lg-pearl rounded-full scale-90 group-hover:scale-100 transition-transform"></div>
+                      <img src={p.image} className="max-h-[80%] object-contain relative z-10 group-hover:scale-110 transition-transform duration-700" alt={p.name} />
+                    </div>
+                    <h3 className="text-xl font-black uppercase mb-1">{p.name}</h3>
+                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-8">{p.subName}</p>
+                    <div className="mt-auto pt-6 border-t border-gray-50 flex items-end justify-between">
+                      <div>
+                        <span className="text-lg-red text-[10px] font-black uppercase tracking-widest block mb-1">月付低至</span>
+                        <span className="text-3xl font-black text-gray-950 tracking-tighter">RM{p.price}</span>
+                      </div>
+                      <a href={`https://wa.me/${activeAgent?.wa || DEFAULT_WA}?text=我想了解 ${p.name}`} target="_blank" className="bg-gray-950 text-white p-4 rounded-full hover:bg-lg-red transition-all">
+                        <Icon name="arrow-right" size={20} />
+                      </a>
+                    </div>
+                  </div>
+                ))}
+              </section>
+
+              <footer className="bg-lg-dark text-white py-20 px-6 text-center">
+                <p className="text-gray-500 text-[10px] font-bold uppercase tracking-widest">© 2025 LG Subscribe Digital Partner Malaysia</p>
+              </footer>
+            </div>
+          ) : (
+            /* 管理后台 */
+            <div className="pt-32 px-6 max-w-4xl mx-auto min-h-screen">
+              {!isAdmin ? (
+                <div className="text-center py-20 space-y-10">
+                  <div className="w-20 h-20 bg-lg-red/5 rounded-full flex items-center justify-center mx-auto text-lg-red"><Icon name="lock" size={40}/></div>
+                  <h2 className="text-3xl font-black uppercase tracking-tighter">管理员认证</h2>
+                  <button onClick={() => { if(prompt("后台密码") === ADMIN_PIN) setIsAdmin(true) }} className="bg-black text-white px-12 py-5 rounded-full font-black text-xs uppercase tracking-widest shadow-xl">解锁面板</button>
+                </div>
+              ) : (
+                <div className="space-y-12 animate-fade-up pb-20">
+                  <div className="bg-lg-dark text-white p-10 rounded-[50px]">
+                    <h1 className="text-3xl font-black uppercase">下线代理管理</h1>
+                    <div className="grid md:grid-cols-3 gap-6 mt-10">
+                      <input id="pname" placeholder="代理姓名" className="w-full bg-white/5 border border-white/10 p-5 rounded-3xl outline-none text-sm font-bold" />
+                      <input id="pwa" placeholder="WA号码 (601...)" className="w-full bg-white/5 border border-white/10 p-5 rounded-3xl outline-none text-sm font-bold" />
+                      <button onClick={() => {
+                        const n = document.getElementById('pname').value;
+                        const w = document.getElementById('pwa').value.replace(/\D/g, '');
+                        if(!n || !w) return alert("请完整填写");
+                        const updated = [...agents, { name: n, wa: w }];
+                        setAgents(updated);
+                        localStorage.setItem('lg_affiliates_v5', JSON.stringify(updated));
+                        document.getElementById('pname').value = '';
+                        document.getElementById('pwa').value = '';
+                      }} className="bg-lg-red text-white py-5 rounded-3xl font-black uppercase text-[10px] tracking-widest">添加代理</button>
+                    </div>
+                  </div>
+
+                  <div className="space-y-6">
+                    <h3 className="text-2xl font-black uppercase">已授权列表</h3>
+                    <div className="grid gap-6">
+                      {agents.map(a => (
+                        <div key={a.wa} className="bg-white p-6 rounded-[35px] border border-gray-100 flex justify-between items-center group shadow-sm">
+                          <div className="flex items-center gap-5">
+                            <div className="w-12 h-12 bg-gray-50 rounded-2xl flex items-center justify-center text-lg-red"><Icon name="shield-check" size={24}/></div>
+                            <div>
+                              <p className="font-black uppercase text-lg leading-none">{a.name}</p>
+                              <p className="text-[10px] font-bold text-gray-300 mt-2 uppercase tracking-widest">WA: {a.wa}</p>
+                            </div>
+                          </div>
+                          <div className="flex gap-2">
+                            <button onClick={() => handleCopyLink(a)} className={`px-6 py-4 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${copiedId === a.wa ? 'bg-green-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-black hover:text-white'}`}>
+                              {copiedId === a.wa ? '已复制' : '复制推广链接'}
+                            </button>
+                            <button onClick={() => {
+                              const filtered = agents.filter(x => x.wa !== a.wa);
+                              setAgents(filtered);
+                              localStorage.setItem('lg_affiliates_v5', JSON.stringify(filtered));
+                            }} className="p-4 bg-red-50 text-red-400 rounded-full"><Icon name="trash-2" size={18}/></button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      );
+    };
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
 </body>
 </html>
