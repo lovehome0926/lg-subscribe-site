@@ -3,11 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>LG Subscribe Malaysia | Digital Showroom</title>
+  <title>LG Subscribe Malaysia | Digital Partner Hub</title>
   
-  <!-- CDN Dependencies -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -16,9 +14,11 @@
 {
   "imports": {
     "react": "https://esm.sh/react@19.0.0",
-    "react-dom": "https://esm.sh/react-dom@19.0.0/client",
+    "react-dom": "https://esm.sh/react-dom@19.0.0",
+    "react-dom/client": "https://esm.sh/react-dom@19.0.0/client",
     "lucide-react": "https://esm.sh/lucide-react@0.463.0",
     "@google/genai": "https://esm.sh/@google/genai@1.30.0",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
     "react/": "https://esm.sh/react@^19.2.4/",
     "vite": "https://esm.sh/vite@^7.3.1",
     "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.2"
@@ -30,7 +30,12 @@
     tailwind.config = {
       theme: {
         extend: {
-          colors: { 'lg-red': '#e60044', 'lg-dark': '#05090f' },
+          colors: { 
+            'lg-red': '#e60044', 
+            'lg-dark': '#05090f', 
+            'lg-pearl': '#f8f9fa',
+            'lg-gold': '#d4af37'
+          },
           fontFamily: { sans: ['Outfit', 'sans-serif'] }
         }
       }
@@ -38,292 +43,28 @@
   </script>
 
   <style type="text/tailwindcss">
-    @tailwind base; @tailwind components; @tailwind utilities;
+    @tailwind base;
+    @tailwind components;
+    @tailwind utilities;
+
     @layer base {
       body { @apply bg-white text-lg-dark font-sans antialiased m-0 p-0 overflow-x-hidden; }
     }
-    .shadow-premium { box-shadow: 0 40px 100px rgba(0,0,0,0.08); }
-    .no-scrollbar::-webkit-scrollbar { display: none; }
+
+    .premium-blur { @apply backdrop-blur-2xl bg-white/80 border border-white/20; }
+    .shadow-premium { box-shadow: 0 30px 60px -12px rgba(0,0,0,0.08), 0 18px 36px -18px rgba(0,0,0,0.1); }
+    
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-up { animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    
+    .text-balance { text-wrap: balance; }
   </style>
 </head>
 <body>
   <div id="root"></div>
-
-  <!-- React 应用程序逻辑 -->
-  <script type="text/babel" data-presets="react,typescript" data-type="module">
-    import React, { useState, useEffect, useMemo } from 'react';
-    import { createRoot } from 'react-dom';
-    import { 
-      Lock, Zap, ShieldCheck, CheckCircle, ArrowRight, 
-      Users, Plus, Trash2, Link, Check, Sparkles 
-    } from 'lucide-react';
-
-    // --- 常量与初始化数据 ---
-    const CATEGORIES = ['Water Purifier', 'Air Purifier', 'Air Conditioner', 'Washer & Dryer', 'Refrigerator', 'TV & Soundbar'];
-    const INITIAL_PRODUCTS = [
-      {
-        id: 'AC-V13ENS',
-        category: 'Air Conditioner',
-        name: 'DUALCOOL™ Premium',
-        subName: { en: 'Inverter Air Conditioner', cn: '双变频冷气机', ms: 'Penyaman Udara Inverter' },
-        image: 'https://www.lg.com/content/dam/channel/wcms/my/images/air-conditioners/v10api_answ_e_my_c/gallery/dz-01.jpg',
-        plans: [
-          { termYears: 7, maintenanceType: 'Regular Visit', price: 45 },
-          { termYears: 'Outright', maintenanceType: 'None', price: 2499 }
-        ],
-        isHotSale: true
-      }
-    ];
-
-    // --- IndexedDB 简单封装 ---
-    const db = {
-      async init() {
-        return new Promise((resolve) => {
-          const req = indexedDB.open('LG_DB', 1);
-          req.onupgradeneeded = () => {
-            req.result.createObjectStore('products', { keyPath: 'id' });
-            req.result.createObjectStore('agents', { keyPath: 'whatsapp' });
-          };
-          req.onsuccess = () => resolve(req.result);
-        });
-      },
-      async getAll(storeName) {
-        const conn = await this.init();
-        return new Promise(r => {
-          const req = conn.transaction(storeName).objectStore(storeName).getAll();
-          req.onsuccess = () => r(req.result);
-        });
-      },
-      async saveAll(storeName, data) {
-        const conn = await this.init();
-        const tx = conn.transaction(storeName, 'readwrite');
-        const store = tx.objectStore(storeName);
-        store.clear();
-        data.forEach(item => store.add(item));
-      }
-    };
-
-    // --- 组件: 产品卡片 ---
-    const ProductCard = ({ product, activeAgent, language }) => {
-      const [mode, setMode] = useState('rental');
-      const t = {
-        en: { sub: "RENTAL", cash: "OUTRIGHT", perMo: "MONTHLY", inquire: "INQUIRE NOW", month: "Month" },
-        cn: { sub: "月付租赁", cash: "买断总价", perMo: "月供", inquire: "立即咨询", month: "每月" },
-        ms: { sub: "SEWA", cash: "TUNAI", perMo: "BULANAN", inquire: "TANYA SEKARANG", month: "Bulan" }
-      }[language];
-
-      const currentPrice = mode === 'rental' 
-        ? product.plans.find(p => p.termYears !== 'Outright')?.price 
-        : product.plans.find(p => p.termYears === 'Outright')?.price;
-
-      const waLink = `https://wa.me/${activeAgent?.whatsapp || "60177473787"}?text=Hi, I am interested in ${product.name} (${mode})`;
-
-      return (
-        <div className="bg-white rounded-[40px] p-8 border border-gray-100 flex flex-col h-full group hover:shadow-premium transition-all duration-500">
-          <div className="flex justify-between mb-8">
-            {product.isHotSale && <span className="bg-lg-red text-white text-[8px] font-black px-3 py-1.5 rounded-full uppercase tracking-widest">HOT</span>}
-            <span className="text-[8px] font-black text-gray-300 uppercase">{product.category}</span>
-          </div>
-          <h3 className="text-2xl font-black text-gray-950 uppercase mb-2">{product.name}</h3>
-          <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-10">{product.subName[language]}</p>
-          <div className="aspect-square mb-10 flex items-center justify-center bg-gray-50 rounded-full p-8">
-            <img src={product.image} className="max-h-full object-contain group-hover:scale-110 transition-transform duration-500" />
-          </div>
-          <div className="flex p-1 bg-gray-100 rounded-3xl mb-8">
-            <button onClick={() => setMode('rental')} className={`flex-1 py-3 rounded-2xl text-[9px] font-black ${mode === 'rental' ? 'bg-white text-lg-red shadow-sm' : 'text-gray-400'}`}>{t.sub}</button>
-            <button onClick={() => setMode('outright')} className={`flex-1 py-3 rounded-2xl text-[9px] font-black ${mode === 'outright' ? 'bg-white text-lg-red shadow-sm' : 'text-gray-400'}`}>{t.cash}</button>
-          </div>
-          <div className="mt-auto pt-6 border-t border-gray-50">
-            <div className="flex flex-col mb-6">
-              <span className="text-lg-red text-[9px] font-black uppercase tracking-widest">{t.perMo}</span>
-              <div className="flex items-baseline gap-1">
-                <span className="text-4xl font-black text-gray-950">RM{currentPrice}</span>
-                {mode === 'rental' && <span className="text-[9px] font-black text-gray-300 uppercase">/ {t.month}</span>}
-              </div>
-            </div>
-            <a href={waLink} target="_blank" className="w-full bg-gray-950 text-white py-5 rounded-full font-black uppercase text-[10px] tracking-[0.2em] flex items-center justify-center gap-3 hover:bg-lg-red transition-all">
-              {t.inquire} <ArrowRight size={14} />
-            </a>
-          </div>
-        </div>
-      );
-    };
-
-    // --- 组件: 管理后台 ---
-    const AdminDashboard = ({ products, agents, setAgents }) => {
-      const [newAgent, setNewAgent] = useState({ name: '', wa: '' });
-      const [activeTab, setActiveTab] = useState('agents');
-
-      const addAgent = () => {
-        const cleanWa = newAgent.wa.replace(/\D/g, '');
-        if (!cleanWa || !newAgent.name) return alert("请填写完整资料");
-        const updated = [...agents, { name: newAgent.name, whatsapp: cleanWa }];
-        setAgents(updated);
-        db.saveAll('agents', updated);
-        setNewAgent({ name: '', wa: '' });
-      };
-
-      const removeAgent = (wa) => {
-        const updated = agents.filter(a => a.whatsapp !== wa);
-        setAgents(updated);
-        db.saveAll('agents', updated);
-      };
-
-      return (
-        <div className="pt-32 px-6 max-w-7xl mx-auto pb-20">
-          <div className="bg-lg-dark text-white p-12 rounded-[50px] mb-12 flex flex-col md:flex-row justify-between items-center gap-8">
-            <div>
-              <h1 className="text-4xl font-black uppercase tracking-tighter">终端控制台</h1>
-              <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mt-2">LG Subscribe Digital Hub Admin</p>
-            </div>
-            <div className="flex bg-white/5 p-1 rounded-full border border-white/5">
-               <button onClick={()=>setActiveTab('agents')} className={`px-8 py-3 rounded-full text-[10px] font-black uppercase ${activeTab === 'agents' ? 'bg-lg-red' : 'text-gray-400'}`}>代理授权 ({agents.length})</button>
-               <button onClick={()=>setActiveTab('products')} className={`px-8 py-3 rounded-full text-[10px] font-black uppercase ${activeTab === 'products' ? 'bg-lg-red' : 'text-gray-400'}`}>库存管理</button>
-            </div>
-          </div>
-
-          {activeTab === 'agents' && (
-            <div className="grid lg:grid-cols-3 gap-12">
-              <div className="bg-gray-50 p-10 rounded-[40px] space-y-6 h-fit">
-                <h2 className="text-xl font-black uppercase">发放新授权</h2>
-                <input placeholder="姓名" value={newAgent.name} onChange={e=>setNewAgent({...newAgent, name:e.target.value})} className="w-full p-4 rounded-2xl border-none outline-none font-bold text-sm" />
-                <input placeholder="WA 号码 (601...)" value={newAgent.wa} onChange={e=>setNewAgent({...newAgent, wa:e.target.value})} className="w-full p-4 rounded-2xl border-none outline-none font-bold text-sm" />
-                <button onClick={addAgent} className="w-full bg-lg-red text-white py-4 rounded-full font-black text-xs uppercase tracking-widest">确认添加</button>
-              </div>
-              <div className="lg:col-span-2 space-y-4">
-                {agents.map(a => (
-                  <div key={a.whatsapp} className="bg-white p-6 rounded-[30px] border border-gray-100 flex justify-between items-center shadow-sm">
-                    <div>
-                      <p className="font-black uppercase">{a.name}</p>
-                      <p className="text-[9px] font-bold text-gray-400">WA: {a.whatsapp}</p>
-                    </div>
-                    <div className="flex gap-2">
-                       <button onClick={() => {
-                         const link = `${location.origin}${location.pathname}?wa=${a.whatsapp}#home`;
-                         navigator.clipboard.writeText(link);
-                         alert("推广链接已复制！");
-                       }} className="p-3 bg-gray-100 rounded-full hover:bg-black hover:text-white transition-all"><Link size={16}/></button>
-                       <button onClick={() => removeAgent(a.whatsapp)} className="p-3 bg-red-50 text-red-400 rounded-full hover:bg-red-500 hover:text-white transition-all"><Trash2 size={16}/></button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-      );
-    };
-
-    // --- 主程序: App ---
-    const App = () => {
-      const [language, setLanguage] = useState('cn');
-      const [agents, setAgents] = useState([]);
-      const [products, setProducts] = useState(INITIAL_PRODUCTS);
-      const [activeAgent, setActiveAgent] = useState(null);
-      const [isAdmin, setIsAdmin] = useState(false);
-      const [isHome, setIsHome] = useState(true);
-
-      useEffect(() => {
-        const init = async () => {
-          const dbAgents = await db.getAll('agents');
-          setAgents(dbAgents);
-          
-          const params = new URLSearchParams(window.location.search);
-          const wa = params.get('wa');
-          if (wa) {
-            const agent = dbAgents.find(a => a.whatsapp === wa);
-            if (agent) {
-              setActiveAgent(agent);
-              localStorage.setItem('cached_agent', JSON.stringify(agent));
-            }
-          } else {
-            const saved = localStorage.getItem('cached_agent');
-            if (saved) setActiveAgent(JSON.parse(saved));
-          }
-
-          const handleHash = () => setIsHome(!window.location.hash.includes('admin'));
-          window.addEventListener('hashchange', handleHash);
-          handleHash();
-        };
-        init();
-      }, []);
-
-      const navLinks = {
-        cn: { home: '展厅首页', join: '加盟合作' },
-        en: { home: 'Showroom', join: 'Join Us' },
-        ms: { home: 'Utama', join: 'Sertai Kami' }
-      }[language];
-
-      return (
-        <div className="min-h-screen">
-          {/* Navbar */}
-          <nav className="fixed top-0 w-full z-[100] h-20 bg-white/80 backdrop-blur-2xl border-b border-gray-100 px-6">
-            <div className="max-w-7xl mx-auto h-full flex items-center justify-between">
-              <a href="/"><img src="https://i.ibb.co/Rk6m7Yw/lg-sub-logo-red.png" className="h-6" alt="LG" /></a>
-              <div className="flex items-center gap-4">
-                <div className="bg-gray-100 p-1 rounded-full flex">
-                  {['cn','en','ms'].map(l => (
-                    <button key={l} onClick={()=>setLanguage(l)} className={`px-3 py-1.5 rounded-full text-[9px] font-black uppercase ${language===l?'bg-white text-lg-red shadow-sm':'text-gray-400'}`}>{l}</button>
-                  ))}
-                </div>
-                <button onClick={()=>window.location.hash='admin'} className="text-[9px] font-black text-gray-400 ml-4 hover:text-black uppercase">ADMIN</button>
-              </div>
-            </div>
-          </nav>
-
-          {isHome ? (
-            <div className="pt-20">
-              {/* Hero */}
-              <section className="bg-gray-50 py-32 px-6 overflow-hidden">
-                <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
-                  <div className="space-y-8">
-                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow-sm text-[10px] font-black text-gray-400 tracking-widest">
-                       <ShieldCheck size={14} className="text-lg-red"/> OFFICIAL LG PARTNER
-                    </div>
-                    <h1 className="text-6xl md:text-8xl font-black uppercase leading-[0.85] tracking-tighter">
-                      ELEGANCE<br/><span className="text-lg-red">UNLOCKED.</span>
-                    </h1>
-                    <p className="text-gray-400 font-bold text-lg max-w-md">LG Subscribe Malaysia 认证合作伙伴。开启您的极简高端家电生活。</p>
-                  </div>
-                  <img src="https://www.lg.com/content/dam/channel/wcms/my/images/air-conditioners/v10api_answ_e_my_c/gallery/dz-01.jpg" className="w-full drop-shadow-2xl" />
-                </div>
-              </section>
-
-              {/* Agent Note */}
-              {activeAgent && (
-                <div className="sticky top-24 z-50 flex justify-center px-6 -mt-8">
-                  <div className="bg-white shadow-2xl rounded-full px-8 py-4 border border-gray-100 flex items-center gap-6">
-                    <div className="w-10 h-10 bg-lg-red rounded-full flex items-center justify-center text-white"><CheckCircle size={18}/></div>
-                    <div className="text-left border-r pr-8">
-                       <span className="text-[8px] font-black text-gray-400 uppercase tracking-widest block">Certified Consultant</span>
-                       <span className="text-sm font-black uppercase">{activeAgent.name}</span>
-                    </div>
-                    <a href={`https://wa.me/${activeAgent.whatsapp}`} className="text-[9px] font-black text-lg-red uppercase tracking-widest">Contact Now</a>
-                  </div>
-                </div>
-              )}
-
-              {/* Products */}
-              <section className="py-32 max-w-7xl mx-auto px-6">
-                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                   {products.map(p => <ProductCard key={p.id} product={p} language={language} activeAgent={activeAgent} />)}
-                 </div>
-              </section>
-            </div>
-          ) : (
-            isAdmin ? <AdminDashboard products={products} agents={agents} setAgents={setAgents} /> : (
-              <div className="h-screen flex flex-col items-center justify-center">
-                <Lock size={48} className="text-lg-red mb-6"/>
-                <h2 className="text-2xl font-black mb-8 uppercase">验证管理权限</h2>
-                <button onClick={()=>{if(prompt("PIN")==="8888")setIsAdmin(true)}} className="bg-black text-white px-12 py-4 rounded-full font-black text-xs uppercase tracking-widest">解锁终端</button>
-              </div>
-            )
-          )}
-        </div>
-      );
-    };
-
-    createRoot(document.getElementById('root')).render(<App />);
-  </script>
+  <script type="module" src="index.tsx"></script>
 </body>
 </html>
