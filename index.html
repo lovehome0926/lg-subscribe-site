@@ -25,7 +25,16 @@
             'lg-pearl': '#f8f9fa',
             'lg-brand-bg': '#f6f3ef'
           },
-          fontFamily: { sans: ['Outfit', 'sans-serif'] }
+          fontFamily: { sans: ['Outfit', 'sans-serif'] },
+          animation: {
+            'scroll': 'scroll 40s linear infinite',
+          },
+          keyframes: {
+            scroll: {
+              '0%': { transform: 'translateX(0)' },
+              '100%': { transform: 'translateX(-50%)' },
+            }
+          }
         }
       }
     }
@@ -45,6 +54,9 @@
     .admin-card { @apply bg-white p-6 rounded-[35px] border border-gray-100 shadow-sm hover:shadow-md transition-all; }
     .file-upload-btn { @apply flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-xl text-[10px] font-black uppercase transition-all cursor-pointer; }
     .lg-benefit-img { @apply rounded-[40px] shadow-2xl transition-transform duration-700 hover:scale-[1.02] object-cover w-full h-full; }
+    .marquee-container { @apply flex whitespace-nowrap overflow-hidden py-10; }
+    .marquee-content { @apply flex animate-scroll min-w-max; }
+    .marquee-img { @apply h-[300px] md:h-[450px] object-contain px-4; }
   </style>
 <script type="importmap">
 {
@@ -79,78 +91,42 @@
     const DICT = {
       cn: { 
         heroSub: "LG Subscribe 认证合作伙伴。以极简方案解锁顶尖家电。", 
-        explore: "浏览展厅", 
-        contactNow: "立即咨询", 
-        monthly: "月供低至", 
-        adminTitle: "管理终端", 
-        inventory: "库存", 
-        siteConfig: "配置", 
-        affiliates: "代理", 
-        promo: "促销", 
-        backup: "备份", 
-        outright: "买断", 
-        duration: "期限", 
-        endDate: "截止日", 
-        categories: "分类",
-        whatIsTitle: "什么是 LG Subscribe？",
+        explore: "浏览展厅", contactNow: "立即咨询", monthly: "月供低至", 
+        adminTitle: "管理终端", inventory: "库存管理", siteConfig: "全局配置", 
+        affiliates: "代理授权", promo: "促销策略", backup: "数据备份", 
+        categories: "分类管理", whatIsTitle: "什么是 LG Subscribe？",
         whatIsDesc: "LG Subscribe 是一项全方位家电订阅服务，旨在通过高性价比的方式助您完善家居配置。从冰箱到电视，丰富的家电选择让您的家焕发温馨活力。",
         benefitsTitle: "LG Subscribe 的三大核心优势",
-        benefit1Title: "市场首创",
-        benefit1Desc: "在马来西亚首家提供多达 10 条产品线的全面订阅方案。",
-        benefit2Title: "灵活免忧维护",
-        benefit2Desc: "提供从自助服务、定期上门维护到综合保养的多种灵活选择，确保使用无忧。",
-        benefit3Title: "LG ThinQ 智能生活",
-        benefit3Desc: "通过智能互联产品，全方位提升您的生活品质与居住体验。"
+        benefit1Title: "市场首创", benefit1Desc: "在马来西亚首家提供多达 10 条产品线的全面订阅方案。",
+        benefit2Title: "灵活免忧维护", benefit2Desc: "提供从自助服务、定期上门维护到综合保养的多种灵活选择，确保使用无忧。",
+        benefit3Title: "LG ThinQ 智能生活", benefit3Desc: "通过智能互联产品，全方位提升您的生活品质与居住体验。",
+        firstMonths: "首 {n} 个月折扣"
       },
       en: { 
         heroSub: "Certified LG Partner. Unlock premium living with flexible plans.", 
-        explore: "Explore Hub", 
-        contactNow: "Contact Now", 
-        monthly: "From RM", 
-        adminTitle: "Admin Panel", 
-        inventory: "Inventory", 
-        siteConfig: "Settings", 
-        affiliates: "Affiliates", 
-        promo: "Promo", 
-        backup: "Backup", 
-        outright: "Outright", 
-        duration: "Months", 
-        endDate: "Expiry", 
-        categories: "Categories",
-        whatIsTitle: "What is LG Subscribe?",
-        whatIsDesc: "LG Subscribe is a household appliance subscription service that allows you to complete your home in a cost-effective way. A wide range of appliances from refrigerators to TVs are available to subscribe, making your place truly feel like a home.",
+        explore: "Explore Hub", contactNow: "Contact Now", monthly: "From RM", 
+        adminTitle: "Admin Panel", inventory: "Inventory", siteConfig: "Settings", 
+        affiliates: "Affiliates", promo: "Promotions", backup: "Backup", 
+        categories: "Categories", whatIsTitle: "What is LG Subscribe?",
+        whatIsDesc: "LG Subscribe is a household appliance subscription service that allows you to complete your home in a cost-effective way.",
         benefitsTitle: "3 Benefits of LG Subscribe",
-        benefit1Title: "First in the market",
-        benefit1Desc: "Offering 10 product lines in Malaysia, providing comprehensive home solutions.",
-        benefit2Title: "Varying Hassle Free Maintenance",
-        benefit2Desc: "From Self-Service, Regular Visit or Combine Maintenance, choose what fits your lifestyle.",
-        benefit3Title: "LG ThinQ Smart Connection",
-        benefit3Desc: "Accessible products designed to upgrade your lifestyle and smart home ecosystem."
+        benefit1Title: "First in the market", benefit1Desc: "Offering 10 product lines in Malaysia, providing comprehensive home solutions.",
+        benefit2Title: "Hassle Free Maintenance", benefit2Desc: "From Self-Service, Regular Visit or Combine Maintenance, choose what fits your lifestyle.",
+        benefit3Title: "LG ThinQ Smart Connection", benefit3Desc: "Accessible products designed to upgrade your lifestyle and smart home ecosystem.",
+        firstMonths: "First {n} Months Offer"
       },
       ms: { 
         heroSub: "Rakan Kongsi Sah LG. Alami kehidupan premium dengan pelan fleksibel.", 
-        explore: "Teroka", 
-        contactNow: "Hubungi", 
-        monthly: "Dari RM", 
-        adminTitle: "Panel Admin", 
-        inventory: "Inventori", 
-        siteConfig: "Tetapan", 
-        affiliates: "Ejen", 
-        promo: "Promosi", 
-        backup: "Sandaran", 
-        outright: "Tunai", 
-        duration: "Tempoh", 
-        endDate: "Tamat", 
-        categories: "Kategori",
-        whatIsTitle: "Apakah LG Subscribe?",
-        whatIsDesc: "LG Subscribe adalah perkhidmatan langganan perkakas rumah yang membolehkan anda melengkapkan kediaman dengan cara kos efektif. Pelbagai pilihan dari peti sejuk ke TV tersedia untuk dilanggan.",
+        explore: "Teroka", contactNow: "Hubungi", monthly: "Dari RM", 
+        adminTitle: "Panel Admin", inventory: "Inventori", siteConfig: "Tetapan", 
+        affiliates: "Ejen", promo: "Promosi", backup: "Sandaran", 
+        categories: "Kategori", whatIsTitle: "Apakah LG Subscribe?",
+        whatIsDesc: "LG Subscribe adalah perkhidmatan langganan perkakas rumah yang membolehkan anda melengkapkan kediaman dengan cara kos efektif.",
         benefitsTitle: "3 Kelebihan LG Subscribe",
-        benefit1Title: "Pertama di Pasaran",
-        benefit1Desc: "Menawarkan 10 barisan produk di Malaysia untuk penyelesaian rumah yang lengkap.",
-        benefit2Title: "Penyelenggaraan Bebas Kerisauan",
-        benefit2Desc: "Dari Servis Sendiri, Lawatan Tetap atau Penyelenggaraan Gabungan, pilih yang sesuai untuk anda.",
-        benefit3Title: "Sambungan Pintar LG ThinQ",
-        benefit3Desc: "Produk yang mudah diakses direka untuk menaik taraf gaya hidup dan ekosistem rumah pintar anda."
+        benefit1Title: "Pertama di Pasaran", benefit1Desc: "Menawarkan 10 barisan produk di Malaysia untuk penyelesaian rumah yang lengkap.",
+        benefit2Title: "Penyelenggaraan Bebas Kerisauan", benefit2Desc: "Dari Servis Sendiri, Lawatan Tetap atau Penyelenggaraan Gabungan.",
+        benefit3Title: "Sambungan Pintar LG ThinQ", benefit3Desc: "Produk yang mudah diakses direka untuk menaik taraf gaya hidup anda.",
+        firstMonths: "Diskaun {n} Bulan Pertama"
       }
     };
 
@@ -169,28 +145,29 @@
       const [activeTab, setActiveTab] = useState('inventory');
       const [activeCategoryFilter, setActiveCategoryFilter] = useState('All');
       
-      const [products, setProducts] = useState(() => JSON.parse(localStorage.getItem('lg_v12_pro') || '[]'));
-      const [categories, setCategories] = useState(() => JSON.parse(localStorage.getItem('lg_v12_cat') || JSON.stringify(DEFAULT_CATEGORIES)));
-      const [settings, setSettings] = useState(() => JSON.parse(localStorage.getItem('lg_v12_set') || JSON.stringify({
+      const STORE_VER = 'lg_v14';
+      const [products, setProducts] = useState(() => JSON.parse(localStorage.getItem(STORE_VER+'_pro') || '[]'));
+      const [categories, setCategories] = useState(() => JSON.parse(localStorage.getItem(STORE_VER+'_cat') || JSON.stringify(DEFAULT_CATEGORIES)));
+      const [settings, setSettings] = useState(() => JSON.parse(localStorage.getItem(STORE_VER+'_set') || JSON.stringify({
         logo: 'https://i.ibb.co/Rk6m7Yw/lg-sub-logo-red.png',
         heroImage: 'https://www.lg.com/content/dam/channel/wcms/my/images/air-conditioners/v10api_answ_e_my_c/gallery/dz-01.jpg',
         heroTitle: { cn: '科技定义 优雅生活', en: 'ELEGANCE IN TECH', ms: 'KEANGGUNAN TEKNOLOGI' },
         contactPhone: '60177473787',
         adminPin: '8888'
       })));
-      const [agents, setAgents] = useState(() => JSON.parse(localStorage.getItem('lg_v12_age') || '[]'));
-      const [templates, setTemplates] = useState(() => JSON.parse(localStorage.getItem('lg_v12_tpl') || '[]'));
+      const [agents, setAgents] = useState(() => JSON.parse(localStorage.getItem(STORE_VER+'_age') || '[]'));
+      const [templates, setTemplates] = useState(() => JSON.parse(localStorage.getItem(STORE_VER+'_tpl') || '[]'));
       
       const [activeAgent, setActiveAgent] = useState(null);
       const [editingProduct, setEditingProduct] = useState(null);
       const [isAiLoading, setIsAiLoading] = useState(false);
 
       useEffect(() => {
-        localStorage.setItem('lg_v12_pro', JSON.stringify(products));
-        localStorage.setItem('lg_v12_cat', JSON.stringify(categories));
-        localStorage.setItem('lg_v12_set', JSON.stringify(settings));
-        localStorage.setItem('lg_v12_age', JSON.stringify(agents));
-        localStorage.setItem('lg_v12_tpl', JSON.stringify(templates));
+        localStorage.setItem(STORE_VER+'_pro', JSON.stringify(products));
+        localStorage.setItem(STORE_VER+'_cat', JSON.stringify(categories));
+        localStorage.setItem(STORE_VER+'_set', JSON.stringify(settings));
+        localStorage.setItem(STORE_VER+'_age', JSON.stringify(agents));
+        localStorage.setItem(STORE_VER+'_tpl', JSON.stringify(templates));
       }, [products, categories, settings, agents, templates]);
 
       useEffect(() => {
@@ -201,8 +178,7 @@
 
       const t = DICT[lang];
 
-      const calculatePrice = (basePrice, productId) => {
-        let final = basePrice;
+      const calculatePromoInfo = (basePrice, productId) => {
         const now = new Date();
         const activePromo = templates.find(tpl => {
           if (!tpl.isActive) return false;
@@ -211,17 +187,23 @@
           return isTarget && notExpired;
         });
 
-        if (activePromo) {
-          if (activePromo.type === 'percent') {
-            final = basePrice * (1 - activePromo.value / 100);
-          } else if (activePromo.type === 'fixed') {
-            final = basePrice - activePromo.value;
-          } else if (activePromo.type === 'direct') {
-            final = activePromo.value;
-          }
+        if (!activePromo) return { price: basePrice, durationText: null };
+
+        let final = basePrice;
+        if (activePromo.type === 'percent') {
+          final = basePrice * (1 - activePromo.value / 100);
+        } else if (activePromo.type === 'fixed') {
+          final = basePrice - activePromo.value;
+        } else if (activePromo.type === 'direct') {
+          final = activePromo.value;
         }
-        // 关键需求：所有进位逻辑
-        return Math.ceil(final);
+
+        let durationText = null;
+        if (activePromo.promoDuration && activePromo.promoDuration !== 'full') {
+          durationText = t.firstMonths.replace('{n}', activePromo.promoDuration);
+        }
+
+        return { price: Math.ceil(final), durationText };
       };
 
       const handleImageUpload = async (e, callback) => {
@@ -245,28 +227,15 @@
             if (data.agents) setAgents(data.agents);
             if (data.templates) setTemplates(data.templates);
             alert("恢复成功！");
-          } catch (err) { alert("文件解析失败。"); }
+          } catch (err) { alert("还原失败，请检查文件。"); }
         };
         reader.readAsText(file);
       };
 
-      const handleAiExtract = async (url) => {
-        if (!url) return;
-        setIsAiLoading(true);
-        try {
-          const ai = new window.GoogleGenAI({ apiKey: process.env.API_KEY });
-          const response = await ai.models.generateContent({
-            model: 'gemini-3-pro-preview',
-            contents: `Scrape LG URL: ${url}. Output JSON: {name, category, subName:{cn,en,ms}, price, image, variants:[{name,colorCode,image}], plans:[{term,type,interval,price}]}. Categories: ${categories.join(',')}`,
-            config: { responseMimeType: "application/json" }
-          });
-          const result = JSON.parse(response.text);
-          setEditingProduct({ ...editingProduct, ...result });
-        } catch (e) { alert("AI提取失败，请手动录入。"); }
-        setIsAiLoading(false);
-      };
-
       const filteredProducts = activeCategoryFilter === 'All' ? products : products.filter(p => p.category === activeCategoryFilter);
+
+      // 特殊横图 URL (用户上传的长图)
+      const MARQUEE_IMAGE = 'https://i.ibb.co/Lhyx4VCH/temp-Image6o-Zc-Wh.avif';
 
       return (
         <div className="min-h-screen font-sans">
@@ -282,38 +251,65 @@
 
           {view === 'home' ? (
             <div className="pt-20 animate-fade-up">
+              {/* Hero */}
               <section className="bg-lg-pearl py-24 px-6 text-center">
                  <h1 className="text-6xl md:text-8xl font-black uppercase tracking-tighter mb-4">{settings.heroTitle[lang]}</h1>
                  <p className="text-gray-400 max-w-2xl mx-auto mb-10">{t.heroSub}</p>
                  <img src={settings.heroImage} className="max-w-4xl w-full mx-auto drop-shadow-2xl rounded-3xl" />
               </section>
 
-              {/* What is LG & Benefits (Brand Identity) */}
-              <section className="bg-lg-brand-bg py-32 px-6">
-                <div className="max-w-7xl mx-auto text-center space-y-12 animate-fade-up">
+              {/* What is LG Section */}
+              <section className="bg-white py-32 px-6">
+                <div className="max-w-7xl mx-auto text-center space-y-8 mb-20">
                   <h2 className="text-5xl font-black uppercase tracking-tighter">{t.whatIsTitle}</h2>
                   <p className="text-gray-500 max-w-3xl mx-auto text-lg leading-relaxed">{t.whatIsDesc}</p>
-                  <div className="flex flex-col md:flex-row items-center justify-center gap-12 pt-16">
-                    <div className="w-64 h-80 rounded-[80px] overflow-hidden shadow-2xl rotate-[-3deg]"><img src="https://www.lg.com/content/dam/channel/wcms/my/images/styler/s3wfs_answ_e_my_c/gallery/dz-01.jpg" className="w-full h-full object-cover" /></div>
-                    <div className="bg-lg-red text-white px-16 py-8 rounded-[40px] shadow-2xl"><span className="text-5xl font-black italic tracking-tighter">LG Subscribe™</span></div>
-                    <div className="w-64 h-80 rounded-[80px] overflow-hidden shadow-2xl rotate-[3deg]"><img src="https://www.lg.com/content/dam/channel/wcms/my/images/refrigerators/gr-x257csav_asbp_e_my_c/gallery/dz-01.jpg" className="w-full h-full object-cover" /></div>
+                </div>
+
+                {/* Repeating Infinite Scroll (The requested picture) */}
+                <div className="marquee-container">
+                  <div className="marquee-content">
+                    <img src={MARQUEE_IMAGE} className="marquee-img" alt="LG Promo" />
+                    <img src={MARQUEE_IMAGE} className="marquee-img" alt="LG Promo" />
+                    <img src={MARQUEE_IMAGE} className="marquee-img" alt="LG Promo" />
+                    <img src={MARQUEE_IMAGE} className="marquee-img" alt="LG Promo" />
                   </div>
                 </div>
               </section>
 
-              <section className="bg-white py-32 px-6">
-                <div className="max-w-6xl mx-auto space-y-24">
+              {/* 3 Benefits Section (RESTORED) */}
+              <section className="bg-lg-brand-bg py-32 px-6">
+                <div className="max-w-6xl mx-auto space-y-32">
                    <h2 className="text-5xl font-black uppercase tracking-tighter border-b-4 border-lg-red pb-4 w-fit">{t.benefitsTitle}</h2>
-                   {[
-                     {id:'01', title:t.benefit1Title, desc:t.benefit1Desc, img:'https://www.lg.com/content/dam/channel/wcms/my/images/common/subscribe/benefits_01.jpg'},
-                     {id:'02', title:t.benefit2Title, desc:t.benefit2Desc, img:'https://www.lg.com/content/dam/channel/wcms/my/images/water-purifiers/wd516an_answ_e_my_c/gallery/dz-01.jpg'},
-                     {id:'03', title:t.benefit3Title, desc:t.benefit3Desc, img:'https://www.lg.com/content/dam/channel/wcms/my/images/common/subscribe/thinq_lifestyle.jpg'}
-                   ].map((b, i) => (
-                     <div key={b.id} className={`grid md:grid-cols-2 gap-16 items-center animate-fade-up ${i%2!==0?'flex-row-reverse':''}`}>
-                        <div className={i%2!==0?'md:order-last':''}><img src={b.img} className="lg-benefit-img aspect-[16/10]" /></div>
-                        <div className="space-y-6"><span className="text-8xl font-black text-gray-100 block">{b.id}</span><h3 className="text-4xl font-black uppercase tracking-tight">{b.title}</h3><p className="text-xl text-gray-500 font-medium leading-relaxed">{b.desc}</p></div>
-                     </div>
-                   ))}
+                   
+                   {/* Benefit 01 */}
+                   <div className="grid md:grid-cols-2 gap-16 items-center animate-fade-up">
+                      <img src="https://www.lg.com/content/dam/channel/wcms/my/images/common/subscribe/benefits_01.jpg" className="lg-benefit-img aspect-[16/10]" />
+                      <div className="space-y-6">
+                        <span className="text-8xl font-black text-gray-200 block leading-none">01</span>
+                        <h3 className="text-4xl font-black uppercase tracking-tight">{t.benefit1Title}</h3>
+                        <p className="text-xl text-gray-500 font-medium leading-relaxed">{t.benefit1Desc}</p>
+                      </div>
+                   </div>
+
+                   {/* Benefit 02 */}
+                   <div className="grid md:grid-cols-2 gap-16 items-center animate-fade-up flex-row-reverse">
+                      <img src="https://www.lg.com/content/dam/channel/wcms/my/images/water-purifiers/wd516an_answ_e_my_c/gallery/dz-01.jpg" className="lg-benefit-img aspect-[16/10] md:order-last" />
+                      <div className="space-y-6">
+                        <span className="text-8xl font-black text-gray-200 block leading-none">02</span>
+                        <h3 className="text-4xl font-black uppercase tracking-tight">{t.benefit2Title}</h3>
+                        <p className="text-xl text-gray-500 font-medium leading-relaxed">{t.benefit2Desc}</p>
+                      </div>
+                   </div>
+
+                   {/* Benefit 03 */}
+                   <div className="grid md:grid-cols-2 gap-16 items-center animate-fade-up">
+                      <img src="https://www.lg.com/content/dam/channel/wcms/my/images/common/subscribe/thinq_lifestyle.jpg" className="lg-benefit-img aspect-[16/10]" />
+                      <div className="space-y-6">
+                        <span className="text-8xl font-black text-gray-200 block leading-none">03</span>
+                        <h3 className="text-4xl font-black uppercase tracking-tight">{t.benefit3Title}</h3>
+                        <p className="text-xl text-gray-500 font-medium leading-relaxed">{t.benefit3Desc}</p>
+                      </div>
+                   </div>
                 </div>
               </section>
 
@@ -326,25 +322,29 @@
                 </div>
               )}
 
-              {/* Showroom Catalog */}
+              {/* Catalog */}
               <section id="catalog" className="py-32 max-w-7xl mx-auto px-6">
                 <div className="flex flex-col md:flex-row justify-between items-end gap-12 mb-20">
                   <div className="space-y-4"><span className="text-lg-red font-black uppercase tracking-[0.6em] text-[10px]">Digital Showroom</span><h2 className="text-5xl md:text-6xl font-black uppercase tracking-tighter">Explore Hub.</h2></div>
                   <div className="flex flex-wrap gap-2 overflow-x-auto no-scrollbar">
-                    <button onClick={() => setActiveCategoryFilter('All')} className={`px-8 py-3.5 rounded-full text-[10px] font-black uppercase tracking-widest ${activeCategoryFilter === 'All' ? 'bg-black text-white shadow-xl' : 'bg-gray-50 text-gray-400'}`}>All</button>
-                    {categories.map(cat => (<button key={cat} onClick={() => setActiveCategoryFilter(cat)} className={`px-8 py-3.5 rounded-full text-[10px] font-black uppercase tracking-widest ${activeCategoryFilter === cat ? 'bg-black text-white shadow-xl' : 'bg-gray-50 text-gray-400'}`}>{cat}</button>))}
+                    <button onClick={() => setActiveCategoryFilter('All')} className={`px-8 py-3.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${activeCategoryFilter === 'All' ? 'bg-black text-white shadow-xl' : 'bg-gray-50 text-gray-400'}`}>All</button>
+                    {categories.map(cat => (<button key={cat} onClick={() => setActiveCategoryFilter(cat)} className={`px-8 py-3.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${activeCategoryFilter === cat ? 'bg-black text-white shadow-xl' : 'bg-gray-50 text-gray-400'}`}>{cat}</button>))}
                   </div>
                 </div>
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-12">
                   {filteredProducts.map(p => {
-                    const displayPrice = calculatePrice(p.price, p.id);
+                    const promo = calculatePromoInfo(p.price, p.id);
                     return (
-                      <div key={p.id} className="bg-white rounded-[45px] p-10 border border-gray-100 flex flex-col group hover:shadow-premium transition-all animate-fade-up">
+                      <div key={p.id} className="bg-white rounded-[45px] p-10 border border-gray-100 flex flex-col group hover:shadow-premium transition-all">
                          <div className="aspect-square mb-8 flex items-center justify-center relative"><img src={p.image} className="max-h-[85%] object-contain relative z-10 transition-transform group-hover:scale-110" /></div>
                          <h3 className="text-2xl font-black uppercase tracking-tighter leading-none mb-1">{p.name}</h3>
                          <p className="text-[10px] font-bold text-gray-400 uppercase mb-8 tracking-widest">{p.subName[lang]}</p>
                          <div className="mt-auto pt-8 border-t border-gray-50 flex items-end justify-between">
-                            <div><span className="text-lg-red text-[10px] font-black uppercase block mb-1">{t.monthly}</span><span className="text-4xl font-black tracking-tighter">RM{displayPrice}</span></div>
+                            <div>
+                              {promo.durationText && <span className="text-lg-red text-[8px] font-black uppercase block leading-none mb-1 animate-pulse">{promo.durationText}</span>}
+                              <span className="text-lg-red text-[10px] font-black uppercase block leading-none mb-1">{t.monthly}</span>
+                              <span className="text-4xl font-black tracking-tighter">RM{promo.price}</span>
+                            </div>
                             <a href={`https://wa.me/${activeAgent?.wa || settings.contactPhone}?text=Inquire: ${p.name}`} className="bg-lg-dark text-white p-5 rounded-full hover:bg-lg-red transition-all shadow-xl"><Icon name="arrow-right" size={24} /></a>
                          </div>
                       </div>
@@ -358,12 +358,12 @@
               </footer>
             </div>
           ) : (
-            /* ADMIN VIEW - FULL IMPLEMENTATION */
+            /* ADMIN VIEW - FULL TAB IMPLEMENTATION */
             <div className="pt-32 px-6 max-w-7xl mx-auto pb-32 space-y-12 animate-fade-up">
                <div className="flex flex-wrap gap-4 border-b pb-8 items-center">
                  <h1 className="text-xl font-black uppercase mr-8 tracking-tighter">{t.adminTitle}</h1>
                  {['inventory', 'categories', 'promo', 'affiliates', 'settings', 'backup'].map(tab => (
-                   <button key={tab} onClick={() => setActiveTab(tab)} className={`px-6 py-2.5 rounded-full text-[9px] font-black uppercase tracking-widest ${activeTab === tab ? 'bg-lg-red text-white shadow-lg' : 'bg-gray-100 text-gray-400'}`}>{t[tab]}</button>
+                   <button key={tab} onClick={() => setActiveTab(tab)} className={`px-6 py-2.5 rounded-full text-[9px] font-black uppercase tracking-widest ${activeTab === tab ? 'bg-lg-red text-white shadow-lg' : 'bg-gray-100 text-gray-400 hover:text-lg-dark transition-all'}`}>{t[tab]}</button>
                  ))}
                  <button onClick={() => setView('home')} className="ml-auto text-[9px] font-black uppercase text-gray-300 hover:text-lg-red">Exit</button>
                </div>
@@ -373,22 +373,19 @@
                    {products.map(p => (
                      <div key={p.id} className="admin-card flex items-center gap-6 group">
                         <img src={p.image} className="w-16 h-16 object-contain bg-gray-50 rounded-2xl" />
-                        <div className="flex-grow">
-                           <p className="font-black uppercase text-sm leading-none mb-1">{p.name}</p>
-                           <p className="text-[10px] text-gray-400 uppercase tracking-widest">{p.category} · RM{p.price}</p>
-                        </div>
+                        <div className="flex-grow"><p className="font-black uppercase text-sm leading-none mb-1">{p.name}</p><p className="text-[10px] text-gray-400 uppercase tracking-widest">{p.category} · RM{p.price}</p></div>
                         <button onClick={() => setEditingProduct({...p})} className="p-3 bg-gray-50 rounded-full hover:bg-lg-red hover:text-white transition-all"><Icon name="edit-3" size={16}/></button>
                      </div>
                    ))}
-                   <button onClick={() => setEditingProduct({ id: Date.now().toString(), category: categories[0] || 'Default', name: 'New Product', subName:{cn:'',en:'',ms:''}, image: '', price: 0, plans: [], variants: [] })} className="border-4 border-dashed border-gray-100 rounded-[40px] flex items-center justify-center text-gray-300 hover:text-lg-red aspect-[3/1] transition-all"><Icon name="plus" size={32}/></button>
+                   <button onClick={() => setEditingProduct({ id: Date.now().toString(), category: categories[0], name: 'New Product', subName:{cn:'',en:'',ms:''}, image: '', price: 0, plans: [], variants: [] })} className="border-4 border-dashed border-gray-100 rounded-[40px] flex items-center justify-center text-gray-300 hover:text-lg-red aspect-[3/1] transition-all"><Icon name="plus" size={32}/></button>
                  </div>
                )}
 
                {activeTab === 'categories' && (
                  <div className="bg-gray-50 p-12 rounded-[50px] space-y-8">
                     <div className="flex gap-4">
-                       <input id="catName" placeholder="New Category Name..." className="flex-grow" />
-                       <button onClick={() => {const v=document.getElementById('catName').value; if(v && !categories.includes(v)) { setCategories([...categories, v]); document.getElementById('catName').value=''; }}} className="bg-lg-red text-white px-10 rounded-full font-black uppercase text-[10px]">Add</button>
+                       <input id="catName" placeholder="New Category..." className="flex-grow" />
+                       <button onClick={() => {const v=document.getElementById('catName').value; if(v && !categories.includes(v)) setCategories([...categories, v]); }} className="bg-lg-red text-white px-10 rounded-full font-black uppercase text-[10px]">Add</button>
                     </div>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                        {categories.map(c => (
@@ -403,23 +400,30 @@
 
                {activeTab === 'promo' && (
                  <div className="space-y-8">
-                    <div className="bg-gray-100 p-10 rounded-[50px] grid md:grid-cols-5 gap-4 shadow-inner">
+                    <div className="bg-gray-100 p-10 rounded-[50px] grid md:grid-cols-6 gap-4 shadow-inner">
                        <input id="prName" placeholder="Promo Name" className="w-full" />
-                       <select id="prType" className="w-full"><option value="percent">% Off</option><option value="fixed">RM Off</option><option value="direct">Direct RM</option></select>
+                       <select id="prType" className="w-full"><option value="percent">% Discount</option><option value="fixed">RM Off</option><option value="direct">Direct RM</option></select>
                        <input id="prValue" placeholder="Value" type="number" className="w-full" />
                        <div className="flex flex-col gap-1">
-                          <label className="text-[8px] font-black text-gray-400 ml-2">EndDate (Required)</label>
-                          <input id="prDate" type="date" className="w-full p-2" />
+                          <label className="text-[8px] font-black text-gray-400 ml-2 uppercase">Duration</label>
+                          <select id="prDur" className="w-full"><option value="full">Full Term</option><option value="8">8 Months</option><option value="9">9 Months</option></select>
                        </div>
+                       <input id="prDate" type="date" className="w-full" />
                        <button onClick={() => {
-                         const n=document.getElementById('prName').value, t=document.getElementById('prType').value, v=Number(document.getElementById('prValue').value), d=document.getElementById('prDate').value;
-                         if(n && v && d) setTemplates([...templates, { id: Date.now().toString(), name:n, type:t, value:v, endDate:d, isActive:true, applyToAll:true }]);
+                         const n=document.getElementById('prName').value, t=document.getElementById('prType').value, v=Number(document.getElementById('prValue').value), d=document.getElementById('prDate').value, dur=document.getElementById('prDur').value;
+                         if(n && v && d) setTemplates([...templates, { id: Date.now().toString(), name:n, type:t, value:v, endDate:d, promoDuration: dur, isActive:true, applyToAll:true }]);
                        }} className="bg-lg-red text-white font-black uppercase text-[10px] rounded-full">Save Promo</button>
                     </div>
                     <div className="space-y-4">
                        {templates.map(tp => (
                          <div key={tp.id} className="admin-card flex justify-between items-center">
-                            <div><p className="font-black uppercase text-lg">{tp.name}</p><p className="text-[10px] text-lg-red font-bold uppercase tracking-widest">{tp.type==='percent'?`-${tp.value}%`:tp.type==='fixed'?`-RM${tp.value}`:`RM${tp.value}`} · Until: {tp.endDate}</p></div>
+                            <div>
+                              <p className="font-black uppercase text-lg">{tp.name}</p>
+                              <p className="text-[10px] text-lg-red font-bold uppercase tracking-widest">
+                                {tp.type==='percent'?`-${tp.value}%`:tp.type==='fixed'?`-RM${tp.value}`:`RM${tp.value}`} 
+                                {tp.promoDuration !== 'full' && ` · ${tp.promoDuration} Months Limit`}
+                              </p>
+                            </div>
                             <div className="flex items-center gap-4">
                                <button onClick={() => setTemplates(templates.map(x=>x.id===tp.id?{...x, isActive:!x.isActive}:x))} className={`p-2 rounded-full ${tp.isActive?'text-green-500 bg-green-50':'text-gray-300 bg-gray-50'}`}><Icon name="power" size={18}/></button>
                                <button onClick={() => setTemplates(templates.filter(x=>x.id!==tp.id))} className="text-red-400"><Icon name="trash-2" size={18}/></button>
@@ -427,51 +431,6 @@
                          </div>
                        ))}
                     </div>
-                 </div>
-               )}
-
-               {activeTab === 'affiliates' && (
-                 <div className="space-y-8">
-                    <div className="bg-lg-dark p-10 rounded-[50px] grid md:grid-cols-3 gap-4">
-                       <input id="agName" placeholder="Agent Name" className="bg-white/10 text-white border-none" />
-                       <input id="agWa" placeholder="WA (601...)" className="bg-white/10 text-white border-none" />
-                       <button onClick={()=>{const n=document.getElementById('agName').value, w=document.getElementById('agWa').value; if(n&&w) setAgents([...agents,{name:n,wa:w.replace(/\D/g,'')}]);}} className="bg-lg-red text-white font-black uppercase text-[10px] rounded-3xl">Add Affiliate</button>
-                    </div>
-                    <div className="grid gap-4">
-                       {agents.map(a => (
-                         <div key={a.wa} className="admin-card flex justify-between items-center">
-                            <div><p className="font-black uppercase">{a.name}</p><p className="text-[9px] text-gray-400">WhatsApp: {a.wa}</p></div>
-                            <div className="flex gap-4">
-                               <button onClick={()=>{const link=`${window.location.origin}${window.location.pathname}?wa=${a.wa}&name=${encodeURIComponent(a.name)}`; navigator.clipboard.writeText(link); alert("Link Copied!");}} className="bg-gray-100 px-6 py-2 rounded-full text-[9px] font-black uppercase">Copy Link</button>
-                               <button onClick={() => setAgents(agents.filter(x=>x.wa!==a.wa))} className="text-red-400"><Icon name="trash-2" size={16}/></button>
-                            </div>
-                         </div>
-                       ))}
-                    </div>
-                 </div>
-               )}
-
-               {activeTab === 'settings' && (
-                 <div className="bg-gray-50 p-12 rounded-[50px] grid md:grid-cols-2 gap-8">
-                    <div className="space-y-4">
-                       <label className="text-[10px] font-black text-gray-400 uppercase">Site Logo</label>
-                       <div className="flex items-center gap-6 bg-white p-6 rounded-3xl border border-gray-100">
-                          <img src={settings.logo} className="h-10 object-contain" />
-                          <label className="file-upload-btn flex-grow justify-center"><Icon name="upload" size={12}/>Upload<input type="file" className="hidden" accept="image/*" onChange={(e) => handleImageUpload(e, (b) => setSettings({...settings, logo: b}))} /></label>
-                       </div>
-                    </div>
-                    <div className="space-y-4">
-                       <label className="text-[10px] font-black text-gray-400 uppercase">Hero BG</label>
-                       <div className="flex items-center gap-6 bg-white p-6 rounded-3xl border border-gray-100">
-                          <img src={settings.heroImage} className="h-10 w-20 object-cover rounded-lg" />
-                          <label className="file-upload-btn flex-grow justify-center"><Icon name="upload" size={12}/>Upload<input type="file" className="hidden" accept="image/*" onChange={(e) => handleImageUpload(e, (b) => setSettings({...settings, heroImage: b}))} /></label>
-                       </div>
-                    </div>
-                    <div className="space-y-2"><label className="text-[9px] font-black text-gray-400 uppercase">Admin PIN</label><input value={settings.adminPin} onChange={e=>setSettings({...settings, adminPin:e.target.value})} className="w-full" /></div>
-                    <div className="space-y-2"><label className="text-[9px] font-black text-gray-400 uppercase">Master WA</label><input value={settings.contactPhone} onChange={e=>setSettings({...settings, contactPhone:e.target.value})} className="w-full" /></div>
-                    {['cn','en','ms'].map(l => (
-                      <div key={l} className="space-y-2"><label className="text-[9px] font-black text-gray-400 uppercase">Hero Title ({l})</label><input value={settings.heroTitle[l]} onChange={e=>setSettings({...settings, heroTitle:{...settings.heroTitle,[l]:e.target.value}})} className="w-full" /></div>
-                    ))}
                  </div>
                )}
 
@@ -485,6 +444,51 @@
                     <label className="bg-white text-lg-red border-2 border-lg-red px-16 py-6 rounded-full font-black uppercase text-[11px] cursor-pointer shadow-xl">Import Data<input type="file" className="hidden" onChange={handleRestore} accept=".json" /></label>
                  </div>
                )}
+
+               {activeTab === 'settings' && (
+                 <div className="bg-gray-50 p-12 rounded-[50px] grid md:grid-cols-2 gap-8 shadow-inner">
+                    <div className="space-y-4">
+                       <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-4">Site Logo</label>
+                       <div className="flex items-center gap-6 bg-white p-6 rounded-3xl border border-gray-100">
+                          <img src={settings.logo} className="h-10 object-contain" />
+                          <label className="file-upload-btn flex-grow justify-center"><Icon name="upload" size={12}/>Upload<input type="file" className="hidden" accept="image/*" onChange={(e) => handleImageUpload(e, (b) => setSettings({...settings, logo: b}))} /></label>
+                       </div>
+                    </div>
+                    <div className="space-y-4">
+                       <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-4">Hero BG</label>
+                       <div className="flex items-center gap-6 bg-white p-6 rounded-3xl border border-gray-100">
+                          <img src={settings.heroImage} className="h-10 w-20 object-cover rounded-lg" />
+                          <label className="file-upload-btn flex-grow justify-center"><Icon name="upload" size={12}/>Upload<input type="file" className="hidden" accept="image/*" onChange={(e) => handleImageUpload(e, (b) => setSettings({...settings, heroImage: b}))} /></label>
+                       </div>
+                    </div>
+                    <div className="space-y-2"><label className="text-[9px] font-black text-gray-400 uppercase">PIN</label><input value={settings.adminPin} onChange={e=>setSettings({...settings, adminPin:e.target.value})} className="w-full" /></div>
+                    <div className="space-y-2"><label className="text-[9px] font-black text-gray-400 uppercase">WA</label><input value={settings.contactPhone} onChange={e=>setSettings({...settings, contactPhone:e.target.value})} className="w-full" /></div>
+                    {['cn','en','ms'].map(l => (
+                      <div key={l} className="space-y-2"><label className="text-[9px] font-black text-gray-400 uppercase">Hero Title ({l})</label><input value={settings.heroTitle[l]} onChange={e=>setSettings({...settings, heroTitle:{...settings.heroTitle,[l]:e.target.value}})} className="w-full" /></div>
+                    ))}
+                 </div>
+               )}
+
+               {activeTab === 'affiliates' && (
+                 <div className="space-y-8">
+                    <div className="bg-lg-dark p-10 rounded-[50px] grid md:grid-cols-3 gap-4 shadow-xl">
+                       <input id="agName" placeholder="Agent Name" className="bg-white/10 text-white border-none" />
+                       <input id="agWa" placeholder="WA (601...)" className="bg-white/10 text-white border-none" />
+                       <button onClick={()=>{const n=document.getElementById('agName').value, w=document.getElementById('agWa').value; if(n&&w) setAgents([...agents,{name:n,wa:w.replace(/\D/g,'')}]);}} className="bg-lg-red text-white font-black uppercase text-[10px] rounded-3xl">Add Affiliate</button>
+                    </div>
+                    <div className="grid gap-4">
+                       {agents.map(a => (
+                         <div key={a.wa} className="admin-card flex justify-between items-center group">
+                            <div><p className="font-black uppercase">{a.name}</p><p className="text-[9px] text-gray-400 font-bold tracking-[0.2em]">WhatsApp: {a.wa}</p></div>
+                            <div className="flex gap-4">
+                               <button onClick={()=>{const link=`${window.location.origin}${window.location.pathname}?wa=${a.wa}&name=${encodeURIComponent(a.name)}`; navigator.clipboard.writeText(link); alert("推广链接已复制！");}} className="bg-gray-100 px-6 py-2 rounded-full text-[9px] font-black uppercase">Copy Link</button>
+                               <button onClick={() => setAgents(agents.filter(x=>x.wa!==a.wa))} className="text-red-400"><Icon name="trash-2" size={16}/></button>
+                            </div>
+                         </div>
+                       ))}
+                    </div>
+                 </div>
+               )}
             </div>
           )}
 
@@ -492,28 +496,27 @@
           {editingProduct && (
             <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 overflow-hidden">
                <div className="absolute inset-0 bg-lg-dark/60 backdrop-blur-md" onClick={() => setEditingProduct(null)}></div>
-               <div className="bg-white w-full max-w-6xl rounded-[60px] p-12 relative z-10 shadow-3xl max-h-[90vh] overflow-y-auto no-scrollbar space-y-12">
+               <div className="bg-white w-full max-w-6xl rounded-[60px] p-12 relative z-10 shadow-3xl max-h-[90vh] overflow-y-auto no-scrollbar space-y-12 animate-fade-up">
                  <div className="flex justify-between items-center border-b pb-8 border-gray-100">
-                    <div className="space-y-2"><h3 className="text-4xl font-black uppercase tracking-tighter">Product Editor</h3><p className="text-[10px] font-black text-gray-300 uppercase tracking-widest">Base64 Images Enabled</p></div>
-                    <div className="flex gap-4 items-center">
-                       <input id="ai_url" placeholder="LG Product URL..." className="w-64 bg-gray-50" />
-                       <button onClick={() => handleAiExtract(document.getElementById('ai_url').value)} className="bg-lg-red text-white px-6 py-4 rounded-2xl text-[9px] font-black uppercase flex items-center gap-2">{isAiLoading?<Icon name="loader" className="animate-spin" size={14}/>:<Icon name="sparkles" size={14}/>} AI Pull</button>
-                       <button onClick={() => setEditingProduct(null)} className="p-3 text-gray-400 hover:text-lg-red bg-gray-100 rounded-full"><Icon name="x" size={24}/></button>
-                    </div>
+                    <h3 className="text-4xl font-black uppercase tracking-tighter">Product Editor</h3>
+                    <button onClick={() => setEditingProduct(null)} className="p-3 text-gray-400 hover:text-lg-red bg-gray-100 rounded-full transition-all"><Icon name="x" size={24}/></button>
                  </div>
 
                  <div className="grid md:grid-cols-12 gap-12">
                     <div className="md:col-span-4 space-y-8">
-                       <div className="bg-gray-50 p-10 rounded-[50px] space-y-6 shadow-sm">
+                       <div className="bg-gray-50 p-10 rounded-[50px] space-y-6 shadow-sm border border-gray-100">
                           <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block text-center">Master Image</label>
-                          <div className="bg-white p-6 rounded-3xl border border-gray-100"><img src={editingProduct.image} className="w-full h-40 object-contain mx-auto mb-4" /><label className="file-upload-btn justify-center"><Icon name="upload" size={12}/>Upload Image<input type="file" className="hidden" onChange={(e) => handleImageUpload(e, (b) => setEditingProduct({...editingProduct, image: b}))} /></label></div>
+                          <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-inner">
+                            {editingProduct.image && <img src={editingProduct.image} className="w-full h-40 object-contain mx-auto mb-4" />}
+                            <label className="file-upload-btn justify-center"><Icon name="upload" size={12}/>Upload Image<input type="file" className="hidden" onChange={(e) => handleImageUpload(e, (b) => setEditingProduct({...editingProduct, image: b}))} /></label>
+                          </div>
                           <div className="space-y-4">
                              <select className="w-full" value={editingProduct.category} onChange={e=>setEditingProduct({...editingProduct, category: e.target.value})}>{categories.map(c => <option key={c} value={c}>{c}</option>)}</select>
                              <input className="w-full" placeholder="Product Name" value={editingProduct.name} onChange={e=>setEditingProduct({...editingProduct, name: e.target.value})} />
-                             <input className="w-full" placeholder="Base Price RM" type="number" value={editingProduct.price} onChange={e=>setEditingProduct({...editingProduct, price: Number(e.target.value)})} />
+                             <input className="w-full" placeholder="Base RM Monthly" type="number" value={editingProduct.price} onChange={e=>setEditingProduct({...editingProduct, price: Number(e.target.value)})} />
                           </div>
                        </div>
-                       <div className="bg-gray-50 p-10 rounded-[50px] space-y-4">
+                       <div className="bg-gray-50 p-10 rounded-[50px] space-y-4 shadow-sm border border-gray-100">
                           <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block text-center">Subtitles</label>
                           {['cn','en','ms'].map(l => (<input key={l} className="w-full" placeholder={`Sub (${l.toUpperCase()})`} value={editingProduct.subName[l]} onChange={e=>setEditingProduct({...editingProduct, subName:{...editingProduct.subName, [l]:e.target.value}})} />))}
                        </div>
@@ -521,10 +524,10 @@
 
                     <div className="md:col-span-8 space-y-12">
                        <div className="space-y-6">
-                          <div className="flex justify-between items-center"><label className="text-[11px] font-black uppercase tracking-[0.4em] text-lg-red">Subscription Plans</label><button onClick={()=>setEditingProduct({...editingProduct, plans: [...editingProduct.plans, {term:'7', type:'Self Service', interval:'6mth', price:0}]})} className="bg-black text-white px-6 py-2 rounded-full font-black uppercase text-[9px] flex items-center gap-2"><Icon name="plus" size={14}/> Add Plan</button></div>
+                          <div className="flex justify-between items-center border-b pb-4"><label className="text-[11px] font-black uppercase tracking-[0.4em] text-lg-red">Subscription Plans</label><button onClick={()=>setEditingProduct({...editingProduct, plans: [...(editingProduct.plans || []), {term:'7', type:'Self Service', interval:'6mth', price:0}]})} className="bg-black text-white px-6 py-2 rounded-full font-black uppercase text-[9px] flex items-center gap-2"><Icon name="plus" size={14}/> Add New Plan</button></div>
                           <div className="grid gap-4">
-                             {editingProduct.plans.map((pl, i) => (
-                               <div key={i} className="bg-lg-dark text-white p-8 rounded-[40px] flex flex-wrap md:flex-nowrap gap-4 items-end shadow-2xl">
+                             {(editingProduct.plans || []).map((pl, i) => (
+                               <div key={i} className="bg-lg-dark text-white p-6 rounded-[30px] flex flex-wrap md:flex-nowrap gap-4 items-end shadow-2xl relative">
                                   <div className="flex-1 space-y-1">
                                     <label className="text-[8px] font-black opacity-40 ml-2 uppercase">Term</label>
                                     <select className="bg-white/10 text-white w-full border-none p-3 rounded-2xl" value={pl.term} onChange={e=>{const np=[...editingProduct.plans]; np[i].term=e.target.value; setEditingProduct({...editingProduct, plans:np})}}><option value="3" className="text-black">3 Years</option><option value="5" className="text-black">5 Years</option><option value="7" className="text-black">7 Years</option><option value="Outright" className="text-black">Outright</option></select>
@@ -542,32 +545,16 @@
                              ))}
                           </div>
                        </div>
-
-                       <div className="space-y-6">
-                          <div className="flex justify-between items-center"><label className="text-[11px] font-black uppercase tracking-[0.4em]">Color Variants</label><button onClick={()=>setEditingProduct({...editingProduct, variants: [...editingProduct.variants, {name:'', colorCode:'#eee', image:''}]})} className="bg-gray-100 px-6 py-2 rounded-full font-black uppercase text-[9px] flex items-center gap-2"><Icon name="plus" size={14}/> Add Variant</button></div>
-                          <div className="grid md:grid-cols-2 gap-6">
-                             {editingProduct.variants.map((v, i) => (
-                               <div key={i} className="bg-gray-50 p-8 rounded-[35px] flex items-center gap-6 border border-gray-100 shadow-sm relative">
-                                  <input type="color" className="w-12 h-12 border-none rounded-full" value={v.colorCode} onChange={e=>{const nv=[...editingProduct.variants]; nv[i].colorCode=e.target.value; setEditingProduct({...editingProduct, variants:nv})}} />
-                                  <div className="flex-grow space-y-2">
-                                     <input className="w-full bg-transparent border-none p-1 font-black text-xs uppercase" placeholder="Color Name" value={v.name} onChange={e=>{const nv=[...editingProduct.variants]; nv[i].name=e.target.value; setEditingProduct({...editingProduct, variants:nv})}} />
-                                     <div className="flex items-center gap-4"><img src={v.image} className="w-10 h-10 object-contain bg-white rounded-xl border" /><label className="file-upload-btn flex-grow py-2 text-[8px]"><Icon name="image" size={10}/>Upload<input type="file" className="hidden" onChange={async(e)=>{const b=await fileToBase64(e.target.files[0]); const nv=[...editingProduct.variants]; nv[i].image=b; setEditingProduct({...editingProduct, variants:nv});}} /></label></div>
-                                  </div>
-                                  <button onClick={()=>{const nv=editingProduct.variants.filter((_,idx)=>idx!==i); setEditingProduct({...editingProduct, variants:nv})}} className="absolute top-4 right-4 text-gray-300 hover:text-red-500"><Icon name="trash-2" size={14}/></button>
-                               </div>
-                             ))}
-                          </div>
-                       </div>
                     </div>
                  </div>
 
-                 <div className="flex gap-6 pt-12 border-t">
+                 <div className="flex gap-6 pt-12 border-t border-gray-100">
                     <button onClick={() => {
                        const updated = products.map(p => p.id === editingProduct.id ? editingProduct : p);
                        if (!products.some(p => p.id === editingProduct.id)) updated.push(editingProduct);
                        setProducts(updated); setEditingProduct(null);
-                    }} className="flex-grow bg-lg-red text-white py-8 rounded-full font-black uppercase text-xs tracking-[0.5em] shadow-2xl hover:bg-lg-dark transition-all">Submit to Global Showroom</button>
-                    <button onClick={()=>{ if(confirm("Permanently delete this product?")) {setProducts(products.filter(p=>p.id!==editingProduct.id)); setEditingProduct(null);}}} className="px-12 bg-gray-100 text-red-500 rounded-full hover:bg-red-500 hover:text-white transition-all"><Icon name="trash-2" size={24}/></button>
+                    }} className="flex-grow bg-lg-red text-white py-8 rounded-full font-black uppercase text-xs tracking-[0.5em] shadow-2xl hover:bg-lg-dark transition-all">Submit Changes</button>
+                    <button onClick={()=>{ if(confirm("Permanently delete?")) {setProducts(products.filter(p=>p.id!==editingProduct.id)); setEditingProduct(null);}}} className="px-12 bg-gray-100 text-red-500 rounded-full hover:bg-red-500 transition-all shadow-lg"><Icon name="trash-2" size={24}/></button>
                  </div>
                </div>
             </div>
