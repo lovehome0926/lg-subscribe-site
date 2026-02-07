@@ -82,66 +82,70 @@ const Admin: React.FC<AdminProps> = ({ products, config, onUpdateProducts, onUpd
         </div>
       </div>
 
-      {/* Verification Troubleshooter */}
+      {/* Specific Verification Troubleshooter */}
       {showDeployGuide && (
-        <div className="mb-10 bg-red-50 dark:bg-red-950/20 border-2 border-red-500 rounded-[2.5rem] p-8 md:p-12 shadow-2xl relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-red-500/10 blur-[100px] -translate-y-1/2 translate-x-1/2"></div>
+        <div className="mb-10 bg-blue-50 dark:bg-blue-950/20 border-2 border-blue-500 rounded-[2.5rem] p-8 md:p-12 shadow-2xl relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 blur-[100px] -translate-y-1/2 translate-x-1/2"></div>
           
-          <button onClick={() => setShowDeployGuide(false)} className="absolute top-8 right-8 text-red-600 hover:text-red-800 transition-colors">
+          <button onClick={() => setShowDeployGuide(false)} className="absolute top-8 right-8 text-blue-600 hover:text-blue-800 transition-colors">
             <span className="material-symbols-outlined font-bold">close</span>
           </button>
 
           <div className="relative z-10 space-y-8">
-            <div className="inline-flex items-center gap-2 bg-red-600 text-white px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">
-              Verification Troubleshooter
+            <div className="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">
+              Security Ownership Verification
             </div>
             
-            <h3 className="text-3xl font-black italic text-red-900 dark:text-red-100 leading-tight">还是显示 "Verification Needed"？</h3>
+            <h3 className="text-3xl font-black italic text-blue-900 dark:text-blue-100 leading-tight">由于域名冲突，需完成以下两步</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {/* CNAME Update */}
               <div className="space-y-4">
-                <p className="text-sm font-bold text-red-800 dark:text-red-200 flex items-center gap-2">
-                   <span className="size-6 bg-red-600 text-white rounded-full flex items-center justify-center text-[10px]">1</span>
-                   点击 Vercel 界面上的 "Learn More"
+                <p className="text-sm font-bold text-blue-800 dark:text-blue-200 flex items-center gap-2">
+                   <span className="size-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-[10px]">1</span>
+                   更新 CNAME 记录 (专属目标)
                 </p>
-                <div className="bg-white/60 dark:bg-black/40 p-4 rounded-2xl border border-red-200 text-[11px] leading-relaxed text-slate-700 dark:text-slate-300">
-                  展开后，Vercel 会显示它预期的值。请对比 Cloudflare 中的设置：
-                  <ul className="mt-2 space-y-1 font-mono text-red-600 dark:text-red-400">
-                    <li>• Type: 是否是 CNAME?</li>
-                    <li>• Value: 是否完全匹配 cname.vercel-dns.com?</li>
-                  </ul>
+                <div className="bg-white/80 dark:bg-black/40 p-5 rounded-2xl border border-blue-200 space-y-3 shadow-sm">
+                  <div className="space-y-1">
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Target / Value</p>
+                    <div className="flex items-center gap-2">
+                      <code className="bg-blue-50 dark:bg-blue-900/40 p-2 rounded text-[11px] font-mono text-blue-600 flex-1 break-all">f1c34f84b29571e7.vercel-dns-017.com</code>
+                    </div>
+                  </div>
+                  <p className="text-[10px] text-amber-600 font-bold">注意：Proxy status 必须保持灰色 ☁️</p>
                 </div>
               </div>
 
+              {/* TXT Record */}
               <div className="space-y-4">
-                <p className="text-sm font-bold text-red-800 dark:text-red-200 flex items-center gap-2">
-                   <span className="size-6 bg-red-600 text-white rounded-full flex items-center justify-center text-[10px]">2</span>
-                   检查 Cloudflare 代理状态
+                <p className="text-sm font-bold text-blue-800 dark:text-blue-200 flex items-center gap-2">
+                   <span className="size-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-[10px]">2</span>
+                   新增 TXT 验证记录 (证明所有权)
                 </p>
-                <div className="bg-white/60 dark:bg-black/40 p-4 rounded-2xl border border-red-200 text-[11px] leading-relaxed text-slate-700 dark:text-slate-300">
-                  这是最常见的错误！在 Cloudflare 编辑那条 CNAME 记录，确保 <strong className="text-red-600">Proxy status</strong> 是 <span className="underline">DNS Only (灰色云朵)</span>。只要是橘色，Vercel 就无法验证。
+                <div className="bg-white/80 dark:bg-black/40 p-5 rounded-2xl border border-blue-200 space-y-3 shadow-sm">
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="space-y-1">
+                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Name</p>
+                      <code className="bg-slate-100 dark:bg-slate-800 p-2 rounded text-[11px] block">_vercel</code>
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Type</p>
+                      <code className="bg-slate-100 dark:bg-slate-800 p-2 rounded text-[11px] block">TXT</code>
+                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Content / Value</p>
+                    <code className="bg-blue-50 dark:bg-blue-900/40 p-2 rounded text-[11px] block break-all font-mono text-blue-600">vc-domain-verify=lgsubscribe.biz.my,6ac1a6e7fa0b76ef0754</code>
+                  </div>
                 </div>
               </div>
+            </div>
 
-              <div className="space-y-4">
-                <p className="text-sm font-bold text-red-800 dark:text-red-200 flex items-center gap-2">
-                   <span className="size-6 bg-red-600 text-white rounded-full flex items-center justify-center text-[10px]">3</span>
-                   检查冲突记录
-                </p>
-                <div className="bg-white/60 dark:bg-black/40 p-4 rounded-2xl border border-red-200 text-[11px] leading-relaxed text-slate-700 dark:text-slate-300">
-                  确保 Cloudflare 中<strong>没有</strong>另一条相同名称 (<code className="bg-red-100 px-1 rounded">lgsubscribe</code>) 的 A 记录。如果有，必须删除 A 记录，只留 CNAME。
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <p className="text-sm font-bold text-red-800 dark:text-red-200 flex items-center gap-2">
-                   <span className="size-6 bg-red-600 text-white rounded-full flex items-center justify-center text-[10px]">4</span>
-                   点击 "Refresh"
-                </p>
-                <div className="bg-white/60 dark:bg-black/40 p-4 rounded-2xl border border-red-200 text-[11px] leading-relaxed text-slate-700 dark:text-slate-300">
-                  修改后，回到 Vercel 点击那个按钮。如果还是红的，可能需要等 5-10 分钟让 DNS 生效。
-                </div>
-              </div>
+            <div className="flex items-center gap-3 p-4 bg-white/40 dark:bg-black/20 rounded-2xl border border-white/20">
+              <span className="material-symbols-outlined text-blue-500">info</span>
+              <p className="text-xs font-bold text-slate-600 dark:text-slate-400 italic">
+                完成这两条设置后，回到 Vercel 点击 "Refresh"。验证通过后，红色警告就会消失，网站立即生效。
+              </p>
             </div>
           </div>
         </div>
@@ -168,8 +172,8 @@ const Admin: React.FC<AdminProps> = ({ products, config, onUpdateProducts, onUpd
 
         <div className="lg:col-span-2">
           <div className="flex justify-between items-center mb-6 px-2">
-             <h3 className="text-xl font-black italic uppercase tracking-tighter">Product Catalog</h3>
-             <button onClick={addProduct} className="bg-primary text-white px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all shadow-lg shadow-primary/20">NEW ITEM</button>
+             <h3 className="text-xl font-black italic uppercase tracking-tighter text-slate-900 dark:text-white">Inventory Management</h3>
+             <button onClick={addProduct} className="bg-primary text-white px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all shadow-lg shadow-primary/20">ADD PRODUCT</button>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
