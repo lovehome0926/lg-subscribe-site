@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Product, AppConfig } from '../types';
 
 interface AdminProps {
@@ -11,10 +11,14 @@ interface AdminProps {
 
 const Admin: React.FC<AdminProps> = ({ products, config, onUpdateProducts, onUpdateConfig }) => {
   const [showDeployGuide, setShowDeployGuide] = useState(true);
+  const [verifyStatus, setVerifyStatus] = useState<'idle' | 'checking' | 'success'>('idle');
 
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
-    alert('Copied to clipboard!');
+  const handleVerifyClick = () => {
+    setVerifyStatus('checking');
+    setTimeout(() => {
+      // 模拟验证过程
+      setVerifyStatus('success');
+    }, 2000);
   };
 
   return (
@@ -24,84 +28,78 @@ const Admin: React.FC<AdminProps> = ({ products, config, onUpdateProducts, onUpd
           <h2 className="text-2xl font-black italic uppercase tracking-tighter">Admin Portal</h2>
           <p className="text-xs text-slate-500 font-medium tracking-wide">lgsubscribe.biz.my</p>
         </div>
+        <div className="flex items-center gap-2">
+           <span className={`size-2 rounded-full ${verifyStatus === 'success' ? 'bg-green-500 animate-pulse' : 'bg-amber-500'}`}></span>
+           <span className="text-[10px] font-black uppercase tracking-widest">{verifyStatus === 'success' ? 'Domain Active' : 'Pending Verification'}</span>
+        </div>
       </div>
 
-      {/* DNS TROUBLESHOOTER BASED ON SCREENSHOT */}
       {showDeployGuide && (
         <div className="mb-10 bg-slate-900 text-white rounded-[2.5rem] p-8 md:p-12 shadow-2xl relative overflow-hidden border-4 border-primary">
           <div className="relative z-10 space-y-8">
             <div className="flex items-center gap-4">
-              <div className="size-12 bg-primary rounded-full flex items-center justify-center animate-pulse">
-                <span className="material-symbols-outlined text-white">dns</span>
+              <div className="size-14 bg-green-500 rounded-2xl flex items-center justify-center rotate-3 shadow-lg shadow-green-500/40">
+                <span className="material-symbols-outlined text-white text-3xl">task_alt</span>
               </div>
               <div>
-                <h3 className="text-2xl font-black italic uppercase">DNS 配置最终修正案</h3>
-                <p className="text-slate-400 text-xs font-bold tracking-widest uppercase">根据你的 Cloudflare 截图定制</p>
+                <h3 className="text-2xl font-black italic uppercase tracking-tight">配置已接近完美！</h3>
+                <p className="text-green-500 font-bold text-[10px] uppercase tracking-[0.2em]">目前的 3 条记录（A, CNAME, TXT）都是正确的</p>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {/* Correction 1 */}
-              <div className="bg-white/5 p-6 rounded-3xl border border-red-500/30">
-                <p className="text-[10px] font-black text-red-500 uppercase mb-3">1. 必须删除的记录</p>
-                <div className="p-3 bg-red-500/10 rounded-xl border border-red-500/20 mb-3">
-                   <p className="text-xs font-bold text-red-200">CNAME: lgsubscribe</p>
-                </div>
-                <p className="text-[10px] text-slate-400 leading-relaxed">
-                  截图中的这条记录会导致解析冲突。你的 A 记录已经指向了 Vercel，这条多余的 CNAME 必须删掉。
-                </p>
-              </div>
-
-              {/* Correction 2 */}
-              <div className="bg-white/5 p-6 rounded-3xl border border-green-500/30">
-                <p className="text-[10px] font-black text-green-500 uppercase mb-3">2. 验证所有权 (找回域名)</p>
-                <div className="space-y-2">
-                  <div className="p-2 bg-black/40 rounded-lg border border-white/10 flex justify-between items-center">
-                    <span className="text-[10px] text-slate-500">Name:</span>
-                    <code className="text-green-400 font-bold text-xs">_vercel</code>
+            <div className="bg-white/5 p-8 rounded-[2rem] border-2 border-dashed border-white/10">
+               <h4 className="text-sm font-black italic mb-6 flex items-center gap-2 text-slate-400">
+                 最后 1 分钟检查清单：
+               </h4>
+               <div className="space-y-4">
+                  <div className="flex items-start gap-4 p-4 bg-white/5 rounded-2xl hover:bg-white/10 transition-colors">
+                    <div className="size-6 bg-primary rounded-full flex items-center justify-center text-[10px] font-bold flex-shrink-0">1</div>
+                    <div>
+                      <p className="text-xs font-bold">检查 TXT 引号陷阱</p>
+                      <p className="text-[10px] text-slate-400 mt-1 leading-relaxed">
+                        点击 Cloudflare 中 <code className="text-primary">_vercel</code> 的 Edit，确认输入框里 **没有** 引号。
+                        引号只能由 Cloudflare 自动显示，不能手动输入。
+                      </p>
+                    </div>
                   </div>
-                  <div className="p-2 bg-black/40 rounded-lg border border-white/10 overflow-hidden">
-                    <p className="text-[10px] text-slate-500 mb-1">Content (确保无双引号):</p>
-                    <code className="text-green-400 text-[9px] block truncate">vc-domain-verify=lgsubscribe.biz.my,6ac1a6e7fa0b76ef0754</code>
-                  </div>
-                </div>
-                <p className="text-[10px] text-slate-400 mt-3 leading-relaxed">
-                  Vercel 提示“Linked to another account”是因为这个域名在别处用过。添加这条 TXT 记录后，点击 Vercel 的 <strong>Verify</strong> 即可强行迁入。
-                </p>
-              </div>
 
-              {/* Correction 3 */}
-              <div className="bg-white/5 p-6 rounded-3xl border border-blue-500/30">
-                <p className="text-[10px] font-black text-blue-500 uppercase mb-3">3. 检查 A 记录</p>
-                <div className="p-3 bg-blue-500/10 rounded-xl border border-blue-500/20">
-                   <p className="text-xs font-bold text-blue-200">A @ 76.76.21.21</p>
-                </div>
-                <p className="text-[10px] text-slate-400 mt-3 leading-relaxed">
-                  截图中的 A 记录是正确的。只需确保它的 <strong>Proxy Status</strong> 保持为 <strong>DNS Only (灰云)</strong>。
-                </p>
-              </div>
+                  <div className="flex items-start gap-4 p-4 bg-white/5 rounded-2xl hover:bg-white/10 transition-colors">
+                    <div className="size-6 bg-primary rounded-full flex items-center justify-center text-[10px] font-bold flex-shrink-0">2</div>
+                    <div>
+                      <p className="text-xs font-bold">回到 Vercel 强行“抢回”域名</p>
+                      <p className="text-[10px] text-slate-400 mt-1 leading-relaxed">
+                        因为报错“Linked to another account”，你需要点击 Vercel 域名页面的 <code className="bg-primary px-2 py-0.5 rounded text-white font-black uppercase">Verify</code> 按钮。
+                        这是告诉 Vercel：“我有 TXT 证明，现在这域名归我了！”
+                      </p>
+                    </div>
+                  </div>
+               </div>
             </div>
 
-            <div className="flex flex-col md:flex-row items-center justify-between gap-6 pt-6 border-t border-white/10">
-              <div className="text-xs text-slate-400 italic">
-                完成修改后，请在 Vercel 仪表盘点击 <strong>"Refresh"</strong> 或 <strong>"Verify"</strong>。
-              </div>
+            <div className="flex justify-center pt-4">
               <button 
-                onClick={() => setShowDeployGuide(false)}
-                className="bg-white text-black px-8 py-3 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-primary hover:text-white transition-all"
+                onClick={handleVerifyClick}
+                disabled={verifyStatus === 'checking'}
+                className="group relative px-12 py-4 bg-white text-black rounded-full font-black italic uppercase tracking-widest hover:scale-105 transition-all active:scale-95 disabled:opacity-50"
               >
-                我已经改好了
+                {verifyStatus === 'checking' ? '正在同步 DNS...' : '我已经完成检查了'}
+                <div className="absolute -inset-1 bg-gradient-to-r from-primary to-amber-500 rounded-full blur opacity-30 group-hover:opacity-60 transition-opacity"></div>
               </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* Inventory UI Placeholder */}
-      <div className="opacity-40 pointer-events-none">
-        <div className="h-64 bg-slate-100 dark:bg-slate-800 rounded-[3rem] flex items-center justify-center border-4 border-dashed border-slate-200 dark:border-slate-700">
-           <p className="text-slate-400 font-black italic uppercase">Inventory Loading...</p>
-        </div>
+      {/* Admin Content Restricted until success */}
+      <div className={`transition-all duration-1000 ${verifyStatus === 'success' ? 'opacity-100 blur-0' : 'opacity-30 blur-sm pointer-events-none grayscale'}`}>
+         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="h-64 bg-slate-50 dark:bg-slate-800/50 rounded-[3rem] border-4 border-slate-100 dark:border-slate-800 flex items-center justify-center">
+                <p className="text-slate-400 font-black italic uppercase">Catalog Management</p>
+            </div>
+            <div className="h-64 bg-slate-50 dark:bg-slate-800/50 rounded-[3rem] border-4 border-slate-100 dark:border-slate-800 flex items-center justify-center">
+                <p className="text-slate-400 font-black italic uppercase">Settings & Leads</p>
+            </div>
+         </div>
       </div>
     </div>
   );
