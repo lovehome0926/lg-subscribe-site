@@ -82,7 +82,7 @@ const Admin: React.FC<AdminProps> = ({ products, config, onUpdateProducts, onUpd
         </div>
       </div>
 
-      {/* Specific Verification Troubleshooter */}
+      {/* FIXED Verification Troubleshooter */}
       {showDeployGuide && (
         <div className="mb-10 bg-blue-50 dark:bg-blue-950/20 border-2 border-blue-500 rounded-[2.5rem] p-8 md:p-12 shadow-2xl relative overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 blur-[100px] -translate-y-1/2 translate-x-1/2"></div>
@@ -93,59 +93,55 @@ const Admin: React.FC<AdminProps> = ({ products, config, onUpdateProducts, onUpd
 
           <div className="relative z-10 space-y-8">
             <div className="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">
-              Security Ownership Verification
+              解决 "Not Authorized" 报错
             </div>
             
-            <h3 className="text-3xl font-black italic text-blue-900 dark:text-blue-100 leading-tight">由于域名冲突，需完成以下两步</h3>
+            <h3 className="text-3xl font-black italic text-blue-900 dark:text-blue-100 leading-tight">修正 Cloudflare 填写方式</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {/* CNAME Update */}
+              {/* Step 1 */}
               <div className="space-y-4">
                 <p className="text-sm font-bold text-blue-800 dark:text-blue-200 flex items-center gap-2">
                    <span className="size-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-[10px]">1</span>
-                   更新 CNAME 记录 (专属目标)
+                   更新 CNAME 记录
                 </p>
-                <div className="bg-white/80 dark:bg-black/40 p-5 rounded-2xl border border-blue-200 space-y-3 shadow-sm">
+                <div className="bg-white/80 dark:bg-black/40 p-5 rounded-2xl border border-blue-200 space-y-3">
+                  <div className="space-y-1">
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Name (只需填前缀)</p>
+                    <code className="bg-slate-100 dark:bg-slate-800 p-2 rounded text-[11px] block text-blue-600 font-bold">lgsubscribe</code>
+                  </div>
                   <div className="space-y-1">
                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Target / Value</p>
-                    <div className="flex items-center gap-2">
-                      <code className="bg-blue-50 dark:bg-blue-900/40 p-2 rounded text-[11px] font-mono text-blue-600 flex-1 break-all">f1c34f84b29571e7.vercel-dns-017.com</code>
-                    </div>
+                    <code className="bg-blue-50 dark:bg-blue-900/40 p-2 rounded text-[11px] font-mono text-blue-600 block break-all">f1c34f84b29571e7.vercel-dns-017.com</code>
                   </div>
-                  <p className="text-[10px] text-amber-600 font-bold">注意：Proxy status 必须保持灰色 ☁️</p>
                 </div>
               </div>
 
-              {/* TXT Record */}
+              {/* Step 2: The Critical Fix for the error */}
               <div className="space-y-4">
                 <p className="text-sm font-bold text-blue-800 dark:text-blue-200 flex items-center gap-2">
-                   <span className="size-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-[10px]">2</span>
-                   新增 TXT 验证记录 (证明所有权)
+                   <span className="size-6 bg-red-600 text-white rounded-full flex items-center justify-center text-[10px]">2</span>
+                   新增 TXT 验证记录 (关键修正)
                 </p>
-                <div className="bg-white/80 dark:bg-black/40 p-5 rounded-2xl border border-blue-200 space-y-3 shadow-sm">
-                  <div className="grid grid-cols-2 gap-2">
-                    <div className="space-y-1">
-                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Name</p>
-                      <code className="bg-slate-100 dark:bg-slate-800 p-2 rounded text-[11px] block">_vercel</code>
-                    </div>
-                    <div className="space-y-1">
-                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Type</p>
-                      <code className="bg-slate-100 dark:bg-slate-800 p-2 rounded text-[11px] block">TXT</code>
+                <div className="bg-white/80 dark:bg-black/40 p-5 rounded-2xl border border-red-200 space-y-3">
+                  <div className="space-y-1">
+                    <p className="text-[10px] font-black text-red-500 uppercase tracking-widest">Name (⚠️ 不要填 .biz.my 后缀)</p>
+                    <div className="flex items-center gap-2">
+                      <code className="bg-red-50 dark:bg-red-900/40 p-2 rounded text-[12px] font-black text-red-600 border border-red-200">_vercel</code>
+                      <span className="text-[10px] text-slate-400">只填这几个字</span>
                     </div>
                   </div>
                   <div className="space-y-1">
                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Content / Value</p>
-                    <code className="bg-blue-50 dark:bg-blue-900/40 p-2 rounded text-[11px] block break-all font-mono text-blue-600">vc-domain-verify=lgsubscribe.biz.my,6ac1a6e7fa0b76ef0754</code>
+                    <code className="bg-blue-50 dark:bg-blue-900/40 p-2 rounded text-[10px] block break-all font-mono">vc-domain-verify=lgsubscribe.biz.my,6ac1a6e7fa0b76ef0754</code>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="flex items-center gap-3 p-4 bg-white/40 dark:bg-black/20 rounded-2xl border border-white/20">
-              <span className="material-symbols-outlined text-blue-500">info</span>
-              <p className="text-xs font-bold text-slate-600 dark:text-slate-400 italic">
-                完成这两条设置后，回到 Vercel 点击 "Refresh"。验证通过后，红色警告就会消失，网站立即生效。
-              </p>
+            <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-2xl border border-amber-200 text-xs text-amber-800 dark:text-amber-200">
+              <p className="font-bold">为什么会报错 "Not Authorized"？</p>
+              <p className="mt-1 opacity-80">因为你在 Name 框里填了 `_vercel.biz.my`，Cloudflare 以为你想管理别人的 `biz.my` 域名。只要把它删减到只剩 `_vercel`，它就会自动对应到你的 `lgsubscribe` 目录下，报错就会消失。</p>
             </div>
           </div>
         </div>
