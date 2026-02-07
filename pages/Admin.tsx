@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Product, AppConfig } from '../types';
 
 interface AdminProps {
@@ -10,97 +10,127 @@ interface AdminProps {
 }
 
 const Admin: React.FC<AdminProps> = ({ products, config, onUpdateProducts, onUpdateConfig }) => {
-  const [showDeployGuide, setShowDeployGuide] = useState(true);
-  const [verifyStatus, setVerifyStatus] = useState<'idle' | 'checking' | 'success'>('idle');
-
-  const handleVerifyClick = () => {
-    setVerifyStatus('checking');
-    setTimeout(() => {
-      // 模拟验证过程
-      setVerifyStatus('success');
-    }, 2000);
-  };
+  const [activeTab, setActiveTab] = useState<'status' | 'cloudflare'>('status');
 
   return (
-    <div className="p-4 md:p-8 max-w-6xl mx-auto bg-white dark:bg-slate-900 min-h-screen pb-20 text-slate-900 dark:text-white font-sans">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 border-b pb-4 gap-4">
+    <div className="p-4 md:p-8 max-w-4xl mx-auto bg-white dark:bg-slate-900 min-h-screen pb-20 text-slate-900 dark:text-white font-sans">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4 border-b pb-6">
         <div>
-          <h2 className="text-2xl font-black italic uppercase tracking-tighter">Admin Portal</h2>
-          <p className="text-xs text-slate-500 font-medium tracking-wide">lgsubscribe.biz.my</p>
+          <h2 className="text-3xl font-black italic uppercase tracking-tighter">Domain Rescue</h2>
+          <p className="text-xs text-slate-500 font-bold tracking-widest uppercase">lgsubscribe.biz.my</p>
         </div>
-        <div className="flex items-center gap-2">
-           <span className={`size-2 rounded-full ${verifyStatus === 'success' ? 'bg-green-500 animate-pulse' : 'bg-amber-500'}`}></span>
-           <span className="text-[10px] font-black uppercase tracking-widest">{verifyStatus === 'success' ? 'Domain Active' : 'Pending Verification'}</span>
+        <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl shadow-inner">
+          <button 
+            onClick={() => setActiveTab('status')}
+            className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase transition-all ${activeTab === 'status' ? 'bg-white dark:bg-slate-700 shadow-sm text-primary' : 'text-slate-400'}`}
+          >
+            Vercel 状态
+          </button>
+          <button 
+            onClick={() => setActiveTab('cloudflare')}
+            className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase transition-all ${activeTab === 'cloudflare' ? 'bg-white dark:bg-slate-700 shadow-sm text-primary' : 'text-slate-400'}`}
+          >
+            Cloudflare 检查
+          </button>
         </div>
       </div>
 
-      {showDeployGuide && (
-        <div className="mb-10 bg-slate-900 text-white rounded-[2.5rem] p-8 md:p-12 shadow-2xl relative overflow-hidden border-4 border-primary">
-          <div className="relative z-10 space-y-8">
-            <div className="flex items-center gap-4">
-              <div className="size-14 bg-green-500 rounded-2xl flex items-center justify-center rotate-3 shadow-lg shadow-green-500/40">
-                <span className="material-symbols-outlined text-white text-3xl">task_alt</span>
-              </div>
-              <div>
-                <h3 className="text-2xl font-black italic uppercase tracking-tight">配置已接近完美！</h3>
-                <p className="text-green-500 font-bold text-[10px] uppercase tracking-[0.2em]">目前的 3 条记录（A, CNAME, TXT）都是正确的</p>
-              </div>
+      {activeTab === 'status' ? (
+        <div className="space-y-8 animate-in fade-in duration-500">
+          <div className="bg-red-50 dark:bg-red-950/20 border-2 border-red-500/50 rounded-[2.5rem] p-8 md:p-12">
+            <div className="flex items-center gap-4 mb-6">
+              <span className="material-symbols-outlined text-red-500 text-4xl">domain_disabled</span>
+              <h3 className="text-xl font-black uppercase italic">域名验证卡死？</h3>
             </div>
-
-            <div className="bg-white/5 p-8 rounded-[2rem] border-2 border-dashed border-white/10">
-               <h4 className="text-sm font-black italic mb-6 flex items-center gap-2 text-slate-400">
-                 最后 1 分钟检查清单：
-               </h4>
-               <div className="space-y-4">
-                  <div className="flex items-start gap-4 p-4 bg-white/5 rounded-2xl hover:bg-white/10 transition-colors">
-                    <div className="size-6 bg-primary rounded-full flex items-center justify-center text-[10px] font-bold flex-shrink-0">1</div>
-                    <div>
-                      <p className="text-xs font-bold">检查 TXT 引号陷阱</p>
-                      <p className="text-[10px] text-slate-400 mt-1 leading-relaxed">
-                        点击 Cloudflare 中 <code className="text-primary">_vercel</code> 的 Edit，确认输入框里 **没有** 引号。
-                        引号只能由 Cloudflare 自动显示，不能手动输入。
-                      </p>
-                    </div>
+            
+            <div className="space-y-6">
+              <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-red-200 dark:border-red-900/50">
+                <p className="text-xs font-bold text-slate-500 mb-4 uppercase tracking-widest">请在 Vercel 域名设置页面尝试：</p>
+                <div className="space-y-3">
+                  <div className="flex items-start gap-3">
+                    <div className="size-5 rounded-full bg-red-100 dark:bg-red-900/40 flex items-center justify-center text-[10px] font-bold text-red-600 mt-0.5">1</div>
+                    <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                      点击 <strong>Remove</strong> 彻底从 Vercel 删除该域名。
+                    </p>
                   </div>
-
-                  <div className="flex items-start gap-4 p-4 bg-white/5 rounded-2xl hover:bg-white/10 transition-colors">
-                    <div className="size-6 bg-primary rounded-full flex items-center justify-center text-[10px] font-bold flex-shrink-0">2</div>
-                    <div>
-                      <p className="text-xs font-bold">回到 Vercel 强行“抢回”域名</p>
-                      <p className="text-[10px] text-slate-400 mt-1 leading-relaxed">
-                        因为报错“Linked to another account”，你需要点击 Vercel 域名页面的 <code className="bg-primary px-2 py-0.5 rounded text-white font-black uppercase">Verify</code> 按钮。
-                        这是告诉 Vercel：“我有 TXT 证明，现在这域名归我了！”
-                      </p>
-                    </div>
+                  <div className="flex items-start gap-3">
+                    <div className="size-5 rounded-full bg-red-100 dark:bg-red-900/40 flex items-center justify-center text-[10px] font-bold text-red-600 mt-0.5">2</div>
+                    <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                      重新在输入框输入 <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">lgsubscribe.biz.my</code> 并添加。
+                    </p>
                   </div>
-               </div>
-            </div>
+                  <div className="flex items-start gap-3">
+                    <div className="size-5 rounded-full bg-red-100 dark:bg-red-900/40 flex items-center justify-center text-[10px] font-bold text-red-600 mt-0.5">3</div>
+                    <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                      系统会再次提示 "Linked to another account"，此时点击那个 <strong>VERIFY</strong> 按钮。
+                    </p>
+                  </div>
+                </div>
+              </div>
 
-            <div className="flex justify-center pt-4">
-              <button 
-                onClick={handleVerifyClick}
-                disabled={verifyStatus === 'checking'}
-                className="group relative px-12 py-4 bg-white text-black rounded-full font-black italic uppercase tracking-widest hover:scale-105 transition-all active:scale-95 disabled:opacity-50"
-              >
-                {verifyStatus === 'checking' ? '正在同步 DNS...' : '我已经完成检查了'}
-                <div className="absolute -inset-1 bg-gradient-to-r from-primary to-amber-500 rounded-full blur opacity-30 group-hover:opacity-60 transition-opacity"></div>
-              </button>
+              <div className="text-center">
+                <p className="text-[10px] font-black uppercase text-slate-400 animate-pulse">
+                  等待 DNS 生效期间，Vercel 页面可能需要 60 秒才能刷新状态
+                </p>
+              </div>
             </div>
           </div>
         </div>
-      )}
+      ) : (
+        <div className="space-y-6 animate-in fade-in duration-500">
+          <div className="bg-slate-900 text-white rounded-[2.5rem] p-8 md:p-12 border-4 border-amber-500/30">
+            <h3 className="text-2xl font-black italic uppercase mb-6 flex items-center gap-3">
+              <span className="material-symbols-outlined text-amber-500">cloud_off</span>
+              最关键的一步：关闭小橘灯
+            </h3>
+            
+            <p className="text-sm text-slate-400 mb-10 leading-relaxed">
+              Vercel 验证期间，Cloudflare 的 <strong>Proxy (代理)</strong> 功能必须关闭，否则 Vercel 找不到你的服务器。
+            </p>
 
-      {/* Admin Content Restricted until success */}
-      <div className={`transition-all duration-1000 ${verifyStatus === 'success' ? 'opacity-100 blur-0' : 'opacity-30 blur-sm pointer-events-none grayscale'}`}>
-         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="h-64 bg-slate-50 dark:bg-slate-800/50 rounded-[3rem] border-4 border-slate-100 dark:border-slate-800 flex items-center justify-center">
-                <p className="text-slate-400 font-black italic uppercase">Catalog Management</p>
+            <div className="space-y-6">
+              <div className="p-6 bg-slate-800 rounded-3xl border border-slate-700">
+                <div className="flex justify-between items-center mb-4">
+                  <span className="text-xs font-black uppercase tracking-widest text-slate-500">当前错误状态</span>
+                  <div className="flex items-center gap-2 bg-orange-500/20 text-orange-500 px-3 py-1 rounded-full text-[10px] font-bold">
+                    <span className="size-2 bg-orange-500 rounded-full animate-ping"></span>
+                    PROXIED (橙色云)
+                  </div>
+                </div>
+                <p className="text-xs text-slate-300">
+                  如果你的 A 记录或 CNAME 记录右侧是<strong>橙色云朵</strong>，请点击 Edit，把开关拨到左边，变成<strong>灰色云朵</strong>。
+                </p>
+              </div>
+
+              <div className="p-6 bg-green-500/10 rounded-3xl border border-green-500/30">
+                <div className="flex justify-between items-center mb-4">
+                  <span className="text-xs font-black uppercase tracking-widest text-green-500">验证所需状态</span>
+                  <div className="flex items-center gap-2 bg-green-500/20 text-green-500 px-3 py-1 rounded-full text-[10px] font-bold">
+                    <span className="size-2 bg-green-500 rounded-full"></span>
+                    DNS ONLY (灰色云)
+                  </div>
+                </div>
+                <p className="text-xs text-slate-300">
+                  只有变成灰色云朵，Vercel 才能直接穿透 Cloudflare 验证你的域名所有权。
+                </p>
+              </div>
             </div>
-            <div className="h-64 bg-slate-50 dark:bg-slate-800/50 rounded-[3rem] border-4 border-slate-100 dark:border-slate-800 flex items-center justify-center">
-                <p className="text-slate-400 font-black italic uppercase">Settings & Leads</p>
+
+            <div className="mt-10 p-4 bg-white/5 rounded-2xl">
+              <p className="text-[10px] text-slate-500 italic">
+                * 注意：关于 TXT 记录的引号，请完全忽略它。那是 Cloudflare 的显示方式，不影响验证。
+              </p>
             </div>
-         </div>
-      </div>
+          </div>
+          
+          <button 
+            onClick={() => window.location.reload()}
+            className="w-full py-4 bg-primary text-white rounded-2xl font-black italic uppercase text-xs shadow-xl shadow-primary/20 hover:scale-[1.02] transition-all"
+          >
+            我已将云朵改为灰色，去刷新 Vercel
+          </button>
+        </div>
+      )}
     </div>
   );
 };
