@@ -68,11 +68,11 @@ const Admin: React.FC<AdminProps> = ({ products, config, onUpdateProducts, onUpd
   };
 
   return (
-    <div className="p-4 md:p-8 max-w-6xl mx-auto bg-white dark:bg-slate-900 min-h-screen pb-20 text-slate-900 dark:text-white">
+    <div className="p-4 md:p-8 max-w-6xl mx-auto bg-white dark:bg-slate-900 min-h-screen pb-20 text-slate-900 dark:text-white font-sans">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 border-b pb-4 gap-4">
         <div>
-          <h2 className="text-2xl font-bold italic uppercase tracking-tighter">Admin Portal</h2>
-          <p className="text-xs text-slate-500 font-medium">Domain: lgsubscribe.biz.my</p>
+          <h2 className="text-2xl font-black italic uppercase tracking-tighter">Admin Portal</h2>
+          <p className="text-xs text-slate-500 font-medium tracking-wide">lgsubscribe.biz.my</p>
         </div>
         <div className="flex gap-2">
           <button onClick={handleBackup} className="bg-slate-100 dark:bg-slate-800 px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-slate-200 transition-colors">Export</button>
@@ -82,82 +82,94 @@ const Admin: React.FC<AdminProps> = ({ products, config, onUpdateProducts, onUpd
         </div>
       </div>
 
-      {/* Improved DNS Assistant for CNAME */}
+      {/* Verification Troubleshooter */}
       {showDeployGuide && (
-        <div className="mb-10 bg-indigo-50 dark:bg-indigo-950/30 border-2 border-indigo-500 rounded-[2.5rem] p-8 md:p-12 shadow-2xl relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 blur-[100px] -translate-y-1/2 translate-x-1/2"></div>
+        <div className="mb-10 bg-red-50 dark:bg-red-950/20 border-2 border-red-500 rounded-[2.5rem] p-8 md:p-12 shadow-2xl relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-red-500/10 blur-[100px] -translate-y-1/2 translate-x-1/2"></div>
           
-          <button onClick={() => setShowDeployGuide(false)} className="absolute top-8 right-8 text-indigo-600 hover:text-indigo-800 transition-colors">
-            <span className="material-symbols-outlined">close</span>
+          <button onClick={() => setShowDeployGuide(false)} className="absolute top-8 right-8 text-red-600 hover:text-red-800 transition-colors">
+            <span className="material-symbols-outlined font-bold">close</span>
           </button>
 
-          <div className="relative z-10 space-y-6">
-            <div className="inline-flex items-center gap-2 bg-indigo-600 text-white px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">
-              DNS Optimization Guide
+          <div className="relative z-10 space-y-8">
+            <div className="inline-flex items-center gap-2 bg-red-600 text-white px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">
+              Verification Troubleshooter
             </div>
             
-            <h3 className="text-3xl font-black italic text-indigo-900 dark:text-indigo-100 leading-tight">使用 CNAME 解决验证问题</h3>
+            <h3 className="text-3xl font-black italic text-red-900 dark:text-red-100 leading-tight">还是显示 "Verification Needed"？</h3>
             
-            <div className="bg-white/80 dark:bg-black/40 p-6 rounded-3xl border border-indigo-200 dark:border-indigo-800 space-y-6">
-              <p className="text-sm leading-relaxed text-indigo-900 dark:text-indigo-100">
-                对于 <code className="bg-indigo-100 dark:bg-indigo-900/40 px-2 py-0.5 rounded">lgsubscribe</code> 这种子域名，请按照以下参数修改 Cloudflare 记录：
-              </p>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="p-5 rounded-2xl bg-indigo-100/50 dark:bg-indigo-900/50 border border-indigo-200/50">
-                   <p className="text-[10px] font-black uppercase text-indigo-500 mb-3 tracking-widest">修改 CNAME 记录</p>
-                   <ul className="text-xs space-y-2 font-medium text-slate-700 dark:text-slate-300">
-                     <li>• <strong>Type:</strong> <span className="bg-white dark:bg-slate-800 px-1.5 rounded border border-indigo-200">CNAME</span></li>
-                     <li>• <strong>Name:</strong> <span className="bg-white dark:bg-slate-800 px-1.5 rounded border border-indigo-200">lgsubscribe</span></li>
-                     <li>• <strong>Target:</strong> <span className="bg-white dark:bg-slate-800 px-1.5 rounded border border-indigo-200">cname.vercel-dns.com</span></li>
-                   </ul>
-                </div>
-                
-                <div className="p-5 rounded-2xl bg-amber-100/50 dark:bg-amber-900/50 border border-amber-200/50">
-                   <p className="text-[10px] font-black uppercase text-amber-600 mb-3 tracking-widest">关键一步：灰色云朵</p>
-                   <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
-                     在 Proxy status 栏，点击那个橘色云朵把它变成 <strong>DNS Only (灰色)</strong> ☁️。<br/>
-                     Vercel 只有直接看到这条记录才能完成验证。
-                   </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="space-y-4">
+                <p className="text-sm font-bold text-red-800 dark:text-red-200 flex items-center gap-2">
+                   <span className="size-6 bg-red-600 text-white rounded-full flex items-center justify-center text-[10px]">1</span>
+                   点击 Vercel 界面上的 "Learn More"
+                </p>
+                <div className="bg-white/60 dark:bg-black/40 p-4 rounded-2xl border border-red-200 text-[11px] leading-relaxed text-slate-700 dark:text-slate-300">
+                  展开后，Vercel 会显示它预期的值。请对比 Cloudflare 中的设置：
+                  <ul className="mt-2 space-y-1 font-mono text-red-600 dark:text-red-400">
+                    <li>• Type: 是否是 CNAME?</li>
+                    <li>• Value: 是否完全匹配 cname.vercel-dns.com?</li>
+                  </ul>
                 </div>
               </div>
-            </div>
 
-            <div className="flex items-start gap-3 p-4 bg-white/40 dark:bg-black/20 rounded-2xl border border-white/20">
-              <span className="material-symbols-outlined text-indigo-500">lightbulb</span>
-              <p className="text-xs font-bold text-slate-600 dark:text-slate-400">
-                修改完成后，在 Vercel 域名页面点击 "Refresh" 按钮。一旦显示绿色的 "Valid Configuration"，你就可以把云朵点回橘色开启防御了。
-              </p>
+              <div className="space-y-4">
+                <p className="text-sm font-bold text-red-800 dark:text-red-200 flex items-center gap-2">
+                   <span className="size-6 bg-red-600 text-white rounded-full flex items-center justify-center text-[10px]">2</span>
+                   检查 Cloudflare 代理状态
+                </p>
+                <div className="bg-white/60 dark:bg-black/40 p-4 rounded-2xl border border-red-200 text-[11px] leading-relaxed text-slate-700 dark:text-slate-300">
+                  这是最常见的错误！在 Cloudflare 编辑那条 CNAME 记录，确保 <strong className="text-red-600">Proxy status</strong> 是 <span className="underline">DNS Only (灰色云朵)</span>。只要是橘色，Vercel 就无法验证。
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <p className="text-sm font-bold text-red-800 dark:text-red-200 flex items-center gap-2">
+                   <span className="size-6 bg-red-600 text-white rounded-full flex items-center justify-center text-[10px]">3</span>
+                   检查冲突记录
+                </p>
+                <div className="bg-white/60 dark:bg-black/40 p-4 rounded-2xl border border-red-200 text-[11px] leading-relaxed text-slate-700 dark:text-slate-300">
+                  确保 Cloudflare 中<strong>没有</strong>另一条相同名称 (<code className="bg-red-100 px-1 rounded">lgsubscribe</code>) 的 A 记录。如果有，必须删除 A 记录，只留 CNAME。
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <p className="text-sm font-bold text-red-800 dark:text-red-200 flex items-center gap-2">
+                   <span className="size-6 bg-red-600 text-white rounded-full flex items-center justify-center text-[10px]">4</span>
+                   点击 "Refresh"
+                </p>
+                <div className="bg-white/60 dark:bg-black/40 p-4 rounded-2xl border border-red-200 text-[11px] leading-relaxed text-slate-700 dark:text-slate-300">
+                  修改后，回到 Vercel 点击那个按钮。如果还是红的，可能需要等 5-10 分钟让 DNS 生效。
+                </div>
+              </div>
             </div>
           </div>
         </div>
       )}
 
-      {/* Product Management Area */}
+      {/* Main Admin UI */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-1 space-y-6">
           <section className="bg-slate-50 dark:bg-slate-800/50 p-6 rounded-[2rem] border border-slate-100 dark:border-slate-800 shadow-sm">
             <h3 className="font-black text-sm uppercase tracking-widest mb-6 flex items-center gap-2">
               <span className="material-symbols-outlined text-primary">settings</span>
-              Global Config
+              Settings
             </h3>
-            <div className="space-y-4">
-              <div>
-                <label className="text-[10px] font-black text-slate-400 block mb-1 uppercase tracking-[0.2em]">WhatsApp Number</label>
-                <input 
-                  value={config.contactWhatsapp} 
-                  onChange={e => onUpdateConfig({...config, contactWhatsapp: e.target.value})} 
-                  className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-sm outline-none focus:ring-2 focus:ring-primary/20 transition-all" 
-                />
-              </div>
+            <div>
+              <label className="text-[10px] font-black text-slate-400 block mb-1 uppercase tracking-[0.2em]">WhatsApp Number</label>
+              <input 
+                value={config.contactWhatsapp} 
+                onChange={e => onUpdateConfig({...config, contactWhatsapp: e.target.value})} 
+                className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-sm outline-none focus:ring-2 focus:ring-primary/20 transition-all" 
+              />
             </div>
           </section>
         </div>
 
         <div className="lg:col-span-2">
           <div className="flex justify-between items-center mb-6 px-2">
-            <h3 className="text-xl font-black italic uppercase tracking-tighter">Live Inventory</h3>
-            <button onClick={addProduct} className="bg-primary text-white px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all shadow-lg shadow-primary/20">ADD NEW PRODUCT</button>
+             <h3 className="text-xl font-black italic uppercase tracking-tighter">Product Catalog</h3>
+             <button onClick={addProduct} className="bg-primary text-white px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all shadow-lg shadow-primary/20">NEW ITEM</button>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -168,15 +180,15 @@ const Admin: React.FC<AdminProps> = ({ products, config, onUpdateProducts, onUpd
                     <img src={p.imageUrl} className="max-w-full max-h-full object-contain" alt={p.name} />
                   </div>
                   <div className="flex flex-col">
-                    <span className="font-bold text-sm leading-tight group-hover:text-primary transition-colors">{p.name}</span>
+                    <span className="font-bold text-sm leading-tight">{p.name}</span>
                     <span className="text-[10px] text-slate-400 font-mono mt-1">{p.modelCode}</span>
                   </div>
                 </div>
                 <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <button onClick={() => setEditingId(p.id)} className="size-8 flex items-center justify-center text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-lg transition-colors">
+                  <button onClick={() => setEditingId(p.id)} className="size-8 flex items-center justify-center text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-lg">
                     <span className="material-symbols-outlined text-[20px]">edit</span>
                   </button>
-                  <button onClick={() => deleteProduct(p.id)} className="size-8 flex items-center justify-center text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-colors">
+                  <button onClick={() => deleteProduct(p.id)} className="size-8 flex items-center justify-center text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg">
                     <span className="material-symbols-outlined text-[20px]">delete</span>
                   </button>
                 </div>
@@ -185,34 +197,6 @@ const Admin: React.FC<AdminProps> = ({ products, config, onUpdateProducts, onUpd
           </div>
         </div>
       </div>
-
-      {/* Quick Edit Modal */}
-      {editingId && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-slate-900 rounded-[3rem] p-8 max-w-lg w-full shadow-2xl border border-white/5 animate-in zoom-in-95 duration-300">
-             <div className="flex justify-between items-center mb-8">
-               <h3 className="text-xl font-black italic uppercase">Edit Details</h3>
-               <button onClick={() => setEditingId(null)} className="size-10 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-center transition-colors">
-                 <span className="material-symbols-outlined">close</span>
-               </button>
-             </div>
-             <div className="space-y-6">
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Display Name</label>
-                  <input 
-                    value={products.find(p => p.id === editingId)?.name} 
-                    onChange={e => updateProduct(editingId, {name: e.target.value})}
-                    className="w-full p-4 rounded-2xl border border-slate-100 dark:border-slate-800 dark:bg-slate-800 font-bold outline-none focus:ring-2 focus:ring-primary/20"
-                    placeholder="Product Name"
-                  />
-                </div>
-                <button onClick={() => setEditingId(null)} className="w-full bg-primary text-white py-4 rounded-2xl font-black italic tracking-widest shadow-xl shadow-primary/30 hover:brightness-110 active:scale-[0.98] transition-all">
-                  CONFIRM CHANGES
-                </button>
-             </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
