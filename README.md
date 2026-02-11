@@ -1,20 +1,26 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
 
-# Run and deploy your AI Studio app
+# LG Subscribe Malaysia - AI Affiliate Platform
 
-This contains everything you need to run your app locally.
+这是一个专业的 LG 订阅平台代理展示系统，具备 AI 自动抓取产品数据和代理抽佣追踪功能。
 
-View your app in AI Studio: https://ai.studio/apps/drive/1z2mJD7Kj3nxk_YB_i-am_VcuLFKBNoR5
+## 快速开始
 
-## Run Locally
+1. **部署到 GitHub Pages**:
+   - 将代码上传至 GitHub 仓库。
+   - 在 Settings -> Pages 中开启托管。
 
-**Prerequisites:**  Node.js
+2. **代理链接生成**:
+   - 访问 `你的域名/#agent-tools`。
+   - 输入你的 WhatsApp 号码和姓名。
+   - 生成的专属链接会自动带上你的参数，客户下单将直接联系到你。
 
+3. **管理后台**:
+   - 访问 `你的域名/#admin`。
+   - 输入默认 PIN: `8888` 进入管理模式。
+   - 使用 AI 引擎粘贴 LG 官网链接即可自动同步产品。
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+## 技术栈
+- React 19 (ESM Mode)
+- Tailwind CSS
+- Google Gemini 2.5/3.0 API
+- IndexedDB (本地持久化存储)
