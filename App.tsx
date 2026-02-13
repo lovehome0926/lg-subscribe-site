@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Product, AppRoute, Agent, Language, SiteSettings } from './types.ts';
+import { Product, AppRoute, Agent, Language, SiteSettings, CategoryItem } from './types.ts';
 import { INITIAL_PRODUCTS, CATEGORIES, INITIAL_SITE_SETTINGS } from './constants.ts';
 import { getProductsDB, saveProductsDB, getAgentsDB, saveAgentsDB, getSettingsDB, saveSettingsDB } from './utils/db.ts';
 import Navbar from './components/Navbar.tsx';
@@ -34,9 +34,17 @@ const App: React.FC = () => {
 
         const dbSettings = await getSettingsDB().catch(() => null);
         if (dbSettings && typeof dbSettings === 'object') {
-          // 核心修复：加载时自动合并原有分类，确保不丢失
-          const userCategories = Array.isArray(dbSettings.categories) ? dbSettings.categories : [];
-          const mergedCategories = Array.from(new Set([...CATEGORIES, ...userCategories]));
+          // 数据清洗：确保分类是对象格式而非旧版本的字符串格式
+          const rawCategories = Array.isArray(dbSettings.categories) ? dbSettings.categories : [];
+          const validCategories: CategoryItem[] = rawCategories.filter(c => typeof c === 'object' && c !== null && c.id && c.label);
+          
+          // 合并初始分类和用户自定义分类（去重）
+          const mergedCategories = [...CATEGORIES];
+          validCategories.forEach(vc => {
+            if (!mergedCategories.find(mc => mc.id === vc.id)) {
+              mergedCategories.push(vc);
+            }
+          });
 
           setSiteSettings({
             ...INITIAL_SITE_SETTINGS,
@@ -50,17 +58,9 @@ const App: React.FC = () => {
         const wa = params.get('wa');
         const name = params.get('name');
         if (wa) {
-          const agentData = { whatsapp: wa.replace(/\D/g, ''), name: name || 'Certified Partner', id: 'ext' };
+          const agentData = { whatsapp: wa.replace(/\D/g, ''), name: name || 'Partner', id: 'ext', token: params.get('t') || 'GEN' };
           setActiveAgent(agentData);
           localStorage.setItem('cached_agent', JSON.stringify(agentData));
-        } else {
-          const saved = localStorage.getItem('cached_agent');
-          if (saved) {
-            try {
-              const parsed = JSON.parse(saved);
-              if (parsed?.whatsapp) setActiveAgent(parsed);
-            } catch (e) { localStorage.removeItem('cached_agent'); }
-          }
         }
 
         const handleHash = () => {
@@ -75,6 +75,7 @@ const App: React.FC = () => {
         setIsReady(true);
         clearTimeout(emergencyTimer);
       } catch (e) {
+        console.error("Initialization Error:", e);
         setError(e instanceof Error ? e.message : "Initialization failed");
         setIsReady(true);
       }
@@ -94,6 +95,7 @@ const App: React.FC = () => {
       <div className="h-screen w-full flex flex-col items-center justify-center bg-gray-50 p-10 text-center">
         <AlertCircle className="text-lg-red mb-6" size={64} />
         <h1 className="text-2xl font-black uppercase mb-4 tracking-tighter italic">System Exception</h1>
+        <p className="text-gray-400 mb-8 max-w-md">{error}</p>
         <button onClick={() => { localStorage.clear(); window.location.reload(); }} className="bg-black text-white px-10 py-4 rounded-full font-black uppercase text-[10px] tracking-widest flex items-center gap-3"><RefreshCw size={14} /> Reset & Refresh</button>
       </div>
     );
@@ -128,7 +130,7 @@ const App: React.FC = () => {
           <div className="h-screen flex flex-col items-center justify-center bg-gray-50 px-6">
             <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center text-lg-red shadow-2xl mb-8 animate-bounce"><Lock size={32}/></div>
             <h2 className="text-4xl font-black uppercase tracking-tighter mb-8 italic text-center text-lg-dark">Authentication Required</h2>
-            <button onClick={() => { if(prompt("Terminal PIN (Default: 8888)") === "8888") setIsAdminAuth(true); }} className="bg-black text-white px-16 py-6 rounded-full font-black uppercase text-[10px] tracking-[0.4em] shadow-2xl hover:bg-lg-red transition-all">Unlock Terminal</button>
+            <button onClick={() => { if(prompt("Terminal PIN") === "4669") setIsAdminAuth(true); }} className="bg-black text-white px-16 py-6 rounded-full font-black uppercase text-[10px] tracking-[0.4em] shadow-2xl hover:bg-lg-red transition-all">Unlock Terminal</button>
           </div>
         )}
       </main>

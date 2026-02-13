@@ -15,9 +15,9 @@ const Footer: React.FC<FooterProps> = ({ siteSettings, language }) => {
   if (!siteSettings) return null;
 
   const t = {
-    en: { join: "PARTNER REWARDS 2026", apply: "START YOUR BUSINESS", recruitment_msg: "Hi! I am interested in the LG Partner Program. Please tell me more about the rewards.", visit: "OFFLINE SHOWROOMS", contact: "HELP CENTER" },
-    cn: { join: "2026 合伙人激励计划", apply: "开启您的轻创业之旅", recruitment_msg: "您好！我对 LG 合作伙伴计划很感兴趣。想了解更多佣金激励政策。", visit: "线下体验展厅", contact: "客户协助中心" },
-    ms: { join: "PROGRAM GANJARAN RAKAN 2026", apply: "SERTAI SEKARANG", recruitment_msg: "Hai! Saya berminat dengan Program Rakan LG. Sila kongsi info insentif.", visit: "BILIK PAMERAN KAMI", contact: "PUSAT BANTUAN" }
+    en: { join: "PARTNER REWARDS 2026", apply: "START YOUR BUSINESS", recruitment_msg: "Hi! I am interested in the LG Partner Program. Please tell me more about the rewards.", visit: "OFFLINE SHOWROOMS", contact: "HELP CENTER", main_showroom: "Main Showroom" },
+    cn: { join: "2026 合伙人激励计划", apply: "开启您的轻创业之旅", recruitment_msg: "您好！我对 LG 合作伙伴计划很感兴趣。想了解更多佣金激励政策。", visit: "线下体验展厅", contact: "客户协助中心", main_showroom: "品牌体验中心" },
+    ms: { join: "PROGRAM GANJARAN RAKAN 2026", apply: "SERTAI SEKARANG", recruitment_msg: "Hai! Saya berminat dengan Program Rakan LG. Sila kongsi info insentif.", visit: "BILIK PAMERAN KAMI", contact: "PUSAT BANTUAN", main_showroom: "Showroom Utama" }
   }[language];
 
   const recruitmentWa = `https://wa.me/${siteSettings.recruitmentWa || "60177473787"}?text=${encodeURIComponent(t.recruitment_msg)}`;
@@ -106,11 +106,11 @@ const Footer: React.FC<FooterProps> = ({ siteSettings, language }) => {
             <div className="space-y-8">
               <h4 className="text-[11px] font-black uppercase text-lg-red tracking-[0.5em]">{t.visit}</h4>
               <div className="space-y-8">
-                {siteSettings.stores && siteSettings.stores.length > 0 ? (
-                  siteSettings.stores.map(s => (
+                {/* 核心修复：优先显示 siteAddress 字段的内容 */}
+                {siteSettings.siteAddress ? (
+                  <div className="space-y-8">
                     <a 
-                      key={s.id} 
-                      href={s.googleMapsUrl} 
+                      href={siteSettings.googleMapsUrl || "#"} 
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="flex gap-5 group cursor-pointer"
@@ -120,14 +120,58 @@ const Footer: React.FC<FooterProps> = ({ siteSettings, language }) => {
                       </div>
                       <div className="pb-2">
                         <p className="text-[12px] font-black text-gray-200 uppercase tracking-tight flex items-center gap-2">
-                          {s.name} <ArrowUpRight size={12} className="opacity-0 group-hover:opacity-100 transition-opacity" />
+                          {t.main_showroom} <ArrowUpRight size={12} className="opacity-0 group-hover:opacity-100 transition-opacity" />
                         </p>
-                        <p className="text-[10px] font-medium text-gray-500 uppercase mt-2 leading-relaxed">{s.address}</p>
+                        <p className="text-[10px] font-medium text-gray-500 uppercase mt-2 leading-relaxed max-w-[280px]">{siteSettings.siteAddress}</p>
                       </div>
                     </a>
-                  ))
+
+                    {/* 如果还有额外的门店列表，也一并显示 */}
+                    {siteSettings.stores && siteSettings.stores.length > 0 && siteSettings.stores.map(s => (
+                      <a 
+                        key={s.id} 
+                        href={s.googleMapsUrl} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="flex gap-5 group cursor-pointer"
+                      >
+                        <div className="shrink-0 w-10 h-10 rounded-2xl bg-white/5 flex items-center justify-center group-hover:bg-lg-red transition-all shadow-sm">
+                           <MapPin size={16} className="text-gray-400 group-hover:text-white" />
+                        </div>
+                        <div className="pb-2">
+                          <p className="text-[12px] font-black text-gray-200 uppercase tracking-tight flex items-center gap-2">
+                            {s.name} <ArrowUpRight size={12} className="opacity-0 group-hover:opacity-100 transition-opacity" />
+                          </p>
+                          <p className="text-[10px] font-medium text-gray-500 uppercase mt-2 leading-relaxed">{s.address}</p>
+                        </div>
+                      </a>
+                    ))}
+                  </div>
                 ) : (
-                  <p className="text-[11px] text-gray-600 font-black uppercase">Official Brand Shops coming soon.</p>
+                  /* 原有的 stores 列表显示逻辑，作为备选 */
+                  siteSettings.stores && siteSettings.stores.length > 0 ? (
+                    siteSettings.stores.map(s => (
+                      <a 
+                        key={s.id} 
+                        href={s.googleMapsUrl} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="flex gap-5 group cursor-pointer"
+                      >
+                        <div className="shrink-0 w-10 h-10 rounded-2xl bg-white/5 flex items-center justify-center group-hover:bg-lg-red transition-all shadow-sm">
+                           <MapPin size={16} className="text-gray-400 group-hover:text-white" />
+                        </div>
+                        <div className="pb-2">
+                          <p className="text-[12px] font-black text-gray-200 uppercase tracking-tight flex items-center gap-2">
+                            {s.name} <ArrowUpRight size={12} className="opacity-0 group-hover:opacity-100 transition-opacity" />
+                          </p>
+                          <p className="text-[10px] font-medium text-gray-500 uppercase mt-2 leading-relaxed">{s.address}</p>
+                        </div>
+                      </a>
+                    ))
+                  ) : (
+                    <p className="text-[11px] text-gray-600 font-black uppercase">Official Brand Shops coming soon.</p>
+                  )
                 )}
               </div>
             </div>

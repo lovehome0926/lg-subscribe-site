@@ -5,6 +5,11 @@ export interface Multilingual {
   ms: string;
 }
 
+export interface CategoryItem {
+  id: string; // 用于逻辑关联的唯一 ID（通常使用英文名）
+  label: Multilingual; // 显式给用户看的三语名称
+}
+
 export interface ProductPlan {
   termYears: number | 'Outright';
   maintenanceType: 'Self Service' | 'Regular Visit' | 'Combined' | 'Combine Maintenance' | 'No Service' | 'None';
@@ -24,15 +29,15 @@ export interface HpOption {
   label: Multilingual;
   value: string;
   modelId?: string; 
-  rentalOffset?: number; 
+  rentalOffset?: number; // 月租加价金额
   cashOffset?: number;   
 }
 
 export interface Product {
   id: string; 
-  category: string;
+  category: string; // 存储 CategoryItem.id
   name: string;
-  modelId?: string; // 主型号 ID
+  modelId?: string; 
   subName: Multilingual;
   description: string;
   image: string;
@@ -59,6 +64,7 @@ export interface Agent {
   id: string;
   name: string;
   whatsapp: string;
+  token?: string; 
 }
 
 export type PromoType = 'percentage' | 'fixed_price' | 'fixed_discount';
@@ -93,6 +99,8 @@ export interface BenefitItem {
 export interface SiteSettings {
   logoUrl?: string;
   heroImageUrl?: string;
+  siteAddress?: string; 
+  googleMapsUrl?: string; 
   siteDescription?: Multilingual;
   whatIsSection: {
     title: Multilingual;
@@ -107,10 +115,10 @@ export interface SiteSettings {
   stores: Store[];
   promoTemplates: PromotionTemplate[];
   officeEmail: string;
-  officePhone?: string; // 新增电话字段
+  officePhone?: string; 
   recruitmentWa: string;
   featuredProductIds: string[]; 
-  categories: string[];
+  categories: CategoryItem[]; // 改为对象数组
   socialLinks: {
     fb: string;
     ig: string;

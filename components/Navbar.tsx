@@ -28,19 +28,13 @@ const Navbar: React.FC<NavbarProps> = ({ language, setLanguage, siteSettings }) 
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
     if (element) {
-      const offset = 100; // Offset for fixed navbar
+      const offset = 100;
       const bodyRect = document.body.getBoundingClientRect().top;
       const elementRect = element.getBoundingClientRect().top;
       const elementPosition = elementRect - bodyRect;
       const offsetPosition = elementPosition - offset;
 
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: 'smooth'
-      });
-    } else {
-      // If not on home page, go to home hash
-      window.location.hash = '';
+      window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
     }
   };
 
@@ -62,13 +56,6 @@ const Navbar: React.FC<NavbarProps> = ({ language, setLanguage, siteSettings }) 
             <button onClick={() => setLanguage('en')} className={`px-4 py-1.5 rounded-full text-[9px] font-black ${language === 'en' ? 'bg-white text-lg-red shadow-md' : 'text-gray-400'}`}>EN</button>
             <button onClick={() => setLanguage('ms')} className={`px-4 py-1.5 rounded-full text-[9px] font-black ${language === 'ms' ? 'bg-white text-lg-red shadow-md' : 'text-gray-400'}`}>MS</button>
           </div>
-          
-          <button 
-            onClick={() => window.location.hash = 'admin'}
-            className="p-3 text-gray-300 hover:text-lg-red transition-colors flex items-center justify-center rounded-full bg-white/5 shadow-sm"
-          >
-            ⚙️
-          </button>
         </div>
       </div>
     </nav>

@@ -157,7 +157,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
               {products.filter(p => p.name.toLowerCase().includes(searchQuery.toLowerCase()) || p.id.toLowerCase().includes(searchQuery.toLowerCase())).map(p => (
                 <div key={p.id} className="bg-white p-8 rounded-[40px] flex items-center gap-8 group hover:border-lg-red transition-all shadow-sm">
                   <div className="w-20 h-20 bg-gray-50 rounded-2xl p-4 flex items-center justify-center overflow-hidden shrink-0"><img src={p.image} className="max-h-full object-contain" /></div>
-                  <div className="flex-1 text-left">
+                  <div className="flex-1">
                     <h4 className="font-black uppercase italic leading-tight text-gray-950 text-xl">{p.name}</h4>
                     <p className="text-[12px] font-black text-lg-red uppercase tracking-widest mt-1">MODEL: {p.modelId || p.id}</p>
                   </div>
@@ -254,7 +254,6 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
               </div>
 
               <div className="grid md:grid-cols-2 gap-10">
-                {/* 1. Branding & Hero */}
                 <div className="bg-white p-12 rounded-[50px] shadow-sm border border-gray-100 space-y-10">
                   <h3 className="text-xl font-black italic uppercase border-b pb-6 text-gray-950">1. Branding & Hero</h3>
                   <div className="grid grid-cols-2 gap-8 text-left">
@@ -273,7 +272,6 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
                   </div>
                 </div>
 
-                {/* 2. Product Categories */}
                 <div className="bg-white p-12 rounded-[50px] shadow-sm border border-gray-100 space-y-10">
                   <h3 className="text-xl font-black italic uppercase border-b pb-6 text-gray-950">2. Product Categories</h3>
                   <div className="flex flex-wrap gap-4 text-left">
@@ -288,9 +286,8 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
                   </div>
                 </div>
 
-                {/* 3. Three Key Benefits */}
                 <div className="bg-white p-12 rounded-[50px] shadow-sm border border-gray-100 md:col-span-2 space-y-10">
-                   <h3 className="text-xl font-black italic uppercase border-b pb-6 text-gray-950">3. Core Values (Home Page Benefits)</h3>
+                   <h3 className="text-xl font-black italic uppercase border-b pb-6 text-gray-950">3. Three Key Benefits</h3>
                    <div className="grid md:grid-cols-3 gap-10 text-left">
                       {[0, 1, 2].map((idx) => {
                          const b = (siteSettings.benefits && siteSettings.benefits[idx]) || {
@@ -302,15 +299,6 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
                          
                          return (
                          <div key={idx} className="bg-gray-50/50 rounded-[40px] p-8 space-y-6 border border-gray-100 shadow-sm">
-                            <div className="space-y-4">
-                               <label className="text-[10px] font-black uppercase text-gray-400 ml-4 tracking-widest">DISPLAY NUMBER</label>
-                               <input value={b.number} onChange={e => {
-                                  const next = [...(siteSettings.benefits || [])];
-                                  while (next.length <= idx) next.push({ number: `0${next.length + 1}`, title: { en: '', cn: '', ms: '' }, description: { en: '', cn: '', ms: '' }, image: '' });
-                                  next[idx] = { ...next[idx], number: e.target.value };
-                                  updateSiteSettings({...siteSettings, benefits: next});
-                               }} className="w-full p-4 bg-white rounded-2xl font-black text-xl italic border border-gray-100 shadow-inner" />
-                            </div>
                             <div onClick={() => handleFileUpload(img => {
                                const next = [...(siteSettings.benefits || [])];
                                while (next.length <= idx) {
@@ -341,7 +329,6 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
                    </div>
                 </div>
 
-                {/* 4. Footer & Contact Info */}
                 <div className="bg-white p-12 rounded-[50px] shadow-sm border border-gray-100 md:col-span-2 space-y-10">
                    <h3 className="text-xl font-black italic uppercase border-b pb-6 text-gray-950">4. Footer & Contact Info</h3>
                    <div className="grid md:grid-cols-2 gap-10 text-left">
@@ -366,64 +353,36 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
                    </div>
                 </div>
 
-                {/* 5. Join Us Info - Relatable Copy */}
                 <div className="bg-white p-12 rounded-[50px] shadow-sm border border-gray-100 md:col-span-2 space-y-10">
                    <h3 className="text-xl font-black italic uppercase border-b pb-6 text-gray-950 italic">5. 加入资讯 (JOIN US INFO)</h3>
                    <div className="space-y-12 text-left">
                       {renderMultilingualInput("JOIN US TAGLINE", siteSettings.joinUsTagline || {en:'',cn:'',ms:''}, (next) => updateSiteSettings({...siteSettings, joinUsTagline: next}), true)}
-                      <div className="grid md:grid-cols-2 gap-12">
-                         <div className="space-y-8">
-                            <div className="space-y-4">
-                               <label className="text-[10px] font-black uppercase text-gray-400 ml-4 italic tracking-widest">RECRUITMENT WA (601...)</label>
-                               <div className="bg-gray-50 p-8 rounded-[35px] border border-gray-100 shadow-inner">
-                                  <input value={siteSettings.recruitmentWa} onChange={e => updateSiteSettings({...siteSettings, recruitmentWa: e.target.value.replace(/\D/g, '')})} className="w-full bg-transparent border-none outline-none font-black text-2xl tracking-tighter text-gray-950" placeholder="601..." />
-                               </div>
-                            </div>
-                            <div className="space-y-4">
-                               <label className="text-[10px] font-black uppercase text-gray-400 ml-4 italic tracking-widest">JOIN US PAIN POINTS (TRILINGUAL)</label>
-                               <div className="space-y-4">
-                                  {(siteSettings.joinUsPainPoints || []).map((p, idx) => (
-                                     <div key={idx} className="bg-gray-50 p-6 rounded-[35px] border border-gray-100 flex flex-col gap-3 shadow-sm relative group">
-                                        <div className="flex items-center gap-2">
-                                           <span className="text-[8px] font-black text-gray-300 w-5">CN</span>
-                                           <input value={p.cn} onChange={e => {const n = [...siteSettings.joinUsPainPoints]; n[idx].cn = e.target.value; updateSiteSettings({...siteSettings, joinUsPainPoints: n});}} className="flex-1 bg-transparent border-none outline-none font-black text-sm" placeholder="痛点描述 (CN)" />
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                           <span className="text-[8px] font-black text-gray-300 w-5">EN</span>
-                                           <input value={p.en} onChange={e => {const n = [...siteSettings.joinUsPainPoints]; n[idx].en = e.target.value; updateSiteSettings({...siteSettings, joinUsPainPoints: n});}} className="flex-1 bg-transparent border-none outline-none font-bold text-[11px] text-gray-400" placeholder="Pain Point (EN)" />
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                           <span className="text-[8px] font-black text-gray-300 w-5">MS</span>
-                                           <input value={p.ms} onChange={e => {const n = [...siteSettings.joinUsPainPoints]; n[idx].ms = e.target.value; updateSiteSettings({...siteSettings, joinUsPainPoints: n});}} className="flex-1 bg-transparent border-none outline-none font-bold text-[11px] text-gray-400" placeholder="Masalah (MS)" />
-                                        </div>
-                                        <button onClick={() => updateSiteSettings({...siteSettings, joinUsPainPoints: siteSettings.joinUsPainPoints.filter((_, i) => i !== idx)})} className="absolute top-4 right-4 text-red-200 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 size={16}/></button>
-                                     </div>
-                                  ))}
-                                  <button onClick={() => updateSiteSettings({...siteSettings, joinUsPainPoints: [...(siteSettings.joinUsPainPoints || []), {en:'Ready for freedom?', cn:'想给生活加点零花钱？', ms:'Nak cari duit lebih?'}]})} className="w-full py-5 border-2 border-dashed border-gray-100 rounded-[35px] text-gray-300 font-black text-[10px] uppercase hover:border-lg-red hover:text-lg-red transition-all flex items-center justify-center gap-2">+ ADD PAIN POINT</button>
-                               </div>
-                            </div>
+                      <div className="grid md:grid-cols-2 gap-10">
+                         <div className="space-y-4">
+                            <label className="text-[10px] font-black uppercase text-gray-400 ml-4 italic tracking-widest">RECRUITMENT WA (601...)</label>
+                            <input value={siteSettings.recruitmentWa} onChange={e => updateSiteSettings({...siteSettings, recruitmentWa: e.target.value.replace(/\D/g, '')})} className="w-full p-6 bg-gray-50 rounded-[25px] font-black text-xl border-none shadow-inner outline-none" placeholder="601..." />
                          </div>
                          <div className="space-y-4">
-                            <label className="text-[10px] font-black uppercase text-gray-400 ml-4 italic tracking-widest">PARTNER REWARDS (TRILINGUAL)</label>
-                            <div className="space-y-4">
+                            <label className="text-[10px] font-black uppercase text-gray-400 ml-4 italic tracking-widest">PARTNER REWARDS</label>
+                            <div className="space-y-3">
                                {(siteSettings.joinUsBenefits || []).map((b, idx) => (
                                   <div key={idx} className="bg-gray-50 p-6 rounded-[35px] border border-gray-100 flex flex-col gap-3 shadow-sm relative group">
                                      <div className="flex items-center gap-2">
-                                        <span className="text-[8px] font-black text-gray-300 w-5">CN</span>
-                                        <input value={b.cn} onChange={e => {const n = [...siteSettings.joinUsBenefits]; n[idx].cn = e.target.value; updateSiteSettings({...siteSettings, joinUsBenefits: n});}} className="flex-1 bg-transparent border-none outline-none font-black text-sm" placeholder="生活化描述 (CN)" />
+                                        <span className="text-[8px] font-black text-gray-300">CN</span>
+                                        <input value={b.cn} onChange={e => {const n = [...siteSettings.joinUsBenefits]; n[idx].cn = e.target.value; updateSiteSettings({...siteSettings, joinUsBenefits: n});}} className="flex-1 bg-transparent border-none outline-none font-black text-sm" placeholder="佣金描述 (CN)" />
                                      </div>
                                      <div className="flex items-center gap-2">
-                                        <span className="text-[8px] font-black text-gray-300 w-5">EN</span>
-                                        <input value={b.en} onChange={e => {const n = [...siteSettings.joinUsBenefits]; n[idx].en = e.target.value; updateSiteSettings({...siteSettings, joinUsBenefits: n});}} className="flex-1 bg-transparent border-none outline-none font-bold text-[11px] text-gray-400" placeholder="Lifestyle Point (EN)" />
+                                        <span className="text-[8px] font-black text-gray-300">EN</span>
+                                        <input value={b.en} onChange={e => {const n = [...siteSettings.joinUsBenefits]; n[idx].en = e.target.value; updateSiteSettings({...siteSettings, joinUsBenefits: n});}} className="flex-1 bg-transparent border-none outline-none font-bold text-[11px] text-gray-400" placeholder="Reward Desc (EN)" />
                                      </div>
                                      <div className="flex items-center gap-2">
-                                        <span className="text-[8px] font-black text-gray-300 w-5">MS</span>
-                                        <input value={b.ms} onChange={e => {const n = [...siteSettings.joinUsBenefits]; n[idx].ms = e.target.value; updateSiteSettings({...siteSettings, joinUsBenefits: n});}} className="flex-1 bg-transparent border-none outline-none font-bold text-[11px] text-gray-400" placeholder="Kelebihan (MS)" />
+                                        <span className="text-[8px] font-black text-gray-300">MS</span>
+                                        <input value={b.ms} onChange={e => {const n = [...siteSettings.joinUsBenefits]; n[idx].ms = e.target.value; updateSiteSettings({...siteSettings, joinUsBenefits: n});}} className="flex-1 bg-transparent border-none outline-none font-bold text-[11px] text-gray-400" placeholder="Ganjaran (MS)" />
                                      </div>
                                      <button onClick={() => updateSiteSettings({...siteSettings, joinUsBenefits: siteSettings.joinUsBenefits.filter((_, i) => i !== idx)})} className="absolute top-4 right-4 text-red-200 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 size={16}/></button>
                                   </div>
                                ))}
-                               <button onClick={() => updateSiteSettings({...siteSettings, joinUsBenefits: [...(siteSettings.joinUsBenefits || []), {en:'New Perk', cn:'新激励点', ms:'Bonus Baru'}]})} className="w-full py-5 border-2 border-dashed border-gray-200 rounded-[35px] text-gray-300 font-black text-[10px] uppercase hover:border-lg-red hover:text-lg-red transition-all flex items-center justify-center gap-2">+ ADD REWARD</button>
+                               <button onClick={() => updateSiteSettings({...siteSettings, joinUsBenefits: [...(siteSettings.joinUsBenefits || []), {en:'New Perk', cn:'新福利', ms:'Kelebihan Baru'}]})} className="w-full py-4 border-2 border-dashed border-gray-100 rounded-[35px] text-gray-300 font-black text-[10px] uppercase hover:border-lg-red transition-all">+ Add Reward</button>
                             </div>
                          </div>
                       </div>
@@ -456,7 +415,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
                    localStorage.setItem('my_agent_wa', cleanWa);
                    localStorage.setItem('my_agent_name', toolsName);
                    if (!authorizedAgents.some(a => a.whatsapp === cleanWa)) setAuthorizedAgents([...authorizedAgents, {id: Date.now().toString(), name: toolsName, whatsapp: cleanWa, token}]);
-                }} className="w-full bg-black text-white py-10 rounded-full font-black uppercase tracking-[0.4em] text-sm hover:bg-lg-red transition-all shadow-xl active:scale-95">Generate My Partner Link</button>
+                }} className="w-full bg-black text-white py-10 rounded-full font-black uppercase tracking-[0.4em] text-sm hover:bg-lg-red transition-all shadow-xl">Generate My Partner Link</button>
                 {genLink && (
                   <div className="p-10 bg-rose-50/50 rounded-[40px] border border-rose-100/30 flex flex-col md:flex-row gap-6 items-center">
                     <div className="flex-1 bg-white p-6 rounded-2xl text-[12px] font-mono break-all border border-rose-100 shadow-inner leading-loose">{genLink}</div>
@@ -634,7 +593,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
                        const next = products.some(p => p.id === final.id) ? products.map(p => p.id === final.id ? final : p) : [final, ...products];
                        await setProducts(next);
                        setEditingProduct(null);
-                   }} className="mt-8 w-full bg-lg-red text-white py-11 rounded-full font-black uppercase tracking-[0.4em] text-lg shadow-2xl hover:bg-black transition-all flex items-center justify-center gap-4 group active:scale-95">SAVE PRODUCT <ArrowRight className="group-hover:translate-x-2 transition-transform"/></button>
+                   }} className="mt-8 w-full bg-lg-red text-white py-11 rounded-full font-black uppercase tracking-[0.4em] text-lg shadow-2xl hover:bg-black transition-all flex items-center justify-center gap-4 group">SAVE PRODUCT <ArrowRight className="group-hover:translate-x-2 transition-transform"/></button>
                 </div>
               </div>
             </div>
@@ -768,7 +727,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
                    updateSiteSettings({...siteSettings, promoTemplates: next});
                    setEditingPromo(null);
                    setPromoProductSearch('');
-                }} className="mt-16 w-full bg-lg-red text-white py-11 rounded-full font-black uppercase tracking-[0.4em] text-sm shadow-2xl hover:bg-black transition-all active:scale-95">PUBLISH PROMOTION</button>
+                }} className="mt-16 w-full bg-lg-red text-white py-11 rounded-full font-black uppercase tracking-[0.4em] text-sm shadow-2xl hover:bg-black transition-all">PUBLISH PROMOTION</button>
               </div>
            </div>
         )}
