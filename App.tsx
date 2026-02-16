@@ -8,6 +8,7 @@ import Home from './components/Home.tsx';
 import AdminDashboard from './components/AdminDashboard.tsx';
 import AgentTools from './components/AgentTools.tsx';
 import Footer from './components/Footer.tsx';
+import FlashSaleOverlay from './components/FlashSaleOverlay.tsx';
 import { Lock, Loader2, AlertCircle, RefreshCw } from 'lucide-react';
 
 const App: React.FC = () => {
@@ -16,10 +17,11 @@ const App: React.FC = () => {
   const [currentRoute, setCurrentRoute] = useState<AppRoute>(AppRoute.HOME);
   const [activeAgent, setActiveAgent] = useState<Agent | null>(null);
   const [isAdminAuth, setIsAdminAuth] = useState(false);
-  const [language, setLanguage] = useState<Language>('ms'); // 默认语言修改为马来文
+  const [language, setLanguage] = useState<Language>('ms'); 
   const [siteSettings, setSiteSettings] = useState<SiteSettings>(INITIAL_SITE_SETTINGS);
   const [isReady, setIsReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showFlashSale, setShowFlashSale] = useState(false);
 
   useEffect(() => {
     const emergencyTimer = setTimeout(() => { if (!isReady) setIsReady(true); }, 4500);
@@ -27,31 +29,39 @@ const App: React.FC = () => {
     const initApp = async () => {
       try {
         const dbProducts = await getProductsDB().catch(() => null);
-        setProducts(Array.isArray(dbProducts) && dbProducts.length > 0 ? dbProducts : INITIAL_PRODUCTS);
+        const finalProducts = Array.isArray(dbProducts) && dbProducts.length > 0 ? dbProducts : INITIAL_PRODUCTS;
+        setProducts(finalProducts);
 
         const dbAgents = await getAgentsDB().catch(() => null);
         setAuthorizedAgents(Array.isArray(dbAgents) ? dbAgents : []);
 
         const dbSettings = await getSettingsDB().catch(() => null);
-        if (dbSettings && typeof dbSettings === 'object') {
-          // 数据清洗：确保分类是对象格式而非旧版本的字符串格式
-          const rawCategories = Array.isArray(dbSettings.categories) ? dbSettings.categories : [];
-          const validCategories: CategoryItem[] = rawCategories.filter(c => typeof c === 'object' && c !== null && c.id && c.label);
-          
-          // 合并初始分类和用户自定义分类（去重）
-          const mergedCategories = [...CATEGORIES];
-          validCategories.forEach(vc => {
-            if (!mergedCategories.find(mc => mc.id === vc.id)) {
-              mergedCategories.push(vc);
-            }
-          });
+        
+        // 改进合并逻辑：无论数据库是否有数据，都基于 constants.ts 进行合并
+        const rawCategories = (dbSettings && Array.isArray(dbSettings.categories)) ? dbSettings.categories : [];
+        const mergedCategories = [...CATEGORIES];
+        rawCategories.forEach((vc: any) => {
+          if (vc && vc.id && !mergedCategories.find(mc => mc.id === vc.id)) {
+            mergedCategories.push(vc);
+          }
+        });
 
-          setSiteSettings({
-            ...INITIAL_SITE_SETTINGS,
-            ...dbSettings,
-            categories: mergedCategories,
-            benefits: Array.isArray(dbSettings.benefits) ? dbSettings.benefits : INITIAL_SITE_SETTINGS.benefits,
-          });
+        const finalSettings: SiteSettings = {
+          ...INITIAL_SITE_SETTINGS,
+          ...(dbSettings || {}),
+          categories: mergedCategories,
+          benefits: (dbSettings && Array.isArray(dbSettings.benefits)) ? dbSettings.benefits : INITIAL_SITE_SETTINGS.benefits,
+        };
+        
+        setSiteSettings(finalSettings);
+
+        // 核心修复：将弹窗检查移出 dbSettings 判断块，确保 constants 模式下也能弹出
+        if (finalSettings.flashSale?.isActive) {
+          const hasSeen = sessionStorage.getItem('flash_sale_seen');
+          if (!hasSeen) {
+            // 稍作延迟，待 Home 页面渲染后弹出
+            setTimeout(() => setShowFlashSale(true), 1000);
+          }
         }
 
         const params = new URLSearchParams(window.location.search);
@@ -106,6 +116,20 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen bg-white font-sans selection:bg-lg-red selection:text-white">
       <Navbar activeAgent={activeAgent} isAdmin={isAdminAuth} language={language} setLanguage={setLanguage} siteSettings={siteSettings} />
+      
+      {showFlashSale && (
+        <FlashSaleOverlay 
+          siteSettings={siteSettings} 
+          products={products} 
+          language={language} 
+          activeAgent={activeAgent}
+          onClose={() => {
+            setShowFlashSale(false);
+            sessionStorage.setItem('flash_sale_seen', 'true');
+          }} 
+        />
+      )}
+
       <main>
         {currentRoute === AppRoute.HOME ? (
           <>

@@ -1,11 +1,12 @@
 
-import { Product, Agent, SiteSettings } from '../types';
+import { Product, Agent, SiteSettings, Lead } from '../types';
 
 const DB_NAME = 'LG_PLATFORM_DB';
 const PRODUCT_STORE = 'products';
 const AGENT_STORE = 'agents';
 const SETTINGS_STORE = 'settings';
-const DB_VERSION = 3; // Bump version for new settings store
+const LEAD_STORE = 'leads'; // 新增预约存储
+const DB_VERSION = 5; // 升级版本
 
 export const initDB = (): Promise<IDBDatabase> => {
   return new Promise((resolve, reject) => {
@@ -20,6 +21,9 @@ export const initDB = (): Promise<IDBDatabase> => {
       }
       if (!db.objectStoreNames.contains(SETTINGS_STORE)) {
         db.createObjectStore(SETTINGS_STORE);
+      }
+      if (!db.objectStoreNames.contains(LEAD_STORE)) {
+        db.createObjectStore(LEAD_STORE, { keyPath: 'id' });
       }
     };
     request.onsuccess = () => resolve(request.result);
@@ -86,5 +90,25 @@ export const getSettingsDB = async (): Promise<SiteSettings | null> => {
   return new Promise((resolve) => {
     const request = store.get('current');
     request.onsuccess = () => resolve(request.result || null);
+  });
+};
+
+export const saveLeadDB = async (lead: Lead) => {
+  const db = await initDB();
+  const tx = db.transaction(LEAD_STORE, 'readwrite');
+  const store = tx.objectStore(LEAD_STORE);
+  store.add(lead);
+  return new Promise((resolve) => {
+    tx.oncomplete = () => resolve(true);
+  });
+};
+
+export const getLeadsDB = async (): Promise<Lead[]> => {
+  const db = await initDB();
+  const tx = db.transaction(LEAD_STORE, 'readonly');
+  const store = tx.objectStore(LEAD_STORE);
+  return new Promise((resolve) => {
+    const request = store.getAll();
+    request.onsuccess = () => resolve(request.result);
   });
 };

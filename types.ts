@@ -6,8 +6,8 @@ export interface Multilingual {
 }
 
 export interface CategoryItem {
-  id: string; // 用于逻辑关联的唯一 ID（通常使用英文名）
-  label: Multilingual; // 显式给用户看的三语名称
+  id: string; 
+  label: Multilingual; 
 }
 
 export interface ProductPlan {
@@ -29,13 +29,35 @@ export interface HpOption {
   label: Multilingual;
   value: string;
   modelId?: string; 
-  rentalOffset?: number; // 月租加价金额
+  rentalOffset?: number; 
   cashOffset?: number;   
+}
+
+export interface FlashSaleConfig {
+  isActive: boolean;
+  productId: string;
+  launchDate: string; 
+  quantity: number;
+  title: Multilingual;
+  description: Multilingual;
+  directLink?: string;
+  customWasPrice?: number; // 手动输入原价
+  customPromoPrice?: number; // 手动输入优惠价
+}
+
+export interface Lead {
+  id: string;
+  fullName: string;
+  phone: string;
+  postcode: string;
+  productId: string;
+  agentToken?: string;
+  timestamp: number;
 }
 
 export interface Product {
   id: string; 
-  category: string; // 存储 CategoryItem.id
+  category: string; 
   name: string;
   modelId?: string; 
   subName: Multilingual;
@@ -74,7 +96,7 @@ export interface PromotionTemplate {
   type: PromoType;
   title: Multilingual;
   applicableProductIds: string[]; 
-  durationMonths?: number;
+  durationMonths?: number; // Only for percentage
   value: number; 
   endDate: string;
   content: Multilingual;
@@ -114,11 +136,12 @@ export interface SiteSettings {
   joinUsPainPoints: Multilingual[];
   stores: Store[];
   promoTemplates: PromotionTemplate[];
+  flashSale?: FlashSaleConfig; 
   officeEmail: string;
   officePhone?: string; 
   recruitmentWa: string;
   featuredProductIds: string[]; 
-  categories: CategoryItem[]; // 改为对象数组
+  categories: CategoryItem[]; 
   socialLinks: {
     fb: string;
     ig: string;
