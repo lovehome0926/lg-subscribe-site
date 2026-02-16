@@ -16,7 +16,7 @@ const App: React.FC = () => {
   const [currentRoute, setCurrentRoute] = useState<AppRoute>(AppRoute.HOME);
   const [activeAgent, setActiveAgent] = useState<Agent | null>(null);
   const [isAdminAuth, setIsAdminAuth] = useState(false);
-  const [language, setLanguage] = useState<Language>('cn');
+  const [language, setLanguage] = useState<Language>('ms'); // 默认语言修改为马来文
   const [siteSettings, setSiteSettings] = useState<SiteSettings>(INITIAL_SITE_SETTINGS);
   const [isReady, setIsReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
